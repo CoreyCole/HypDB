@@ -4,9 +4,7 @@ import { MainService } from '../../services/main.service';
 @Component({
   selector: 'hyp-home-page',
   template: `
-    <p>
-      home-page works!
-    </p>
+    <hyp-bar-chart-demo></hyp-bar-chart-demo>
   `,
   styleUrls: ['./home-page.component.scss']
 })

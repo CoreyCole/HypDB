@@ -20,16 +20,21 @@ import {
 } from '@angular/material';
 import 'hammerjs';
 
+// ngx charts
+import { BarChartModule } from '@swimlane/ngx-charts';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { MainService } from './services/main.service';
+import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-demo.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomePageComponent
+    HomePageComponent,
+    BarChartDemoComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +53,9 @@ import { MainService } from './services/main.service';
     MatSidenavModule,
     MatInputModule,
     MatSelectModule,
-    MatChipsModule
+    MatChipsModule,
+    // ngx charts
+    BarChartModule
   ],
   providers: [
     MainService

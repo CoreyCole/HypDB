@@ -1,0 +1,19 @@
+{
+  "name": "hypdb",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-server": "cd server && gunicorn --workers=1 --bind 0.0.0.0:5000 --reload app:APP",
+    "start-client": "cd client && ng serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CoreyCole/HypDB.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CoreyCole/HypDB/issues"
+  },
+  "homepage": "https://github.com/CoreyCole/HypDB#readme"
+}

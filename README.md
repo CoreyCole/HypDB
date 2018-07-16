@@ -1,4 +1,12 @@
 # HypDB
+To run the demo, first install Node, NPM, and python 3.6
+```
+# to start the server
+npm run start-server
+
+# to start the client
+npm run start-client
+```
 
 ### Contributing
 We follow [angular-style commit message guidelines.](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit)

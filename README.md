@@ -4,7 +4,10 @@ To run the demo, first install Node, NPM, and python 3.6
 # to start the server
 npm run start-server
 
-# to start the client
+# to start the client, first install node_modules
+cd client && npm i
+
+# then cd back into the root and run the client
 npm run start-client
 ```
 

@@ -23,18 +23,22 @@ import 'hammerjs';
 // ngx charts
 import { BarChartModule } from '@swimlane/ngx-charts';
 
+// csv parser
+import { PapaParseModule } from 'ngx-papaparse';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { MainService } from './services/main.service';
 import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-demo.component';
-
+import { CsvUploadComponent } from './components/csv-upload/csv-upload.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomePageComponent,
-    BarChartDemoComponent
+    BarChartDemoComponent,
+    CsvUploadComponent
   ],
   imports: [
     BrowserModule,
@@ -55,7 +59,9 @@ import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-dem
     MatSelectModule,
     MatChipsModule,
     // ngx charts
-    BarChartModule
+    BarChartModule,
+    // csv parser
+    PapaParseModule
   ],
   providers: [
     MainService

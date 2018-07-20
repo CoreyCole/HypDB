@@ -31,6 +31,7 @@ import { MainService } from '../../services/main.service';
 export class CsvUploadComponent implements OnInit {
   error: string;
   currentResultJson: PapaParseResult;
+  currentFileName: string;
   confirmColumns: string[];
   loading = false;
 
@@ -49,6 +50,7 @@ export class CsvUploadComponent implements OnInit {
   fileSelected(files: FileList) {
     if (files.length > 1) return this.error = 'can only upload 1 file at a time!';
     const file: File = files[0];
+    this.currentFileName = file.name;
     this.papa.parse(file, {
       header: true,
       complete: parsedResult => this.handleParsedJson(parsedResult),
@@ -59,19 +61,22 @@ export class CsvUploadComponent implements OnInit {
   handleParsedJson(resultJson: PapaParseResult) {
     if (resultJson.errors) console.dir(resultJson.errors)
     this.currentResultJson = resultJson;
-    this.confirmColumns = Object.keys(resultJson.data[0]);
+    this.confirmColumns = resultJson.meta.fields;
   }
 
   confirmUpload() {
     const uploadJson = { ...this.currentResultJson };
-    uploadJson['columns'] = [ ...this.confirmColumns ];
+    uploadJson.meta['filename'] = this.currentFileName;
+    uploadJson.meta['uploadDate'] = new Date().toLocaleString();
     
     // reset component fields
-    this.error = '';
+    this.error = null;
     this.currentResultJson = null;
+    this.currentFileName = null;
     this.confirmColumns = null;
     
     // upload the json to the backend
+    console.log('uploading file to backend: ', uploadJson);
     this.loading = true;
     this.main.uploadCsvJson(uploadJson)
       .subscribe(response => {

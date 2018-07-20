@@ -7,7 +7,8 @@ import { MainService } from '../../services/main.service';
 @Component({
   selector: 'hyp-csv-upload',
   template: `
-    <span class="error">{{ error }}</span>
+    <span class="error" *ngIf="error">{{ error }}</span>
+    <span class="success" *ngIf="success">Upload Successful!</span>
     <div class="upload" *ngIf="!currentResultJson && !loading">
       <button mat-raised-button color="accent" (click)="uploadCsv($event)">UPLOAD CSV</button>
       <input id="file-upload" mat-raised-button type="file" (change)="fileSelected($event.target.files)">
@@ -34,6 +35,7 @@ export class CsvUploadComponent implements OnInit {
   currentFileName: string;
   confirmColumns: string[];
   loading = false;
+  success = false;
 
   constructor(
     private papa: Papa,
@@ -49,6 +51,7 @@ export class CsvUploadComponent implements OnInit {
 
   fileSelected(files: FileList) {
     if (files.length > 1) return this.error = 'can only upload 1 file at a time!';
+    this.success = false;
     const file: File = files[0];
     this.currentFileName = file.name;
     this.papa.parse(file, {
@@ -82,6 +85,7 @@ export class CsvUploadComponent implements OnInit {
       .subscribe(response => {
         console.log(response)
         this.loading = false;
+        this.success = true;
       });
   }
 

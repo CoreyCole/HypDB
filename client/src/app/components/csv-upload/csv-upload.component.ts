@@ -14,7 +14,7 @@ import { MainService } from '../../services/main.service';
     </div>
     <div class="confirm" *ngIf="currentResultJson && !loading">
       <h2>Confirm Columns</h2>
-      <button mat-raised-button color="primary" (click)="confirmUpload()">LOOKS GOOD</button>
+      <button mat-raised-button color="accent" (click)="confirmUpload()">LOOKS GOOD</button>
       <mat-list>
         <mat-list-item *ngFor="let column of confirmColumns">
           <i class="material-icons" mat-list-icon>

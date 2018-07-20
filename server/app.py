@@ -4,9 +4,10 @@ import logging
 import json
 import falcon
 # app middlewares
-from middlewares.cors import CORSComponent
+from middlewares.Cors import CORSComponent
 # app resources
-from resources.test import TestResource
+from resources.Test import TestResource
+from resources.UploadCsvJson import UploadCsvJsonResource
 
 # create info logger
 INFO_LOGGER = logging.getLogger('info')
@@ -29,9 +30,10 @@ ERROR_LOGGER.addHandler(ERROR_CH)
 INFO_LOGGER.info('starting server . . .')
 
 APP = falcon.API(middleware=[
-    CORSComponent()
+  CORSComponent()
 ])
 # APP.req_options.auto_parse_form_urlencoded = True
 APP.add_route('/test', TestResource())
+APP.add_route('/upload-csv-json', UploadCsvJsonResource())
 
 INFO_LOGGER.info('started server')

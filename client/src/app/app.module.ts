@@ -16,7 +16,9 @@ import {
   MatSidenavModule,
   MatInputModule,
   MatSelectModule,
-  MatChipsModule
+  MatChipsModule,
+  MatProgressSpinnerModule,
+  MatProgressBarModule
 } from '@angular/material';
 import 'hammerjs';
 
@@ -58,6 +60,8 @@ import { CsvUploadComponent } from './components/csv-upload/csv-upload.component
     MatInputModule,
     MatSelectModule,
     MatChipsModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
     // ngx charts
     BarChartModule,
     // csv parser

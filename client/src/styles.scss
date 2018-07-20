@@ -96,6 +96,8 @@ $uw-app-theme:   mat-light-theme($uw-app-primary, $uw-app-accent);
 @include mat-card-theme($uw-app-theme);
 @include mat-form-field-theme($uw-app-theme);
 @include mat-select-theme($uw-app-theme);
+@include mat-progress-bar-theme($uw-app-theme);
+@include mat-progress-spinner-theme($uw-app-theme);
 
 body {
   margin: 0;
@@ -123,4 +125,8 @@ body {
 .flex-row-container {
   display: flex;
   flex-direction: row;
+}
+
+.spacer {
+  margin-bottom: 16px;
 }

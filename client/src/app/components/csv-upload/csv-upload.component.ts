@@ -8,13 +8,13 @@ import { MainService } from '../../services/main.service';
   selector: 'hyp-csv-upload',
   template: `
     <span class="error">{{ error }}</span>
-    <div class="upload" *ngIf="!currentResultJson">
+    <div class="upload" *ngIf="!currentResultJson && !loading">
       <button mat-raised-button color="accent" (click)="uploadCsv($event)">UPLOAD CSV</button>
       <input id="file-upload" mat-raised-button type="file" (change)="fileSelected($event.target.files)">
     </div>
-    <div class="confirm" *ngIf="currentResultJson">
+    <div class="confirm" *ngIf="currentResultJson && !loading">
       <h2>Confirm Columns</h2>
-      <button mat-raised-button color="accent" (click)="confirmUpload()">LOOKS GOOD</button>
+      <button mat-raised-button color="primary" (click)="confirmUpload()">LOOKS GOOD</button>
       <mat-list>
         <mat-list-item *ngFor="let column of confirmColumns">
           <i class="material-icons" mat-list-icon>
@@ -24,6 +24,7 @@ import { MainService } from '../../services/main.service';
         </mat-list-item>
       </mat-list>
     </div>
+    <mat-spinner *ngIf="loading" color="accent"></mat-spinner>
   `,
   styleUrls: ['./csv-upload.component.scss']
 })
@@ -31,6 +32,7 @@ export class CsvUploadComponent implements OnInit {
   error: string;
   currentResultJson: PapaParseResult;
   confirmColumns: string[];
+  loading = false;
 
   constructor(
     private papa: Papa,
@@ -70,7 +72,12 @@ export class CsvUploadComponent implements OnInit {
     this.confirmColumns = null;
     
     // upload the json to the backend
-    this.main.uploadCsvJson(uploadJson);
+    this.loading = true;
+    this.main.uploadCsvJson(uploadJson)
+      .subscribe(response => {
+        console.log(response)
+        this.loading = false;
+      });
   }
 
 }

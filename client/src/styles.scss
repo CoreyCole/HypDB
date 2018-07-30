@@ -1,2 +1,132 @@
 /* You can add global styles to this file, and also import other style files */
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '~@angular/material/theming';
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// **Be sure that you only ever include this mixin once!**
+@include mat-core();
+
+$dark-primary-text: rgba(black, 0.87);
+$dark-secondary-text: rgba(black, 0.54);
+$dark-disabled-text: rgba(black, 0.38);
+$dark-dividers: rgba(black, 0.12);
+$dark-focused: rgba(black, 0.12);
+$light-primary-text: white;
+$light-secondary-text: rgba(white, 0.7);
+$light-disabled-text: rgba(white, 0.5);
+$light-dividers: rgba(white, 0.12);
+$light-focused: rgba(white, 0.12);
+
+$mat-uw-purple: (
+  50: #4b2e83,
+  100: #4b2e83,
+  200: #4b2e83,
+  300: #4b2e83,
+  400: #4b2e83,
+  500: #4b2e83,
+  600: #4b2e83,
+  700: #4b2e83,
+  800: #4b2e83,
+  900: #4b2e83,
+  A100: #4b2e83,
+  A200: #4b2e83,
+  A400: #4b2e83,
+  A700: #4b2e83,
+  contrast: (
+    50: $light-primary-text,
+    100: $light-primary-text,
+    200: $light-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $light-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+
+$mat-uw-gold: (
+  50: #b7a57a,
+  100: #b7a57a,
+  200: #b7a57a,
+  300: #b7a57a,
+  400: #b7a57a,
+  500: #b7a57a,
+  600: #b7a57a,
+  700: #b7a57a,
+  800: #b7a57a,
+  900: #b7a57a,
+  A100: #b7a57a,
+  A200: #b7a57a,
+  A400: #b7a57a,
+  A700: #b7a57a,
+  contrast: (
+    50: $light-primary-text,
+    100: $light-primary-text,
+    200: $light-primary-text,
+    300: $light-primary-text,
+    400: $light-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $light-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+
+// Define the theme.
+$uw-app-primary: mat-palette($mat-uw-purple);
+$uw-app-accent:  mat-palette($mat-uw-gold);
+$uw-app-theme:   mat-light-theme($uw-app-primary, $uw-app-accent);
+
+// Include the theme styles for only specified components.
+@include mat-core-theme($uw-app-theme);
+@include mat-button-theme($uw-app-theme);
+@include mat-toolbar-theme($uw-app-theme);
+@include mat-chips-theme($uw-app-theme);
+@include mat-card-theme($uw-app-theme);
+@include mat-form-field-theme($uw-app-theme);
+@include mat-select-theme($uw-app-theme);
+@include mat-progress-bar-theme($uw-app-theme);
+@include mat-progress-spinner-theme($uw-app-theme);
+
+body {
+  margin: 0;
+  background-color: #e5e5e5;
+}
+
+.markdown-pre {
+  background: rgba(0, 0, 0, 0.1);
+  border: 0.5px solid rgba(0, 0, 0, 0.03);
+  border-radius: 5px;
+  margin: 16px auto;
+  display: block;
+  padding: 0px;
+}
+
+.markdown-code {
+  font-family: Roboto Mono,monospace;
+  background: transparent;
+}
+
+.flex-span {
+  flex: 1 1 auto;
+}
+
+.flex-row-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.spacer {
+  margin-bottom: 16px;
+}

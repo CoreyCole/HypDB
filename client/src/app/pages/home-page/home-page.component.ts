@@ -4,6 +4,7 @@ import { MainService } from '../../services/main.service';
 @Component({
   selector: 'hyp-home-page',
   template: `
+    <hyp-csv-upload></hyp-csv-upload>
     <hyp-bar-chart-demo></hyp-bar-chart-demo>
   `,
   styleUrls: ['./home-page.component.scss']

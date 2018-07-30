@@ -10,4 +10,8 @@ export class MainService {
   test() {
     return this.http.get(`${this.endpoint}/test`);
   }
+
+  uploadCsvJson(csvJson) {
+    return this.http.post(`${this.endpoint}/upload-csv-json`, { json: csvJson });
+  }
 }

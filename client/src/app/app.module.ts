@@ -28,13 +28,15 @@ import { AppComponent } from './app.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { MainService } from './services/main.service';
 import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-demo.component';
+import { TestButtonDemoComponent } from './components/bar-chart-demo/test-button-demo.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomePageComponent,
-    BarChartDemoComponent
+    BarChartDemoComponent,
+    TestButtonDemoComponent
   ],
   imports: [
     BrowserModule,

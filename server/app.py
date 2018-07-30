@@ -33,5 +33,6 @@ APP = falcon.API(middleware=[
 ])
 # APP.req_options.auto_parse_form_urlencoded = True
 APP.add_route('/test', TestResource())
+APP.add_route('/api/bias', BiasResource())
 
 INFO_LOGGER.info('started server')

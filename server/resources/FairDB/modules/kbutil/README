@@ -1,0 +1,9 @@
+Author : Kevin S. Brown (kevin.s.brown@uconn.edu, github.com/thelahunginjeet)
+
+Assorted python utilities that I find myself repeatedly reinventing/repeating in multiple projects.
+ 
+-listutil.py   : utilties for working with lists and dictionaries
+-plotting.py   : making prettier or specialized plots
+-rand.py       : generating random numbers
+-statistics.py : correlation matrices, smoothing, bootstrapping correlations, z-scoring
+

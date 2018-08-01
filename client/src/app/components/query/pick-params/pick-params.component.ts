@@ -6,6 +6,7 @@ import { CsvJson, HypDBDto, MainService } from '../../../services/main.service';
   template: `
   <div *ngIf="csvJson">
     <h1>Query Input</h1>
+    <span class="error">{{ error }}</span>
     <div class="inputs">
       <div class="input">
         <h2>Select Outcomes of Interest</h2>
@@ -50,6 +51,7 @@ export class PickParamsComponent implements OnInit {
   outcomes: string[] = [];
   groupingAttributes: string[] = [];
   where: string;
+  error: string;
 
   constructor(private main: MainService) { }
 
@@ -71,13 +73,20 @@ export class PickParamsComponent implements OnInit {
   }
 
   query() {
-    const dto: HypDBDto = {
-      outcomes: this.outcomes,
-      groupingAttributes: this.groupingAttributes,
-      filename: this.csvJson.meta.filename,
-      where: this.where
-    };
-    this.main.queryHypDb(dto);
+    if (!this.outcomes || this.outcomes.length === 0) {
+      this.error = 'no outcomes selected!';
+    } else if (!this.groupingAttributes || this.groupingAttributes.length === 0) {
+      this.error = 'no grouping attributes selected!';
+    } else {
+      this.error = null;
+      const dto: HypDBDto = {
+        outcomes: this.outcomes,
+        groupingAttributes: this.groupingAttributes,
+        filename: this.csvJson.meta.filename,
+        where: this.where
+      };
+      this.main.queryHypDb(dto);
+    }
   }
 
 }

@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 
 import { Papa } from 'ngx-papaparse';
 import { PapaParseResult } from '../../../../node_modules/ngx-papaparse/lib/interfaces/papa-parse-result';
-import { MainService } from '../../services/main.service';
+import { MainService, CsvJson } from '../../services/main.service';
 
 @Component({
   selector: 'hyp-csv-upload',
   template: `
+    <h1>Upload CSV Files</h1>
     <span class="error" *ngIf="error">{{ error }}</span>
     <span class="success" *ngIf="success">Upload Successful!</span>
     <div class="upload" *ngIf="!currentResultJson && !loading">
@@ -31,7 +32,7 @@ import { MainService } from '../../services/main.service';
 })
 export class CsvUploadComponent implements OnInit {
   error: string;
-  currentResultJson: PapaParseResult;
+  currentResultJson: CsvJson;
   currentFileName: string;
   confirmColumns: string[];
   loading = false;
@@ -56,19 +57,19 @@ export class CsvUploadComponent implements OnInit {
     this.currentFileName = file.name;
     this.papa.parse(file, {
       header: true,
-      complete: parsedResult => this.handleParsedJson(parsedResult),
+      complete: parsedResult => this.handleParsedJson(parsedResult as CsvJson),
       error: () => this.error = 'csv error'
     });
   }
 
-  handleParsedJson(resultJson: PapaParseResult) {
+  handleParsedJson(resultJson: CsvJson) {
     if (resultJson.errors) console.dir(resultJson.errors)
     this.currentResultJson = resultJson;
     this.confirmColumns = resultJson.meta.fields;
   }
 
   confirmUpload() {
-    const uploadJson = { ...this.currentResultJson };
+    const uploadJson: CsvJson = { ...this.currentResultJson };
     uploadJson.meta['filename'] = this.currentFileName;
     uploadJson.meta['uploadDate'] = new Date().toLocaleString();
     

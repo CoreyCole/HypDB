@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // angular material components
@@ -34,18 +35,23 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { MainService } from './services/main.service';
 import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-demo.component';
 import { CsvUploadComponent } from './components/csv-upload/csv-upload.component';
+import { QueryComponent } from './components/query/query.component';
+import { PickParamsComponent } from './components/query/pick-params/pick-params.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomePageComponent,
     BarChartDemoComponent,
-    CsvUploadComponent
+    CsvUploadComponent,
+    QueryComponent,
+    PickParamsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    FormsModule,
     BrowserAnimationsModule,
     // material components
     MatButtonModule,

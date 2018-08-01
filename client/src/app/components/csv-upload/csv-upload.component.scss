@@ -1,0 +1,21 @@
+.error {
+  display: block;
+  color: red;
+  font-size: 16pt;
+}
+
+.success {
+  display: block;
+  font-size: 16pt;
+}
+
+#file-upload {
+  display: none;
+}
+
+mat-spinner {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-left: auto;
+  margin-right: auto;
+}

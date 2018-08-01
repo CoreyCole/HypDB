@@ -8,6 +8,9 @@ from middlewares.Cors import CORSComponent
 # app resources
 from resources.Test import TestResource
 from resources.Bias import BiasResource
+from resources.CsvJsonUploadListResource import CsvJsonUploadListResource
+from resources.UploadCsvJson import UploadCsvJsonResource
+from resources.DownloadCsvJson import DownloadCsvJsonResource
 
 # create info logger
 INFO_LOGGER = logging.getLogger('info')
@@ -30,10 +33,13 @@ ERROR_LOGGER.addHandler(ERROR_CH)
 INFO_LOGGER.info('starting server . . .')
 
 APP = falcon.API(middleware=[
-    CORSComponent()
+  CORSComponent()
 ])
 # APP.req_options.auto_parse_form_urlencoded = True
 APP.add_route('/test', TestResource())
 APP.add_route('/api/bias', BiasResource())
+APP.add_route('/csv-json', CsvJsonUploadListResource())
+APP.add_route('/csv-json/upload', UploadCsvJsonResource())
+APP.add_route('/csv-json/download/{file_name}', DownloadCsvJsonResource())
 
 INFO_LOGGER.info('started server')

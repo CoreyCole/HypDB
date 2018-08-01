@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // angular material components
@@ -16,12 +17,17 @@ import {
   MatSidenavModule,
   MatInputModule,
   MatSelectModule,
-  MatChipsModule
+  MatChipsModule,
+  MatProgressSpinnerModule,
+  MatProgressBarModule
 } from '@angular/material';
 import 'hammerjs';
 
 // ngx charts
 import { BarChartModule } from '@swimlane/ngx-charts';
+
+// csv parser
+import { PapaParseModule } from 'ngx-papaparse';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,19 +35,25 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
 import { MainService } from './services/main.service';
 import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-demo.component';
 import { TestButtonDemoComponent } from './components/bar-chart-demo/test-button-demo.component';
-
+import { CsvUploadComponent } from './components/csv-upload/csv-upload.component';
+import { QueryComponent } from './components/query/query.component';
+import { PickParamsComponent } from './components/query/pick-params/pick-params.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomePageComponent,
     BarChartDemoComponent,
-    TestButtonDemoComponent
+    TestButtonDemoComponent,
+    CsvUploadComponent,
+    QueryComponent,
+    PickParamsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    FormsModule,
     BrowserAnimationsModule,
     // material components
     MatButtonModule,
@@ -56,8 +68,12 @@ import { TestButtonDemoComponent } from './components/bar-chart-demo/test-button
     MatInputModule,
     MatSelectModule,
     MatChipsModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
     // ngx charts
-    BarChartModule
+    BarChartModule,
+    // csv parser
+    PapaParseModule
   ],
   providers: [
     MainService

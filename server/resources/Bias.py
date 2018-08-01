@@ -1,8 +1,22 @@
+from os import chdir
+import warnings
+warnings.filterwarnings("ignore")
+#chdir("/Users/peter/Workspace/HypDB/server/resources/")
+import sys
+print(sys.path)
+sys.path = ['.'] + sys.path
+print(sys.path)
+
+import os
+cwd = os.getcwd()
+print(cwd)
+
 """
 Bias Resource
 
 Computes bias statistics
 """
+
 import os 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 print(dir_path)
@@ -25,12 +39,19 @@ class BiasResource(object):
   """Resource for computing bias statistics"""
 
   def on_post(self, req, resp):
-    """Endpoint for returning bias statistics about a query"""
+    #print(req)
+    #print(resp)
+    #print('helloworld')
+    #with open('posttest123.txt', 'w+') as f:
+    #    f.write('hello world')
+    #    f.write('end')
 
+    """Endpoint for returning bias statistics about a query"""
+    
     # Read Data
-    data2 = read_from_csv('./data/binadult.csv')
-    data2=data2[data2['maritalstatus'].isin(['Divorced','Nevermarried','Separated','Widowed'])]
-    data2=data2[data2['maritalstatus'].isin(['Divorced','Nevermarried'])]
+    data2 = read_from_csv('./resources/data/binadult.csv')
+    #data2=data2[data2['maritalstatus'].isin(['Divorced','Nevermarried','Separated','Widowed'])]
+    #data2=data2[data2['maritalstatus'].isin(['Divorced','Nevermarried'])]
 
     # Question: Does sex have any direct or indirect effect on adult income?
     ## Initializes FairDB 
@@ -53,11 +74,11 @@ class BiasResource(object):
     ## Naive group-by query, followd by a conditional independance test 
     ate = sql.naive_groupby(data2, treatment, outcome)
     sql.plot(ate,treatment,outcome,'Average High Income','Naive SQL')
-    pval,I=test.ulti_fast_permutation_tst(data2,treatment, outcome, pvalue=pvalue,
-                                         debug=True,loc_num_samples=10000,
-                                         num_samples=1000,view=False)
+    #pval,I=test.ulti_fast_permutation_tst(data2,treatment, outcome, pvalue=pvalue,
+    #                                     debug=True,loc_num_samples=10000,
+    #                                     num_samples=1000,view=False)
     print('P value',pval,'  (<0.01 depedance)')
-
+    '''
     # Computing parents of the treatment
     start=time.time()
     cov1, par1 = detector.get_parents(treatment, pvalue=pvalue, method=method
@@ -157,13 +178,14 @@ class BiasResource(object):
     top_k_explanation(data2, treatment, outcome, ['relationship'],k=3)
 
     top_k_explanation(data2, treatment, outcome, ['occupation'])
+    '''
 
     # Temporary filler return
+    print('post worked')
     resp.content_type = 'application/json'
     resp.status = falcon.HTTP_200
     resp.body = json.dumps({'bias': 'immense'})
     return resp
-
 # Works
 #temp = BiasResource()
 #temp.on_post('', '')

@@ -24,7 +24,10 @@ import {
 import 'hammerjs';
 
 // ngx charts
-import { BarChartModule } from '@swimlane/ngx-charts';
+import { NgxChartsModule, BarChartModule } from '@swimlane/ngx-charts';
+
+// ngx dag
+import { NgxGraphModule } from '@swimlane/ngx-graph';
 
 // csv parser
 import { PapaParseModule } from 'ngx-papaparse';
@@ -37,6 +40,7 @@ import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-dem
 import { CsvUploadComponent } from './components/csv-upload/csv-upload.component';
 import { QueryComponent } from './components/query/query.component';
 import { PickParamsComponent } from './components/query/pick-params/pick-params.component';
+import { DagDemoComponent } from './components/dag-demo/dag-demo.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +49,8 @@ import { PickParamsComponent } from './components/query/pick-params/pick-params.
     BarChartDemoComponent,
     CsvUploadComponent,
     QueryComponent,
-    PickParamsComponent
+    PickParamsComponent,
+    DagDemoComponent
   ],
   imports: [
     BrowserModule,
@@ -69,7 +74,10 @@ import { PickParamsComponent } from './components/query/pick-params/pick-params.
     MatProgressSpinnerModule,
     MatProgressBarModule,
     // ngx charts
+    NgxChartsModule,
     BarChartModule,
+    // ngx dag
+    NgxGraphModule,
     // csv parser
     PapaParseModule
   ],

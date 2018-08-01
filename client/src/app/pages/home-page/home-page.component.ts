@@ -6,7 +6,6 @@ import { MainService, CsvJson } from '../../services/main.service';
 @Component({
   selector: 'hyp-home-page',
   template: `
-    <hyp-bar-chart-demo></hyp-bar-chart-demo>
     <test-button-demo></test-button-demo>
     <div class="container">
       <hyp-csv-upload></hyp-csv-upload>

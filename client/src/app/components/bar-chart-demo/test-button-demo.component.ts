@@ -1,29 +1,32 @@
 import { Component, OnInit } from '@angular/core';
+import { MainService } from '../../services/main.service';
+import { of } from 'rxjs'
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'test-button-demo',
   template: `
-    <input type="button" value="Submit" onclick="sendJSON()"/>
+    <input type="button" value="Submit" (click)="sendJSON()"/>
   `,
   styleUrls: ['./test-button-demo.component.scss'],
 })
 export class TestButtonDemoComponent implements OnInit {
-  constructor() { }
+  constructor(
+    private main: MainService
+  ) { }
 
   ngOnInit() {
   }
 
   sendJSON() {
-    console.log("hello world");
-    fetch('0.0.0.0:5000/api/bias', {
-      method: 'post',
-      body: JSON.stringify({})
-    }).then(function(response) {
-      return response.json();
-    }).then(function(data) {
-      // TODO: Viz
-      console.log(data);
-    });
+    this.main.postJSON({hello: "world"})
+      .pipe(
+        catchError((err: any) => {
+          console.error(err);
+          return of(err);
+        })
+      )
+      .subscribe(res => console.log(res));
   }
 
 }

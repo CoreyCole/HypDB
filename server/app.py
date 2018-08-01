@@ -4,9 +4,10 @@ import logging
 import json
 import falcon
 # app middlewares
-from middlewares.cors import CORSComponent
+from middlewares.Cors import CORSComponent
 # app resources
-from resources.test import TestResource
+from resources.Test import TestResource
+from resources.Bias import BiasResource
 
 # create info logger
 INFO_LOGGER = logging.getLogger('info')

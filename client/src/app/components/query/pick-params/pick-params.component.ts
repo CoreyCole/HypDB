@@ -72,8 +72,8 @@ export class PickParamsComponent implements OnInit {
 
   query() {
     const dto: HypDBDto = {
-      outcome: this.outcome,
-      groupingAttribute: this.groupingAttribute,
+      outcomes: this.outcomes,
+      groupingAttributes: this.groupingAttributes,
       filename: this.csvJson.meta.filename,
       where: this.where
     };

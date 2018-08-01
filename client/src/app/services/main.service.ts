@@ -15,10 +15,10 @@ export interface CsvJson {
 }
 
 export interface HypDBDto {
-  outcome: string;
+  outcomes: string[];
   filename: string;
   where: string;
-  groupingAttribute: string;
+  groupingAttributes: string[];
 }
 
 @Injectable()

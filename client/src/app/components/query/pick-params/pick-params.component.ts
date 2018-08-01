@@ -77,7 +77,7 @@ export class PickParamsComponent implements OnInit {
       filename: this.csvJson.meta.filename,
       where: this.where
     };
-    this.main.queryHypDb(dto);
+    this.main.queryHypDb(dto).subscribe(res => console.log(res));;
   }
 
 }

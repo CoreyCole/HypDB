@@ -10,6 +10,8 @@ import { MainService, CsvJson } from '../../services/main.service';
       <hyp-csv-upload></hyp-csv-upload>
       <hyp-query [files]="files | async"></hyp-query>
       <hyp-bar-chart-demo></hyp-bar-chart-demo>
+      <div class="spacer"></div>
+      <hyp-dag-demo></hyp-dag-demo>
     </div>
   `,
   styleUrls: ['./home-page.component.scss']

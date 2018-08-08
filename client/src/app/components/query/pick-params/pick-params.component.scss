@@ -1,0 +1,29 @@
+.inputs {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  .input {
+    flex: 1;
+    width: 200px;
+  }
+}
+
+pre {
+  font-size: 16pt;
+  margin: 8px;
+  margin-left: 0;
+  display: inline;
+}
+
+.where {
+  width: 500px;
+}
+
+button {
+  margin-right: 8px;
+}
+
+.error {
+  color: red;
+  font-size: 16pt;
+}

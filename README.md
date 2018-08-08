@@ -1,5 +1,5 @@
 # HypDB
-To run the demo, first install Node, NPM, and python 3.6
+To run the demo, first install Node, NPM, @angular/cli, and python 3.6
 ```
 # to start the server
 npm run start-server

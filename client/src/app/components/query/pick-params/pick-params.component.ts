@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CsvJson, HypDBDto, MainService } from '../../../services/main.service';
+import * as SqlWhereParser from 'sql-where-parser';
 
 @Component({
   selector: 'hyp-pick-params',
@@ -52,6 +53,7 @@ export class PickParamsComponent implements OnInit {
   groupingAttributes: string[] = [];
   where: string;
   error: string;
+  whereParser = new SqlWhereParser();
 
   constructor(private main: MainService) { }
 
@@ -79,11 +81,12 @@ export class PickParamsComponent implements OnInit {
       this.error = 'no grouping attributes selected!';
     } else {
       this.error = null;
+      const parsedWhere = this.whereParser.parse(this.where);
       const dto: HypDBDto = {
         outcomes: this.outcomes,
         groupingAttributes: this.groupingAttributes,
         filename: this.csvJson.meta.filename,
-        where: this.where
+        where: parsedWhere
       };
       this.main.queryHypDb(dto);
     }

@@ -7,7 +7,7 @@ import { MainService, CsvJson } from '../../services/main.service';
   selector: 'hyp-home-page',
   template: `
     <div class="container">
-      <hyp-csv-upload></hyp-csv-upload>
+      <hyp-csv-upload (uploadedFile)="refreshFiles()"></hyp-csv-upload>
       <hyp-query [files]="files | async"></hyp-query>
       <hyp-bar-chart-demo></hyp-bar-chart-demo>
       <div class="spacer"></div>
@@ -25,6 +25,10 @@ export class HomePageComponent implements OnInit {
 
   ngOnInit() {
     this.main.test().subscribe(res => console.log(res));
+    this.files = this.main.getCsvJsonUploadList();
+  }
+
+  refreshFiles() {
     this.files = this.main.getCsvJsonUploadList();
   }
 

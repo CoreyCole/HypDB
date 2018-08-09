@@ -108,21 +108,21 @@ class BiasResource(object):
         # FairDB parameters
         whitelist = []
         black = ['']  
-        fraction = 0.1
-        shfraction = 1.1
+        fraction = 1
+        shfraction = 1
         method = 'g2'
-        pvalue = 0.001
+        pvalue = 0.01
         num_samples = 1000
         loc_num_samples = 100
         debug = False
-        coutious = 'full'
+        coutious = 'no'
         k=3
         
         ## Naive group-by query, followd by a conditional independance test 
         ate = sql.naive_groupby(data, treatment, outcome)
-        outJson = sql.plot(ate,treatment,outcome)
+        outJSON = sql.plot(ate,treatment,outcome)
 
-        '''
+        
         # Computing parents of the treatment
         start=time.time()
         cov1, par1 = detector.get_parents(treatment, pvalue=pvalue, method=method, ratio=1, fraction=fraction,
@@ -142,6 +142,9 @@ class BiasResource(object):
         cov2, par2 = detector.get_parents(outcome, pvalue=pvalue, method=method, ratio=1, fraction=fraction,
                                             num_samples=num_samples, blacklist=black, whitelist=whitelist,
                                             debug=debug, coutious=coutious, loc_num_samples=loc_num_samples, k=k)
+
+        sql.graph(cov1, par1, cov2, par2, treatment, outcome, outJSON)
+
         # end=time.time()
         # print('elapsed time',end-start)
         # print('g test',detector.ngtest)
@@ -149,7 +152,7 @@ class BiasResource(object):
 
         print('covariates of the outcome', cov2)
         print('parents of the outcome', par2)
-
+        '''
         covarite1=remove_dup(par1+par2)
         print(covarite1)
         covarite2=remove_dup(cov1+cov2)
@@ -202,7 +205,7 @@ class BiasResource(object):
         print('post worked')
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
-        resp.body = json.dumps(outJson)
+        resp.body = json.dumps(outJSON)
         return resp
     except Exception as e:
         print(e)

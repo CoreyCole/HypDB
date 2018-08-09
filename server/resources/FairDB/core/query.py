@@ -45,7 +45,7 @@ def adjusted_groupby(data,treatment,outcome,covariates,mediatpor=[],init=[],thre
     return ate,matcheddata ,adj_set,pur
 
 def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
-    outJson = {'barChart' : []}
+    outJSON = {'barChart' : []}
     # objects1 = res[treatment[0]].values
     # objects2 = res[treatment[1]].values
     # performance = res[outcome[0]].values
@@ -70,10 +70,10 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
                 temp[treatment[k]] = i[k]
 
         temp[outcome[0]] = j
-        outJson['barChart'].append(temp)
-    print(outJson)
-    print(json.dumps(outJson))
-    return outJson
+        outJSON['barChart'].append(temp)
+    print(outJSON)
+    print(json.dumps(outJSON))
+    return outJSON
 
 
 
@@ -92,6 +92,15 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
     # plt.title(title)
     # print(res)
     #plt.show()
+
+def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
+    outJSON['graph'] = {'treatment': {}, 'outcome': {}}
+    outJSON['graph']['treatment']['attributes'] = treatment
+    outJSON['graph']['treatment']['boundary'] = cov1
+    outJSON['graph']['treatment']['parents'] = par1
+    outJSON['graph']['outcome']['attributes'] = outcome
+    outJSON['graph']['outcome']['boundary'] = cov2
+    outJSON['graph']['outcome']['parents'] = par2
 
 def grouped_bar(df):
     pos = list(range(len(df['pre_score'])))

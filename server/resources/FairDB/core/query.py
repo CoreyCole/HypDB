@@ -4,6 +4,8 @@ from FairDB.utils.read_data import *
 from FairDB.core.matching import matching
 from FairDB.utils.util import *
 from pylab import *
+import json
+import numpy
 
 def naive_groupby(data,treatment,outcome,where=[]):
     ate = data.sort_values(by=treatment).groupby(treatment)[outcome].mean().reset_index()
@@ -62,9 +64,15 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
     for i, j in zip(attrs, outcomes):
         temp = {}
         for k in range(len(treatment)):
-            temp[treatment[k]] = i[k]
+            if type(i[k]).__module__ == 'numpy':
+                temp[treatment[k]] = int(i[k])
+            else:    
+                temp[treatment[k]] = i[k]
+
         temp[outcome[0]] = j
         outJson['barChart'].append(temp)
+    print(outJson)
+    print(json.dumps(outJson))
     return outJson
 
 

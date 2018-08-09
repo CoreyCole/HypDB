@@ -5,8 +5,8 @@ from FairDB.core.matching import matching
 from FairDB.utils.util import *
 from pylab import *
 
-def naive_groupby(data,treatment,outcome):
-    ate = data.groupby(treatment)[outcome].mean().reset_index()
+def naive_groupby(data,treatment,outcome,where=[]):
+    ate = data.sort_values(by=treatment).groupby(treatment)[outcome].mean().reset_index()
     return ate
 
 def remove_dup(lst):
@@ -34,7 +34,7 @@ def adjusted_groupby(data,treatment,outcome,covariates,mediatpor=[],init=[],thre
         ate = ate.merge(prob2, on=covariates)
         ate = ate.merge(prob1, on=mediatpor)
         W_ATEX = ate['ATE_X'] * ate['prob1'] * ate['prob2']
-    if   mediatpor and not covariates:
+    if mediatpor and not covariates:
         ate = ate.merge(prob1, on=mediatpor)
         W_ATEX = ate['ATE_X'] * ate['prob1']
     ate['WATE_X'] = W_ATEX
@@ -42,19 +42,48 @@ def adjusted_groupby(data,treatment,outcome,covariates,mediatpor=[],init=[],thre
     ate = wate.merge(counts, on=treatment, how='inner')
     return ate,matcheddata ,adj_set,pur
 
-def plot(res,treatment,outcome,ylable,title,fontsize=10):
-    objects = res[treatment[0]].values
-    y_pos = np.arange(len(objects))
-    performance = res[outcome[0]].values
-    font = {'size': fontsize}
+def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
+    outJson = {'barChart' : []}
+    # objects1 = res[treatment[0]].values
+    # objects2 = res[treatment[1]].values
+    # performance = res[outcome[0]].values
+    # font = {'size': fontsize} 
+    # print('res', res)
+    # print('treatment', treatment)
+    # print('outcome', outcome)
+    # print('objects1', objects1)
+    # print('objects2', objects2)
+    # print('performance', performance)
+    outcomes = res[outcome[0]].values
+    attrs = [[] for index in range(len(outcomes))]
+    for i in range(len(outcomes)):
+        for j in range(len(treatment)):
+            attrs[i].append(res[treatment[j]].values[i])
+    for i, j in zip(attrs, outcomes):
+        temp = {}
+        for k in range(len(treatment)):
+            temp[treatment[k]] = i[k]
+        temp[outcome[0]] = j
+        outJson['barChart'].append(temp)
+    return outJson
 
-    matplotlib.rc('font', **font)
-    plt.bar(y_pos.tolist(), performance.tolist(), align='center', alpha=0.5)
-    plt.xticks(y_pos, objects)
-    plt.ylabel(ylable)
-    plt.title(title)
-    print(res)
-    plt.show()
+
+
+    #for i, j in zip(res[treatment[attr]].values for attr in range(len(treatment))):
+    #    print(i, j)
+
+    #    print(i, treatment[i], res[treatment[i]].values)
+
+    # print(res.to_json(orient='split'))
+    # matplotlib.rc('font', **font)
+    # print('y_pos', y_pos)
+    # print('performance', performance)
+    # plt.bar(y_pos.tolist(), performance.tolist(), align='center', alpha=0.5)
+    # plt.xticks(y_pos, objects)
+    # plt.ylabel(ylable)
+    # plt.title(title)
+    # print(res)
+    #plt.show()
 
 def grouped_bar(df):
     pos = list(range(len(df['pre_score'])))

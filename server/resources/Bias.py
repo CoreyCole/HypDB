@@ -1,16 +1,5 @@
-from os import chdir
 import warnings
 warnings.filterwarnings("ignore")
-# chdir("/Users/coreycole/workspace/babak/HypDB/server/resources")
-import sys
-# print(sys.path)
-sys.path = ['/Users/coreycole/workspace/babak/HypDB/server/resources'] + sys.path
-# print(sys.path)
-import ast
-
-import os
-# cwd = os.getcwd()
-# print(cwd)
 
 import reprlib
 import pprint
@@ -22,18 +11,13 @@ Bias Resource
 
 Computes bias statistics
 """
-
-import os
-dir_path = os.path.dirname(os.path.realpath(__file__))
-print(dir_path)
-
 import csv
 import json
 import falcon
 
 # HypDB imports
 from os import chdir
-from resources.FairDB.core.cov_selection import FairDB
+from FairDB.core.cov_selection import FairDB
 from FairDB.core.explanation import top_k_explanation
 import FairDB.core.query as sql
 from FairDB.core.matching import *
@@ -46,21 +30,40 @@ from FairDB.utils.util import bining, get_distinct
 class BiasResource(object):
     """Resource for computing bias statistics"""
 
+    def parseWhere(key, value, data):
+        # print(key, value, len(data))
+        if key == 'AND':
+            key0 = next(iter(value[0]))
+            key1 = next(iter(value[1]))
+            data1 = BiasResource.parseWhere(key0, value[0][key0], data)
+            data2 = BiasResource.parseWhere(key1, value[1][key1], data1)
+            return data2
+        elif key == 'IN':
+            if not isinstance(value[1], list):
+                value[1] = [value[1]]
+            data = data[data[value[0]].isin(value[1])]
+            return data
+        elif key == '=':
+            data = data.query(value[0] + '==\'' + value[1] + '\'')
+            return data
+        else:
+            print('Invalid where clause operator')
+
     def on_post(self, req, resp):
-        try:
+        #try:
 
             """Endpoint for returning bias statistics about a query"""
 
             # Process request
             params = json.load(req.bounded_stream)
-            print(params)
+            print(json.dumps(params))
             filename = params['filename']
             # Convert json of database into csv
             with open('./uploads/' + filename + '.json', 'rb') as f:
                 data = json.load(f)
-                print(len(data['data']))
+                #print(len(data['data']))
                 #data = pd.read_json(data)
-                print(reprlib.repr(data['data']))
+                #print(reprlib.repr(data['data']))
                 with open('./tmp/' + filename, 'w') as g:
                     fieldnames = data['data'][0].keys()
                     writer = csv.DictWriter(g, fieldnames=fieldnames)
@@ -79,10 +82,13 @@ class BiasResource(object):
             # print(len(data))
 
             if 'where' in params and params['where'] != 'undefined':
-                if params['where']:
-                    # change = to ==
-                    addEquals = params['where'].split('=', 1)
-                    data = data.query(addEquals[0] + '==' + addEquals[1])
+                key = next(iter(params['where']))
+                data = BiasResource.parseWhere(key, params['where'][key], data)
+                print(len(data))
+                #if params['where']:
+                #    # change = to ==
+                #    addEquals = params['where'].split('=', 1)
+                #    data = data.query(addEquals[0] + '==' + addEquals[1])
 
             # Process group by
             treatment = []
@@ -201,12 +207,12 @@ class BiasResource(object):
             resp.status = falcon.HTTP_200
             resp.body = json.dumps(outJSON)
             return resp
-        except Exception as e:
-            print(e)
-            resp.content_type = 'application/json'
-            resp.status = falcon.HTTP_422
-            resp.body = 'Error: Please try again with different parameters'
-            return resp
+        #except Exception as e:
+        #    print(e, e.traceback())
+        #    resp.content_type = 'application/json'
+        #    resp.status = falcon.HTTP_422
+        #    resp.body = 'Error: Please try again with different parameters'
+        #    return resp
 # Works
 #temp = BiasResource()
 #temp.on_post('', '')

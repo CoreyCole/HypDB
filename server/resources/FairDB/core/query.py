@@ -46,16 +46,6 @@ def adjusted_groupby(data,treatment,outcome,covariates,mediatpor=[],init=[],thre
 
 def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
     outJSON = {'barChart' : []}
-    # objects1 = res[treatment[0]].values
-    # objects2 = res[treatment[1]].values
-    # performance = res[outcome[0]].values
-    # font = {'size': fontsize} 
-    # print('res', res)
-    # print('treatment', treatment)
-    # print('outcome', outcome)
-    # print('objects1', objects1)
-    # print('objects2', objects2)
-    # print('performance', performance)
     outcomes = res[outcome[0]].values
     attrs = [[] for index in range(len(outcomes))]
     for i in range(len(outcomes)):
@@ -75,32 +65,35 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
     print(json.dumps(outJSON))
     return outJSON
 
-
-
-    #for i, j in zip(res[treatment[attr]].values for attr in range(len(treatment))):
-    #    print(i, j)
-
-    #    print(i, treatment[i], res[treatment[i]].values)
-
-    # print(res.to_json(orient='split'))
-    # matplotlib.rc('font', **font)
-    # print('y_pos', y_pos)
-    # print('performance', performance)
-    # plt.bar(y_pos.tolist(), performance.tolist(), align='center', alpha=0.5)
-    # plt.xticks(y_pos, objects)
-    # plt.ylabel(ylable)
-    # plt.title(title)
-    # print(res)
-    #plt.show()
-
 def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
-    outJSON['graph'] = {'treatment': {}, 'outcome': {}}
-    outJSON['graph']['treatment']['attributes'] = treatment
-    outJSON['graph']['treatment']['boundary'] = cov1
-    outJSON['graph']['treatment']['parents'] = par1
-    outJSON['graph']['outcome']['attributes'] = outcome
-    outJSON['graph']['outcome']['boundary'] = cov2
-    outJSON['graph']['outcome']['parents'] = par2
+    outJSON['graph'] = {'nodes': [], 'links': [], 'correlation': {'dashed': False, 'treatment': treatment, 'outcome': outcome}}
+    if outcome in cov1 or treatment in cov2:
+        outJSON['graph']['dashed'] = True
+    for attr in set(cov1 + cov2):
+        outJSON['graph']['nodes'].append({'id': attr, 'label': attr})
+        if attr in par1:
+            for t in treatment:
+                outJSON['graph']['links'].append({'source': attr, 'target': t})
+        if attr in par2:
+            for o in outcome:
+                outJSON['graph']['links'].append({'source': attr, 'target': o})
+        if attr in cov1:
+            for t in treatment:
+                outJSON['graph']['links'].append({'source': attr, 'target': t})
+                outJSON['graph']['links'].append({'source': t, 'target': attr})
+        if attr in cov2:
+            for o in outcome:
+                outJSON['graph']['links'].append({'source': attr, 'target': o})
+                outJSON['graph']['links'].append({'source': o, 'target': attr})
+
+    print(json.dumps(outJSON))
+
+    # outJSON['graph']['treatment']['attributes'] = treatment
+    # outJSON['graph']['treatment']['boundary'] = cov1
+    # outJSON['graph']['treatment']['parents'] = par1
+    # outJSON['graph']['outcome']['attributes'] = outcome
+    # outJSON['graph']['outcome']['boundary'] = cov2
+    # outJSON['graph']['outcome']['parents'] = par2
 
 def grouped_bar(df):
     pos = list(range(len(df['pre_score'])))

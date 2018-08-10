@@ -39,18 +39,32 @@ class BiasResource(object):
             data2 = BiasResource.parseWhere(key1, value[1][key1], data1)
             return data2
         elif key == 'IN':
-            if not isinstance(value[1], list):
-                value[1] = [value[1]]
-            data = data[data[value[0]].isin(value[1])]
+            if isinstance(value[0], dict):
+                key = next(iter(value[0]))
+                if key == 'NOT':
+                    if not isinstance(value[1], list):
+                        value[1] = [value[1]]
+                    data = data[~data[value[0][key][0]].isin(value[1])]
+                    return data
+                else:
+                    raise ValueError('Invalid IN statement')
+            else:
+                if not isinstance(value[1], list):
+                    value[1] = [value[1]]
+                data = data[data[value[0]].isin(value[1])]
             return data
         elif key == '=':
             data = data.query(value[0] + '==\'' + value[1] + '\'')
             return data
+        elif key == '!=':
+            data = data.query(value[0] + '!=\'' + value[1] + '\'')
+            return data
         else:
-            print('Invalid where clause operator')
+            raise ValueError("Supported where operators include 'AND', 'IN', 'NOT IN', '=', and '!='  ")
+
 
     def on_post(self, req, resp):
-        #try:
+        try:
 
             """Endpoint for returning bias statistics about a query"""
 
@@ -73,6 +87,7 @@ class BiasResource(object):
                             writer.writerow(line)
             # Create data
             data = read_from_csv('./tmp/' + filename)
+            print('data size: ', len(data))
 
             # Processwhere clause
             # TODO: need support for multiple where statements separated by or
@@ -82,9 +97,14 @@ class BiasResource(object):
             # print(len(data))
 
             if 'where' in params and params['where'] != 'undefined':
+                #print(len(data))
+                #data = data.query("carrier in ('UA', 'AA') and origin in ('COS', 'MFE', 'MTJ', 'ROC') and carrier != 'UA'")
+                #print(len(data))
                 key = next(iter(params['where']))
                 data = BiasResource.parseWhere(key, params['where'][key], data)
-                print(len(data))
+                print('data size (post where clause): ', len(data))
+            if len(data) == 0:
+                raise ValueError('No rows remaining in database after where clause')
                 #if params['where']:
                 #    # change = to ==
                 #    addEquals = params['where'].split('=', 1)
@@ -154,12 +174,12 @@ class BiasResource(object):
             print('covariates of the outcome', cov2)
             print('parents of the outcome', par2)
             '''
-        covarite1=remove_dup(par1+par2)
-        print(covarite1)
-        covarite2=remove_dup(cov1+cov2)
-        print(covarite2)
-        covarite3=remove_dup(par1+cov2)
-        print(covarite3)'''
+            covarite1=remove_dup(par1+par2)
+            print(covarite1)
+            covarite2=remove_dup(cov1+cov2)
+            print(covarite2)
+            covarite3=remove_dup(par1+cov2)
+            print(covarite3)'''
 
             # covarite3=['workclass', 'age', 'education', 'occupation', 'hoursperweek', 'capitalgain']
 
@@ -207,12 +227,12 @@ class BiasResource(object):
             resp.status = falcon.HTTP_200
             resp.body = json.dumps(outJSON)
             return resp
-        #except Exception as e:
-        #    print(e, e.traceback())
-        #    resp.content_type = 'application/json'
-        #    resp.status = falcon.HTTP_422
-        #    resp.body = 'Error: Please try again with different parameters'
-        #    return resp
+        except Exception as e:
+            print(e)
+            resp.content_type = 'application/json'
+            resp.status = falcon.HTTP_422
+            resp.body = str(e)
+            return resp
 # Works
 #temp = BiasResource()
 #temp.on_post('', '')

@@ -1,14 +1,16 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CsvJson, HypDBDto, MainService } from '../../../services/main.service';
+import * as SqlWhereParser from 'sql-where-parser';
 
 @Component({
   selector: 'hyp-pick-params',
   template: `
   <div *ngIf="csvJson">
     <h1>Query Input</h1>
+    <span class="error">{{ error }}</span>
     <div class="inputs">
-      <div class="input">
-        <h2>Select Outcomes of Interest</h2>
+      <div class="input outcome">
+        <h2>Select Outcome of Interest</h2>
         <mat-form-field>
           <mat-select placeholder="column">
             <mat-option *ngFor="let column of csvJson.meta.fields" [value]="column" (click)="selectOutcome(column)">
@@ -47,9 +49,11 @@ import { CsvJson, HypDBDto, MainService } from '../../../services/main.service';
 })
 export class PickParamsComponent implements OnInit {
   @Input() csvJson: CsvJson;
-  outcomes: string[] = [];
+  outcome: string = null;
   groupingAttributes: string[] = [];
   where: string;
+  error: string;
+  whereParser = new SqlWhereParser();
 
   constructor(private main: MainService) { }
 
@@ -57,13 +61,13 @@ export class PickParamsComponent implements OnInit {
   }
 
   clear() {
-    this.outcomes = [];
+    this.outcome = null;
     this.groupingAttributes = [];
     this.where = '';
   }
 
   selectOutcome(column: string) {
-    this.outcomes.push(column);
+    this.outcome = column;
   }
 
   selectGroupingAttribute(column: string) {
@@ -71,13 +75,21 @@ export class PickParamsComponent implements OnInit {
   }
 
   query() {
-    const dto: HypDBDto = {
-      outcomes: this.outcomes,
-      groupingAttributes: this.groupingAttributes,
-      filename: this.csvJson.meta.filename,
-      where: this.where
-    };
-    this.main.queryHypDb(dto).subscribe(res => console.log(res));;
+    if (!this.outcome) {
+      this.error = 'no outcomes selected!';
+    } else if (!this.groupingAttributes || this.groupingAttributes.length === 0) {
+      this.error = 'no grouping attributes selected!';
+    } else {
+      this.error = null;
+      const parsedWhere = this.whereParser.parse(this.where);
+      const dto: HypDBDto = {
+        outcome: this.outcome,
+        groupingAttributes: this.groupingAttributes,
+        filename: this.csvJson.meta.filename,
+        where: parsedWhere
+      };
+      this.main.queryHypDb(dto);
+    }
   }
 
 }

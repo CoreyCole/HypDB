@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 import { Papa } from 'ngx-papaparse';
 import { PapaParseResult } from '../../../../node_modules/ngx-papaparse/lib/interfaces/papa-parse-result';
@@ -37,6 +37,7 @@ export class CsvUploadComponent implements OnInit {
   confirmColumns: string[];
   loading = false;
   success = false;
+  @Output() uploadedFile = new EventEmitter<void>();
 
   constructor(
     private papa: Papa,
@@ -87,6 +88,7 @@ export class CsvUploadComponent implements OnInit {
         console.log(response)
         this.loading = false;
         this.success = true;
+        this.uploadedFile.emit();
       });
   }
 

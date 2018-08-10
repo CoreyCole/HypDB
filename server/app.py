@@ -4,10 +4,10 @@ import logging
 import json
 import falcon
 # app middlewares
-from middlewares.Cors import CORSComponent
+from middlewares.cors import CORSComponent
 # app resources
-from resources.Test import TestResource
 from resources.Bias import BiasResource
+from resources.test import TestResource
 from resources.CsvJsonUploadListResource import CsvJsonUploadListResource
 from resources.UploadCsvJson import UploadCsvJsonResource
 from resources.DownloadCsvJson import DownloadCsvJsonResource

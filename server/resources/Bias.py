@@ -64,7 +64,7 @@ class BiasResource(object):
 
 
     def on_post(self, req, resp):
-        try:
+        #try:
 
             """Endpoint for returning bias statistics about a query"""
 
@@ -142,60 +142,44 @@ class BiasResource(object):
 
             # Naive group-by query, followd by a conditional independance test
             ate = sql.naive_groupby(data, treatment, outcome)
+            print(ate)
+
             outJSON = sql.plot(ate, treatment, outcome)
 
             # Computing parents of the treatment
-            start = time.time()
             cov1, par1 = detector.get_parents(treatment, pvalue=pvalue, method=method, ratio=1, fraction=fraction,
                                               num_samples=num_samples, blacklist=black, whitelist=whitelist,
                                               debug=debug, coutious=coutious, loc_num_samples=loc_num_samples, k=k)
 
-            # end=time.time()
-            # print('elapsed time',end-start)
-            # print('g test',detector.ngtest)
-            # print('p test',detector.nptest)
-
-            print('covariates of the treatment:', cov1)
-            print('parents of the treatment:', par1)
+            print('covariates of the treatment: ', cov1)
+            print('parents of the treatment: ', par1)
 
             # Computing parents of the outcome
-            # start=time.time()
             cov2, par2 = detector.get_parents(outcome, pvalue=pvalue, method=method, ratio=1, fraction=fraction,
                                               num_samples=num_samples, blacklist=black, whitelist=whitelist,
                                               debug=debug, coutious=coutious, loc_num_samples=loc_num_samples, k=k)
-
+    
             sql.graph(cov1, par1, cov2, par2, treatment, outcome, outJSON)
 
-            # end=time.time()
-            # print('elapsed time',end-start)
-            # print('g test',detector.ngtest)
-            # print('p test',detector.nptest)
-
-            print('covariates of the outcome', cov2)
-            print('parents of the outcome', par2)
-            '''
-            covarite1=remove_dup(par1+par2)
-            print(covarite1)
-            covarite2=remove_dup(cov1+cov2)
-            print(covarite2)
-            covarite3=remove_dup(par1+cov2)
-            print(covarite3)'''
-
-            # covarite3=['workclass', 'age', 'education', 'occupation', 'hoursperweek', 'capitalgain']
-
-            # cov2=['hoursperweek', 'relationship', 'occupation', 'educationnum', 'capitalgain']
-            # cov=['hoursperweek', 'relationship', 'educationnum', 'capitalgain']
-
-            # covarite=['maritalstatus']
-            # outcome
+            print('covariates of the outcome: ', cov2)
+            print('parents of the outcome: ', par2)
 
             # Adjusting for parents of the treatment for computing total effect
 
-            #ate, matcheddata, adj_set,pur=sql.adjusted_groupby(data2, treatment, outcome,covarite1,covarite,['Male'],threshould=0)
+            # mediatpor and init not needed for total effect
+            de = None
+            # direct effect
+            if par1 or par2:
+                # init for adjusted group by
+                # pass list to iloc to guarantee dataframe
+                highestGroup = ate.iloc[[ate[outcome[0]].idxmax()]]
+                init = highestGroup[treatment].values[0]
+                de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov1, cov2, init, threshould=0)
+                print(de)
 
-            # ate, matcheddata, adj_set,pur=sql.adjusted_groupby(data2, treatment, outcome,
-            #                                                     threshould=0,
-            #                                                     covariates=[],mediatpor=covarite3,init=['Male'])
+            # total effect
+            te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov1)
+            print(te)
             # print(adj_set,pur)
             # covarite3
             #cov=['age', 'education', 'hoursperweek', 'capitalgain']
@@ -223,16 +207,17 @@ class BiasResource(object):
 
             # Temporary filler return
             print('post worked')
+
             resp.content_type = 'application/json'
             resp.status = falcon.HTTP_200
             resp.body = json.dumps(outJSON)
             return resp
-        except Exception as e:
-            print(e)
-            resp.content_type = 'application/json'
-            resp.status = falcon.HTTP_422
-            resp.body = str(e)
-            return resp
+        #except Exception as e:
+        #    print(e)
+        #    resp.content_type = 'application/json'
+        #    resp.status = falcon.HTTP_422
+        #    resp.body = str(e)
+        #    return resp
 # Works
 #temp = BiasResource()
 #temp.on_post('', '')

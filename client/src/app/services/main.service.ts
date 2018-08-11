@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface CsvJson {
   data: any[];
@@ -15,7 +16,7 @@ export interface CsvJson {
 }
 
 export interface HypDBDto {
-  outcomes: string[];
+  outcome: string;
   filename: string;
   where: string;
   groupingAttributes: string[];
@@ -31,6 +32,10 @@ export class MainService {
     return this.http.get(`${this.endpoint}/test`);
   }
 
+  postJSON(csvJSON) {
+    console.log(`${this.endpoint}/api/bias`);
+    return this.http.post(`${this.endpoint}/api/bias`, { json: csvJSON });
+  }
   getCsvJsonUploadList(): Observable<string[]> {
     return this.http.get<string[]>(`${this.endpoint}/csv-json`);
   }
@@ -45,6 +50,10 @@ export class MainService {
 
   queryHypDb(dto: HypDBDto) {
     console.log(dto);
-    return this.http.post(`${this.endpoint}/api/bias`, { ...dto });
+    return this.http.post(`${this.endpoint}/api/bias`, { ...dto })
+      .pipe(
+        catchError(err => of(err))
+      )
+      .subscribe(res => console.dir(res));
   }
 }

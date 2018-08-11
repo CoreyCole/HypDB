@@ -9,8 +9,8 @@ import * as SqlWhereParser from 'sql-where-parser';
     <h1>Query Input</h1>
     <span class="error">{{ error }}</span>
     <div class="inputs">
-      <div class="input">
-        <h2>Select Outcomes of Interest</h2>
+      <div class="input outcome">
+        <h2>Select Outcome of Interest</h2>
         <mat-form-field>
           <mat-select placeholder="column">
             <mat-option *ngFor="let column of csvJson.meta.fields" [value]="column" (click)="selectOutcome(column)">
@@ -49,7 +49,7 @@ import * as SqlWhereParser from 'sql-where-parser';
 })
 export class PickParamsComponent implements OnInit {
   @Input() csvJson: CsvJson;
-  outcomes: string[] = [];
+  outcome: string = null;
   groupingAttributes: string[] = [];
   where: string;
   error: string;
@@ -61,13 +61,13 @@ export class PickParamsComponent implements OnInit {
   }
 
   clear() {
-    this.outcomes = [];
+    this.outcome = null;
     this.groupingAttributes = [];
     this.where = '';
   }
 
   selectOutcome(column: string) {
-    this.outcomes.push(column);
+    this.outcome = column;
   }
 
   selectGroupingAttribute(column: string) {
@@ -75,7 +75,7 @@ export class PickParamsComponent implements OnInit {
   }
 
   query() {
-    if (!this.outcomes || this.outcomes.length === 0) {
+    if (!this.outcome) {
       this.error = 'no outcomes selected!';
     } else if (!this.groupingAttributes || this.groupingAttributes.length === 0) {
       this.error = 'no grouping attributes selected!';
@@ -83,7 +83,7 @@ export class PickParamsComponent implements OnInit {
       this.error = null;
       const parsedWhere = this.whereParser.parse(this.where);
       const dto: HypDBDto = {
-        outcomes: this.outcomes,
+        outcome: this.outcome,
         groupingAttributes: this.groupingAttributes,
         filename: this.csvJson.meta.filename,
         where: parsedWhere

@@ -6,6 +6,7 @@ import falcon
 # app middlewares
 from middlewares.cors import CORSComponent
 # app resources
+from resources.Bias import BiasResource
 from resources.test import TestResource
 from resources.CsvJsonUploadListResource import CsvJsonUploadListResource
 from resources.UploadCsvJson import UploadCsvJsonResource
@@ -36,6 +37,7 @@ APP = falcon.API(middleware=[
 ])
 # APP.req_options.auto_parse_form_urlencoded = True
 APP.add_route('/test', TestResource())
+APP.add_route('/api/bias', BiasResource())
 APP.add_route('/csv-json', CsvJsonUploadListResource())
 APP.add_route('/csv-json/upload', UploadCsvJsonResource())
 APP.add_route('/csv-json/download/{file_name}', DownloadCsvJsonResource())

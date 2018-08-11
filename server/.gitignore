@@ -1,5 +1,6 @@
 # ignore uploaded json files
 uploads/*.json
+tmp/*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -37,7 +37,6 @@ import { AppComponent } from './app.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { MainService } from './services/main.service';
 import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-demo.component';
-import { TestButtonDemoComponent } from './components/bar-chart-demo/test-button-demo.component';
 import { CsvUploadComponent } from './components/csv-upload/csv-upload.component';
 import { QueryComponent } from './components/query/query.component';
 import { PickParamsComponent } from './components/query/pick-params/pick-params.component';
@@ -48,7 +47,6 @@ import { DagDemoComponent } from './components/dag-demo/dag-demo.component';
     AppComponent,
     HomePageComponent,
     BarChartDemoComponent,
-    TestButtonDemoComponent,
     CsvUploadComponent,
     QueryComponent,
     PickParamsComponent,

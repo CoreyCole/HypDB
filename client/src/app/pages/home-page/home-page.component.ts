@@ -6,7 +6,6 @@ import { MainService, CsvJson } from '../../services/main.service';
 @Component({
   selector: 'hyp-home-page',
   template: `
-    <test-button-demo></test-button-demo>
     <div class="container">
       <hyp-csv-upload (uploadedFile)="refreshFiles()"></hyp-csv-upload>
       <hyp-query [files]="files | async"></hyp-query>

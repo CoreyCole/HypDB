@@ -45,7 +45,7 @@ def adjusted_groupby(data,treatment,outcome,covariates,mediatpor=[],init=[],thre
     return ate,matcheddata ,adj_set,pur
 
 def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
-    outJSON = {'ate' : []}
+    outJSON = []
     outcomes = res[outcome[0]].values
     attrs = [[] for index in range(len(outcomes))]
     for i in range(len(outcomes)):
@@ -60,7 +60,7 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
                 temp[treatment[k]] = i[k]
 
         temp[outcome[0]] = j
-        outJSON['ate'].append(temp)
+        outJSON.append(temp)
     print(outJSON)
     print(json.dumps(outJSON))
     return outJSON

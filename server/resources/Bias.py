@@ -145,7 +145,7 @@ class BiasResource(object):
             ate_list = []
             for treat in treatment:
                 grouping_attributes.append(treat)
-                ate = sql.naive_groupby(data, grouping_attributes, outcome)
+                ate = sql.naive_groupby(data, grouping_attributes[::-1], outcome)
                 ate_step = sql.plot(ate, grouping_attributes, outcome)
                 ate_list.append(ate_step)
             outJSON = {'ate': ate_list}

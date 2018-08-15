@@ -141,8 +141,14 @@ class BiasResource(object):
             k = 3
 
             # Naive group-by query, followd by a conditional independance test
-            ate = sql.naive_groupby(data, treatment, outcome)
-            outJSON = sql.plot(ate, treatment, outcome)
+            grouping_attributes = []
+            ate_list = []
+            for treat in treatment:
+                grouping_attributes.append(treat)
+                ate = sql.naive_groupby(data, grouping_attributes, outcome)
+                ate_step = sql.plot(ate, grouping_attributes, outcome)
+                ate_list.append(ate_step)
+            outJSON = {'ate': ate_list}
 
             # Computing parents of the treatment
             start = time.time()

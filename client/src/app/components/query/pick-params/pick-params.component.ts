@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { CsvJson, HypDBDto, MainService } from '../../../services/main.service';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as SqlWhereParser from 'sql-where-parser';
+
+import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main.service';
 
 @Component({
   selector: 'hyp-pick-params',
@@ -36,7 +37,7 @@ import * as SqlWhereParser from 'sql-where-parser';
         </mat-form-field>
       </div>
     </div>
-    <pre>SELECT <span *ngFor="let outcome of outcomes">avg({{ outcome }}) </span></pre>
+    <pre>SELECT avg({{ outcome }}) </pre>
     <pre>FROM {{ csvJson.meta.filename }}</pre>
     <pre>WHERE {{ where }}</pre>
     <pre>GROUP BY <span *ngFor="let attribute of groupingAttributes">{{ attribute }} </span></pre>
@@ -49,6 +50,7 @@ import * as SqlWhereParser from 'sql-where-parser';
 })
 export class PickParamsComponent implements OnInit {
   @Input() csvJson: CsvJson;
+  @Output() results = new EventEmitter<QueryRes>();
   outcome: string = null;
   groupingAttributes: string[] = [];
   where: string;
@@ -88,7 +90,11 @@ export class PickParamsComponent implements OnInit {
         filename: this.csvJson.meta.filename,
         where: parsedWhere
       };
-      this.main.queryHypDb(dto);
+      this.main.queryHypDb(dto)
+        .subscribe(data => {
+          console.log(data);
+          this.results.emit(data);
+        });
     }
   }
 

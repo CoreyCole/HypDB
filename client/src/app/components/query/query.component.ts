@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { CsvJson, MainService } from '../../services/main.service';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { CsvJson, QueryRes, MainService } from '../../services/main.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -13,12 +13,13 @@ import { Observable } from 'rxjs';
       </mat-option>
     </mat-select>
   </mat-form-field>
-  <hyp-pick-params [csvJson]="csvJson | async"></hyp-pick-params>
+  <hyp-pick-params [csvJson]="csvJson | async" (results)="queryResults($event)"></hyp-pick-params>
   `,
   styleUrls: ['./query.component.scss']
 })
 export class QueryComponent implements OnInit {
   @Input() files: string[];
+  @Output() results = new EventEmitter<QueryRes>();
   csvJson: Observable<CsvJson>;
 
   constructor(private main: MainService) { }
@@ -28,6 +29,10 @@ export class QueryComponent implements OnInit {
 
   getCsvJson(filename: string) {
     this.csvJson = this.main.downloadCsvJson(filename);
+  }
+
+  queryResults(data: QueryRes) {
+    this.results.emit(data);
   }
 
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import * as SqlWhereParser from 'sql-where-parser';
 
 import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main.service';
@@ -39,7 +39,7 @@ import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main
     </div>
     <pre>SELECT avg({{ outcome }}) </pre>
     <pre>FROM {{ csvJson.meta.filename }}</pre>
-    <pre>WHERE {{ where }}</pre>
+    <pre *ngIf="where">WHERE {{ where }}</pre>
     <pre>GROUP BY <span *ngFor="let attribute of groupingAttributes">{{ attribute }} </span></pre>
     <div class="spacer"></div>
     <div *ngIf="!loading">
@@ -51,7 +51,7 @@ import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main
   `,
   styleUrls: ['./pick-params.component.scss']
 })
-export class PickParamsComponent implements OnInit {
+export class PickParamsComponent implements OnChanges {
   @Input() csvJson: CsvJson;
   @Output() results = new EventEmitter<QueryRes>();
   outcome: string = null;
@@ -63,7 +63,8 @@ export class PickParamsComponent implements OnInit {
 
   constructor(private main: MainService) { }
 
-  ngOnInit() {
+  ngOnChanges() {
+    this.clear();
   }
 
   clear() {

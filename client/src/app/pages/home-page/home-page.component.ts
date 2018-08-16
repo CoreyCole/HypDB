@@ -8,7 +8,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
   template: `
   <div class="container">
     <hyp-csv-upload (uploadedFile)="refreshFiles()"></hyp-csv-upload>
-    <hyp-query [files]="files | async" (results)="displayResults($event)"></hyp-query>
+    <hyp-query [files]="files | async" (results)="displayResults($event)" (fileChanged)="fileChanged()"></hyp-query>
     <span class="error">{{ error }}</span>
     <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts>
     <div class="spacer"></div>
@@ -47,6 +47,12 @@ export class HomePageComponent implements OnInit {
       ate1, ate2
     ];
     this.graph = data['graph'];
+  }
+
+  fileChanged() {
+    this.ateData = null;
+    this.graph = null;
+    this.error = null;
   }
 
   private parseAte(ateData: any[]) {

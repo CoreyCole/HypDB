@@ -20,6 +20,7 @@ import { Observable } from 'rxjs';
 export class QueryComponent implements OnInit {
   @Input() files: string[];
   @Output() results = new EventEmitter<QueryRes>();
+  @Output() fileChanged = new EventEmitter<void>();
   csvJson: Observable<CsvJson>;
 
   constructor(private main: MainService) { }
@@ -29,6 +30,7 @@ export class QueryComponent implements OnInit {
 
   getCsvJson(filename: string) {
     this.csvJson = this.main.downloadCsvJson(filename);
+    this.fileChanged.emit();
   }
 
   queryResults(data: QueryRes) {

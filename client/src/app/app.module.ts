@@ -41,6 +41,7 @@ import { CsvUploadComponent } from './components/csv-upload/csv-upload.component
 import { QueryComponent } from './components/query/query.component';
 import { PickParamsComponent } from './components/query/pick-params/pick-params.component';
 import { DagDemoComponent } from './components/dag-demo/dag-demo.component';
+import { GroupByChartsComponent } from './components/group-by-charts/group-by-charts.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { DagDemoComponent } from './components/dag-demo/dag-demo.component';
     CsvUploadComponent,
     QueryComponent,
     PickParamsComponent,
-    DagDemoComponent
+    DagDemoComponent,
+    GroupByChartsComponent
   ],
   imports: [
     BrowserModule,

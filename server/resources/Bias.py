@@ -54,23 +54,23 @@ class BiasResource(object):
                 data = data[data[value[0]].isin(value[1])]
             return data
         elif key == '=':
-            data = data.query(value[0] + '==\'' + value[1] + '\'')
+            data = data.query(value[0] + '==\'' + str(value[1]) + '\'')
             return data
         elif key == '!=':
-            data = data.query(value[0] + '!=\'' + value[1] + '\'')
+            data = data.query(value[0] + '!=\'' + str(value[1]) + '\'')
             return data
         else:
             raise ValueError("Supported where operators include 'AND', 'IN', 'NOT IN', '=', and '!='  ")
 
 
     def on_post(self, req, resp):
-        try:
+        # try:
 
             """Endpoint for returning bias statistics about a query"""
 
             # Process request
             params = json.load(req.bounded_stream)
-            print(json.dumps(params))
+            # print(json.dumps(params))
             filename = params['filename']
             # Convert json of database into csv
             with open('./uploads/' + filename + '.json', 'rb') as f:
@@ -145,10 +145,11 @@ class BiasResource(object):
             ate_list = []
             for treat in treatment:
                 grouping_attributes.append(treat)
-                ate = sql.naive_groupby(data, grouping_attributes, outcome)
+                ate = sql.naive_groupby(data, grouping_attributes[::-1], outcome)
                 ate_step = sql.plot(ate, grouping_attributes, outcome)
                 ate_list.append(ate_step)
             outJSON = {'ate': ate_list}
+            print(outJSON)
 
             # Computing parents of the treatment
             start = time.time()
@@ -233,12 +234,12 @@ class BiasResource(object):
             resp.status = falcon.HTTP_200
             resp.body = json.dumps(outJSON)
             return resp
-        except Exception as e:
-            print(e)
-            resp.content_type = 'application/json'
-            resp.status = falcon.HTTP_422
-            resp.body = str(e)
-            return resp
+        # except Exception as e:
+        #     print(e)
+        #     resp.content_type = 'application/json'
+        #     resp.status = falcon.HTTP_422
+        #     resp.body = str(e)
+        #     return resp
 # Works
 #temp = BiasResource()
 #temp.on_post('', '')

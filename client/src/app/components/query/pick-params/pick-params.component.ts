@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { CsvJson, HypDBDto, MainService } from '../../../services/main.service';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import * as SqlWhereParser from 'sql-where-parser';
+
+import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main.service';
 
 @Component({
   selector: 'hyp-pick-params',
@@ -36,28 +37,34 @@ import * as SqlWhereParser from 'sql-where-parser';
         </mat-form-field>
       </div>
     </div>
-    <pre>SELECT <span *ngFor="let outcome of outcomes">avg({{ outcome }}) </span></pre>
+    <pre>SELECT avg({{ outcome }}) </pre>
     <pre>FROM {{ csvJson.meta.filename }}</pre>
-    <pre>WHERE {{ where }}</pre>
+    <pre *ngIf="where">WHERE {{ where }}</pre>
     <pre>GROUP BY <span *ngFor="let attribute of groupingAttributes">{{ attribute }} </span></pre>
     <div class="spacer"></div>
-    <button mat-raised-button (click)="clear()">CLEAR</button>
-    <button mat-raised-button color="accent" (click)="query()">QUERY</button>
+    <div *ngIf="!loading">
+      <button mat-raised-button (click)="clear()">CLEAR</button>
+      <button mat-raised-button color="accent" (click)="query()">QUERY</button>
+    </div>
+    <mat-spinner *ngIf="loading" color="accent"></mat-spinner>
   </div>
   `,
   styleUrls: ['./pick-params.component.scss']
 })
-export class PickParamsComponent implements OnInit {
+export class PickParamsComponent implements OnChanges {
   @Input() csvJson: CsvJson;
+  @Output() results = new EventEmitter<QueryRes>();
   outcome: string = null;
   groupingAttributes: string[] = [];
   where: string;
   error: string;
   whereParser = new SqlWhereParser();
+  loading = false;
 
   constructor(private main: MainService) { }
 
-  ngOnInit() {
+  ngOnChanges() {
+    this.clear();
   }
 
   clear() {
@@ -81,6 +88,7 @@ export class PickParamsComponent implements OnInit {
       this.error = 'no grouping attributes selected!';
     } else {
       this.error = null;
+      this.loading = true;
       const parsedWhere = this.whereParser.parse(this.where);
       const dto: HypDBDto = {
         outcome: this.outcome,
@@ -88,7 +96,12 @@ export class PickParamsComponent implements OnInit {
         filename: this.csvJson.meta.filename,
         where: parsedWhere
       };
-      this.main.queryHypDb(dto);
+      this.main.queryHypDb(dto)
+        .subscribe(data => {
+          console.log(data);
+          this.results.emit(data);
+          this.loading = false;
+        });
     }
   }
 

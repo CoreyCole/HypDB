@@ -22,11 +22,36 @@ export interface HypDBDto {
   groupingAttributes: string[];
 }
 
+export interface QueryRes {
+  ate: any[][];
+  graph: GraphData;
+}
+
+export interface GraphData {
+  correlation: {
+    dashed: boolean;
+    treatment: string[];
+    outcome: string[];
+  },
+  links: GraphLink[];
+  nodes: GraphNode[];
+}
+
+export interface GraphLink {
+  source: string;
+  target: string;
+}
+
+export interface GraphNode {
+  id: string;
+  label: string;
+}
+
 @Injectable()
 export class MainService {
   private endpoint = 'http://localhost:5000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   test() {
     return this.http.get(`${this.endpoint}/test`);
@@ -48,12 +73,11 @@ export class MainService {
     return this.http.get<CsvJson>(`${this.endpoint}/csv-json/download/${filename}`);
   }
 
-  queryHypDb(dto: HypDBDto) {
+  queryHypDb(dto: HypDBDto): Observable<QueryRes> {
     console.log(dto);
     return this.http.post(`${this.endpoint}/api/bias`, { ...dto })
       .pipe(
         catchError(err => of(err))
-      )
-      .subscribe(res => console.dir(res));
+      );
   }
 }

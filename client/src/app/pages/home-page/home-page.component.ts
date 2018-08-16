@@ -9,7 +9,8 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
   <div class="container">
     <hyp-csv-upload (uploadedFile)="refreshFiles()"></hyp-csv-upload>
     <hyp-query [files]="files | async" (results)="displayResults($event)"></hyp-query>
-    <hyp-group-by-charts *ngIf="ateData" [data]="ateData"></hyp-group-by-charts>
+    <span class="error">{{ error }}</span>
+    <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts>
     <div class="spacer"></div>
     <hyp-dag-demo></hyp-dag-demo>
   </div>
@@ -19,6 +20,8 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
 export class HomePageComponent implements OnInit {
   files: Observable<string[]>
   ateData: any[];
+  graph: GraphData;
+  error: string;
 
   constructor(
     private main: MainService
@@ -34,15 +37,15 @@ export class HomePageComponent implements OnInit {
   }
 
   displayResults(data: QueryRes) {
-    this.ateData = null;
+    if (!data['ate'] || data['ate'].length === 0) {
+      return this.error = 'Query error!';
+    }
     const ate1 = this.parseAte(data['ate'][0]);
-    console.log(ate1);
     const ate2 = data['ate'][1] ? this.parseAteWithGroupingAttribute(data['ate'][1]) : null;
-    console.log(ate2);
     this.ateData = [
       ate1, ate2
     ];
-    const graph = data['graph'];
+    this.graph = data['graph'];
   }
 
   private parseAte(ateData: any[]) {
@@ -80,7 +83,7 @@ export class HomePageComponent implements OnInit {
       }
       ate[ate.length - 1]['series'].push({
         name: ateRow[treatment],
-        value: ateRow[outcome]
+        value: '' + ateRow[outcome]
       });
     }
     return ate;

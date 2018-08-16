@@ -42,8 +42,11 @@ import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main
     <pre>WHERE {{ where }}</pre>
     <pre>GROUP BY <span *ngFor="let attribute of groupingAttributes">{{ attribute }} </span></pre>
     <div class="spacer"></div>
-    <button mat-raised-button (click)="clear()">CLEAR</button>
-    <button mat-raised-button color="accent" (click)="query()">QUERY</button>
+    <div *ngIf="!loading">
+      <button mat-raised-button (click)="clear()">CLEAR</button>
+      <button mat-raised-button color="accent" (click)="query()">QUERY</button>
+    </div>
+    <mat-spinner *ngIf="loading" color="accent"></mat-spinner>
   </div>
   `,
   styleUrls: ['./pick-params.component.scss']
@@ -56,6 +59,7 @@ export class PickParamsComponent implements OnInit {
   where: string;
   error: string;
   whereParser = new SqlWhereParser();
+  loading = false;
 
   constructor(private main: MainService) { }
 
@@ -83,6 +87,7 @@ export class PickParamsComponent implements OnInit {
       this.error = 'no grouping attributes selected!';
     } else {
       this.error = null;
+      this.loading = true;
       const parsedWhere = this.whereParser.parse(this.where);
       const dto: HypDBDto = {
         outcome: this.outcome,
@@ -94,6 +99,7 @@ export class PickParamsComponent implements OnInit {
         .subscribe(data => {
           console.log(data);
           this.results.emit(data);
+          this.loading = false;
         });
     }
   }

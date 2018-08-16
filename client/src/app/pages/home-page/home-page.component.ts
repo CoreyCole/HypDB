@@ -34,6 +34,7 @@ export class HomePageComponent implements OnInit {
   }
 
   displayResults(data: QueryRes) {
+    this.ateData = null;
     const ate1 = this.parseAte(data['ate'][0]);
     console.log(ate1);
     const ate2 = data['ate'][1] ? this.parseAteWithGroupingAttribute(data['ate'][1]) : null;

@@ -40,6 +40,7 @@ export class HomePageComponent implements OnInit {
     if (!data['ate'] || data['ate'].length === 0) {
       return this.error = 'Query error!';
     }
+    this.error = null;
     const ate1 = this.parseAte(data['ate'][0]);
     const ate2 = data['ate'][1] ? this.parseAteWithGroupingAttribute(data['ate'][1]) : null;
     this.ateData = [

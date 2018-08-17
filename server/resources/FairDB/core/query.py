@@ -69,8 +69,11 @@ def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
     outJSON['graph'] = {'nodes': [], 'links': [], 'correlation': {'dashed': False, 'treatment': treatment, 'outcome': outcome}}
     if outcome in cov1 or treatment in cov2:
         outJSON['graph']['dashed'] = True
-    for attr in set(cov1 + cov2):
+
+    for attr in set(cov1 + cov2 + treatment + outcome):
         outJSON['graph']['nodes'].append({'id': attr, 'label': attr})
+
+    for attr in set(cov1 + cov2):
         if attr in par1:
             for t in treatment:
                 outJSON['graph']['links'].append({'source': attr, 'target': t})

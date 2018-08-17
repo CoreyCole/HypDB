@@ -67,8 +67,8 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
 
 def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
     outJSON['graph'] = {'nodes': [], 'links': [], 'correlation': {'dashed': True, 'treatment': treatment, 'outcome': outcome}}
-    if outcome in cov1 or treatment in cov2:
-        outJSON['graph']['dashed'] = False
+    if outcome[0] in cov1 or treatment[0] in cov2:
+        outJSON['graph']['correlation']['dashed'] = False
     for attr in set(cov1 + cov2 + treatment + outcome):
         outJSON['graph']['nodes'].append({'id': attr, 'label': attr})
 
@@ -81,12 +81,12 @@ def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
             for o in outcome:
                 if attr != o and {'source': attr, 'target': o} not in outJSON['graph']['links']:
                     outJSON['graph']['links'].append({'source': attr, 'target': o})
-        if attr in cov1:
+        if attr in cov1 and attr not in par1:
             for t in treatment:
                 if attr != t and {'source': attr, 'target': t} not in outJSON['graph']['links'] and {'source': t, 'target': attr} not in outJSON['graph']['links']:
                     outJSON['graph']['links'].append({'source': attr, 'target': t})
                     outJSON['graph']['links'].append({'source': t, 'target': attr})
-        if attr in cov2:
+        if attr in cov2 and attr not in par2:
             for o in outcome:
                 if attr != o and {'source': attr, 'target': o} not in outJSON['graph']['links'] and {'source': o, 'target': attr} not in outJSON['graph']['links']:
                     outJSON['graph']['links'].append({'source': attr, 'target': o})

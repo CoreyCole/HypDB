@@ -20,7 +20,7 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
       [draggingEnabled]="true"
       [panningEnabled]="false">
 
-      <ng-template #defsTemplate>
+      <ng-template #defsTemplate let-link>
         <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="8" markerHeight="8" orient="auto">
           <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
         </svg:marker>
@@ -39,12 +39,18 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
 
       <ng-template #linkTemplate let-link>
         <svg:g class="edge">
-          <svg:path
+          <svg:path *ngIf="directed(link)"
             class="line"
             [ngClass]="{'dashed': dashed(link), 'bold': bold(link)}"
             attr.id="{{link.source}}-to-{{link.target}}"
             stroke-width="2"
             marker-end="url(#arrow)" >
+          </svg:path>
+          <svg:path *ngIf="!directed(link)"
+            class="line"
+            [ngClass]="{'dashed': dashed(link), 'bold': bold(link)}"
+            attr.id="{{link.source}}-to-{{link.target}}"
+            stroke-width="2">
           </svg:path>
         </svg:g>
       </ng-template>
@@ -123,6 +129,21 @@ export class GraphComponent implements OnChanges {
     } else {
       return "rgb(170, 170, 170)";
     }
+  }
+
+  directed(link: GraphLink): boolean {
+    const treatment = this.graph.correlation.treatment[0];
+    const outcome = this.graph.correlation.outcome[0];
+    if (link.source === outcome) {
+      return false;
+    } else if (link.target === outcome) {
+      return true;
+    } else if (link.source === treatment) {
+      return false;
+    } else if (link.target === treatment) {
+      return true;
+    }
+    return false;
   }
 
   dashed(link: GraphLink): boolean {

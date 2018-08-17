@@ -92,14 +92,15 @@ export class GraphComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges() {
-    // if (this.graph && this.invalid(this.graph)) {
-    //   this.links = [];
-    //   this.nodes = [];
-    //   this.error = 'outcome found to be parent of the treatment';
-    // } else if (this.graph) {
-    // this.links = this.graph.links;
-    // this.nodes = this.graph.nodes;
-    // }
+    if (this.graph && this.invalid(this.graph)) {
+      this.links = [];
+      this.nodes = [];
+      this.error = 'outcome found to be parent of the treatment';
+    }
+    //else if (this.graph) {
+    //this.links = this.graph.links;
+    //this.nodes = this.graph.nodes;
+    //}
     if (this.graph) {
       this.links = this.graph.links;
       this.nodes = this.graph.nodes;

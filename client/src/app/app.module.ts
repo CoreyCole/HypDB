@@ -42,6 +42,7 @@ import { QueryComponent } from './components/query/query.component';
 import { PickParamsComponent } from './components/query/pick-params/pick-params.component';
 import { DagDemoComponent } from './components/dag-demo/dag-demo.component';
 import { GroupByChartsComponent } from './components/group-by-charts/group-by-charts.component';
+import { GraphComponent } from './components/graph/graph.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { GroupByChartsComponent } from './components/group-by-charts/group-by-ch
     QueryComponent,
     PickParamsComponent,
     DagDemoComponent,
-    GroupByChartsComponent
+    GroupByChartsComponent,
+    GraphComponent
   ],
   imports: [
     BrowserModule,

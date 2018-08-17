@@ -11,8 +11,8 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
     <hyp-query [files]="files | async" (results)="displayResults($event)" (fileChanged)="fileChanged()"></hyp-query>
     <span class="error">{{ error }}</span>
     <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts>
-    <div class="spacer"></div>
-    <hyp-dag-demo></hyp-dag-demo>
+    <h2 *ngIf="graph">Causal Graph</h2>
+    <hyp-graph [graph]="graph"></hyp-graph>
   </div>
   `,
   styleUrls: ['./home-page.component.scss']
@@ -30,6 +30,7 @@ export class HomePageComponent implements OnInit {
   ngOnInit() {
     this.main.test().subscribe(res => console.log(res));
     this.files = this.main.getCsvJsonUploadList();
+    window.scrollTo(0, 0);
   }
 
   refreshFiles() {
@@ -94,10 +95,6 @@ export class HomePageComponent implements OnInit {
       });
     }
     return ate;
-  }
-
-  private parseGraph(graphData: GraphData) {
-
   }
 
 }

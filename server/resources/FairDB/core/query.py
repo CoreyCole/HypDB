@@ -67,6 +67,8 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
 
 def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
     outJSON['graph'] = {'nodes': [], 'links': [], 'correlation': {'dashed': True, 'treatment': treatment, 'outcome': outcome}}
+    print('\n\n\n\n\n')
+    print(treatment, outcome)
     if outcome[0] in cov1 or treatment[0] in cov2:
         outJSON['graph']['correlation']['dashed'] = False
     for attr in set(cov1 + cov2 + treatment + outcome):
@@ -75,22 +77,24 @@ def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
     for attr in set(cov1 + cov2):
         if attr in par1:
             for t in treatment:
-                if attr != t and {'source': attr, 'target': t} not in outJSON['graph']['links']:
+                if attr != t and {'source': attr, 'target': t} not in outJSON['graph']['links'] and not (attr == outcome[0] and t == treatment[0]):
                     outJSON['graph']['links'].append({'source': attr, 'target': t})
         if attr in par2:
             for o in outcome:
-                if attr != o and {'source': attr, 'target': o} not in outJSON['graph']['links']:
+                if attr != o and {'source': attr, 'target': o} not in outJSON['graph']['links'] and not (attr == outcome[0] and o == treatment[0]):
                     outJSON['graph']['links'].append({'source': attr, 'target': o})
         if attr in cov1 and attr not in par1:
             for t in treatment:
-                if attr != t and {'source': attr, 'target': t} not in outJSON['graph']['links'] and {'source': t, 'target': attr} not in outJSON['graph']['links']:
+                if attr != t and {'source': attr, 'target': t} not in outJSON['graph']['links'] and {'source': t, 'target': attr} not in outJSON['graph']['links'] and not ((attr == outcome[0] and t == treatment[0]) or (attr == treatment[0] and t == outcome[0])):
                     outJSON['graph']['links'].append({'source': attr, 'target': t})
                     outJSON['graph']['links'].append({'source': t, 'target': attr})
         if attr in cov2 and attr not in par2:
             for o in outcome:
-                if attr != o and {'source': attr, 'target': o} not in outJSON['graph']['links'] and {'source': o, 'target': attr} not in outJSON['graph']['links']:
+                if attr != o and {'source': attr, 'target': o} not in outJSON['graph']['links'] and {'source': o, 'target': attr} not in outJSON['graph']['links'] and not ((attr == outcome[0] and o == treatment[0]) or (attr == treatment[0] and o == outcome[0])):
                     outJSON['graph']['links'].append({'source': attr, 'target': o})
                     outJSON['graph']['links'].append({'source': o, 'target': attr})
+        outJSON['graph']['links'].append({'source': outcome[0], 'target': treatment[0]})
+
         print(outJSON['graph']['links'])
 
     print(json.dumps(outJSON))

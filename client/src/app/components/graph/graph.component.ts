@@ -96,6 +96,7 @@ export class GraphComponent implements OnChanges {
       this.links = [];
       this.nodes = [];
       this.error = 'outcome found to be parent of the treatment';
+      console.log(this.error);
     }
     //else if (this.graph) {
     //this.links = this.graph.links;

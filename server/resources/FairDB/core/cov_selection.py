@@ -868,12 +868,17 @@ ratio=0.1, fraction=0.1, num_samples=1000, loc_num_samples=100,
         end=time.time()
         tdur=end-start
         self.isshrink=False
+        # print("*****\n")
+        # print(targetboundary, causes,timeeee)
+        # print("\n*****")
         parents = self.learn_parents(target, target_boundary=targetboundary, pvalue=pvalue, method=method
                                       ,ratio=ratio, fraction=fraction, num_samples=num_samples,
                                       blacklist=blacklist, whitelist=whitelist, debug=debug, coutious=coutious,
                                       loc_num_samples=loc_num_samples, deep=True,k=k,maxmc=maxmc,optimized=optimized)
 
-
+        # print("*****\n")
+        # print(parents)
+        # print("\n*****")
         print(parents,'heree')
         if fullcheck==True and parents:
             if optimized:

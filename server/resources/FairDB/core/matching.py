@@ -53,8 +53,8 @@ def get_respon(data,treatment, outcome, covariates):
         temp.remove(att)
         after = inf.CMI(treatment[0], temp,att)
         loss = (base - after)
-        print(base)
-        print(loss)
+        #print(base)
+        #print(loss)
         resp[att] = loss
         temp.insert(0, att)
     total=0

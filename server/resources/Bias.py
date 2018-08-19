@@ -1,19 +1,16 @@
-import warnings
-warnings.filterwarnings("ignore")
-
-import reprlib
-import pprint
-
-import pandas as pd
-
 """
 Bias Resource
 
 Computes bias statistics
 """
+import warnings
+warnings.filterwarnings("ignore")
+
 import csv
 import json
 import falcon
+import pandas as pd
+
 
 # HypDB imports
 from os import chdir
@@ -24,14 +21,12 @@ from FairDB.core.matching import *
 import time
 import FairDB.core.simdetec as simp
 from FairDB.utils.util import bining, get_distinct
-# import FairDB.modules.statistics.cit as test
-
+#import pyitlib
 
 class BiasResource(object):
     """Resource for computing bias statistics"""
 
     def parseWhere(key, value, data):
-        # print(key, value, len(data))
         if key == 'AND':
             key0 = next(iter(value[0]))
             key1 = next(iter(value[1]))
@@ -64,7 +59,7 @@ class BiasResource(object):
 
 
     def on_post(self, req, resp):
-        #try:
+        try:
 
             """Endpoint for returning bias statistics about a query"""
 
@@ -165,20 +160,22 @@ class BiasResource(object):
             print('parents of the outcome: ', par2)
 
             # Adjusting for parents of the treatment for computing total effect
-
             # mediatpor and init not needed for total effect
             de = None
             # direct effect
+            # no parents
+            #if not par1:
             if par1 or par2:
                 # init for adjusted group by
                 # pass list to iloc to guarantee dataframe
                 highestGroup = ate.iloc[[ate[outcome[0]].idxmax()]]
                 init = highestGroup[treatment].values[0]
-                de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov1, cov2, init, threshould=0)
+                print(init)
+                de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1, par2, init, threshould=0)
                 print(de)
 
             # total effect
-            te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov1)
+            te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1)
             print(te)
             # print(adj_set,pur)
             # covarite3
@@ -212,12 +209,12 @@ class BiasResource(object):
             resp.status = falcon.HTTP_200
             resp.body = json.dumps(outJSON)
             return resp
-        #except Exception as e:
-        #    print(e)
-        #    resp.content_type = 'application/json'
-        #    resp.status = falcon.HTTP_422
-        #    resp.body = str(e)
-        #    return resp
+        except Exception as e:
+           print(e)
+           resp.content_type = 'application/json'
+           resp.status = falcon.HTTP_422
+           resp.body = str(e)
+           return resp
 # Works
 #temp = BiasResource()
 #temp.on_post('', '')

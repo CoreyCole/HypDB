@@ -1,16 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.service';
 
 @Component({
   selector: 'hyp-home-page',
   template: `
+  <mat-toolbar color="primary">
+    HypDB
+    <span class="flex-span"></span>
+    <button mat-raised-button color="accent" routerLink="/upload">UPLOAD CSV FILE</button>
+  </mat-toolbar>
   <div class="container">
-    <hyp-csv-upload (uploadedFile)="refreshFiles()"></hyp-csv-upload>
-    <hyp-query [files]="files | async" (results)="displayResults($event)" (fileChanged)="fileChanged()"></hyp-query>
+    <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
     <span class="error">{{ error }}</span>
-    <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts>
+    <hyp-naive-group-by-chart *ngIf="!error && naiveAteData" [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
+    <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
+    <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
+    <div class="weighted-avg-query">
+<pre *ngIf="graph">
+SELECT WITH BLOCKS ...
+</pre>
+    </div>
     <h2 *ngIf="graph">Causal Graph</h2>
     <hyp-graph [graph]="graph"></hyp-graph>
   </div>
@@ -18,35 +29,35 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
   styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit {
-  files: Observable<string[]>
-  ateData: any[];
-  graph: GraphData;
-  error: string;
+  ateData: any[] = null;
+  naiveAteData: any[] = null;
+  naiveGraphData: GraphData = null;
+  graph: GraphData = null;
+  error: string = null;
 
   constructor(
-    private main: MainService
+    public main: MainService
   ) { }
 
   ngOnInit() {
     this.main.test().subscribe(res => console.log(res));
-    this.files = this.main.getCsvJsonUploadList();
+    this.main.files = this.main.getCsvJsonUploadList();
     window.scrollTo(0, 0);
   }
 
-  refreshFiles() {
-    this.files = this.main.getCsvJsonUploadList();
+  displayNaiveAte(data: any[]) {
+    console.log('naive data=', data);
+    this.naiveAteData = this.parseAte(data['naiveAte']);
+    this.naiveGraphData = data['graph'];
   }
 
   displayResults(data: QueryRes) {
-    if (!data['ate'] || data['ate'].length === 0) {
+    if (!data['naiveAte'] || data['naiveAte'].length === 0) {
       return this.error = 'Query error!';
     }
     this.error = null;
-    const ate1 = this.parseAte(data['ate'][0]);
-    const ate2 = data['ate'][1] ? this.parseAteWithGroupingAttribute(data['ate'][1]) : null;
-    this.ateData = [
-      ate1, ate2
-    ];
+    // this.naiveAteData = this.parseAte(data['naiveAte']);
+    // const ate2 = data['ate'][1] ? this.parseAteWithGroupingAttribute(data['ate'][1]) : null;
     this.graph = data['graph'];
   }
 
@@ -67,6 +78,7 @@ export class HomePageComponent implements OnInit {
         value: ateRow[outcome]
       });
     }
+    console.log(ate);
     return ate;
   }
 

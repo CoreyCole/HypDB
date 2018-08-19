@@ -62,6 +62,71 @@ class BiasResource(object):
         else:
             raise ValueError("Supported where operators include 'AND', 'IN', 'NOT IN', '=', and '!='  ")
 
+    def on_get(self, req, resp):
+        """endpoint for returning naive group by query results"""
+        # Process request
+        params = json.load(req.bounded_stream)
+        # print(json.dumps(params))
+        filename = params['filename']
+        # Convert json of database into csv
+        with open('./uploads/' + filename + '.json', 'rb') as f:
+            data = json.load(f)
+            #print(len(data['data']))
+            #data = pd.read_json(data)
+            #print(reprlib.repr(data['data']))
+            with open('./tmp/' + filename, 'w') as g:
+                fieldnames = data['data'][0].keys()
+                writer = csv.DictWriter(g, fieldnames=fieldnames)
+                writer.writeheader()
+                for line in data['data']:
+                    if len(line) == len(fieldnames):
+                        writer.writerow(line)
+        # Create data
+        data = read_from_csv('./tmp/' + filename)
+        print('data size: ', len(data))
+
+        # Processwhere clause
+        # TODO: need support for multiple where statements separated by or
+        # TODO: support in clause
+        # data = data[data['carrier'].isin(['AA', 'UA'])]
+        # data = data[data['origin'].isin(['COS', 'MFE', 'MTJ', 'ROC'])]
+        # print(len(data))
+
+        if 'where' in params and params['where'] != 'undefined':
+            #print(len(data))
+            #data = data.query("carrier in ('UA', 'AA') and origin in ('COS', 'MFE', 'MTJ', 'ROC') and carrier != 'UA'")
+            #print(len(data))
+            key = next(iter(params['where']))
+            data = BiasResource.parseWhere(key, params['where'][key], data)
+            print('data size (post where clause): ', len(data))
+        if len(data) == 0:
+            raise ValueError('No rows remaining in database after where clause')
+            #if params['where']:
+            #    # change = to ==
+            #    addEquals = params['where'].split('=', 1)
+            #    data = data.query(addEquals[0] + '==' + addEquals[1])
+
+        # Process group by
+        treatment = []
+        if 'groupingAttributes' in params:
+            if params['groupingAttributes']:
+                for attr in params['groupingAttributes']:
+                    treatment.append(attr)
+
+        # Process select
+        outcome = [params['outcome']]
+
+        # Naive group-by query, followd by a conditional independance test
+        ate = sql.naive_groupby(data, treatment, outcome)
+        ate_data = sql.plot(ate, treatment, outcome)
+        outJSON = ate_data
+
+        print('post worked')
+        resp.content_type = 'application/json'
+        resp.status = falcon.HTTP_200
+        resp.body = json.dumps(outJSON)
+        return resp
+
 
     def on_post(self, req, resp):
         # try:
@@ -141,15 +206,21 @@ class BiasResource(object):
             k = 3
 
             # Naive group-by query, followd by a conditional independance test
-            grouping_attributes = []
-            ate_list = []
-            for treat in treatment:
-                grouping_attributes.append(treat)
-                ate = sql.naive_groupby(data, grouping_attributes[::-1], outcome)
-                ate_step = sql.plot(ate, grouping_attributes, outcome)
-                ate_list.append(ate_step)
-            outJSON = {'ate': ate_list}
+            ate = sql.naive_groupby(data, treatment, outcome)
+            ate_data = sql.plot(ate, treatment, outcome)
+            outJSON = {'naiveAte': ate_data}
             print(outJSON)
+
+            # old code for getting ate for each grouping attribute
+            # going to need to do the reverse array trick again once we know the most biased covariate
+            # grouping_attributes = []
+            # ate_list = []
+            # for treat in treatment:
+            #     grouping_attributes.append(treat)
+            #     ate = sql.naive_groupby(data, grouping_attributes[::-1], outcome)
+            #     ate_step = sql.plot(ate, grouping_attributes, outcome)
+            #     ate_list.append(ate_step)
+            # outJSON = {'ate': ate_list}
 
             # Computing parents of the treatment
             start = time.time()

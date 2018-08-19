@@ -18,7 +18,8 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
       [curve]="curve"
       [enableZoom]="false"
       [draggingEnabled]="true"
-      [panningEnabled]="false">
+      [panningEnabled]="false"
+      [orientation]="orientation">
 
       <ng-template #defsTemplate let-link>
         <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="8" markerHeight="8" orient="auto">
@@ -27,13 +28,17 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
       </ng-template>
 
       <ng-template #nodeTemplate let-node>
-        <svg:g class="node"
+        <!-- <svg:g class="node"
           ngx-tooltip
           [tooltipPlacement]="'top'"
           [tooltipType]="'tooltip'"
           [tooltipTitle]="node.label">
-          <svg:rect [attr.width]="node.width + 10" [attr.height]="node.height + 10" [attr.fill]="getColor(node)" fill-opacity="0.4" />
+          <svg:circle [attr.r]="node.width / 2" [attr.cx]="node.height / 2" [attr.fill]="getColor(node)" fill-opacity="1.0" />
           <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="(node.height + 10)/ 2">{{node.label}}</svg:text>
+        </svg:g> -->
+        <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label">
+          <svg:circle [attr.r]="35" [attr.cx]="35" [attr.cy]="35" [attr.fill]="getColor(node)" />
+          <svg:text alignment-baseline="top" [attr.x]="10" [attr.y]="35">{{node.label}}</svg:text>
         </svg:g>
       </ng-template>
 
@@ -66,42 +71,21 @@ export class GraphComponent implements OnChanges {
   nodes: GraphNode[];
   error: string;
 
-  view: any[] = [900, 400];
+  view: any[] = [900, 200];
   curve = shape.curveLinear; // or some other function from d3-shape
   colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
-  orientations: any[] = [
-    {
-      label: 'Left to Right',
-      value: 'LR'
-    },
-    {
-      label: 'Right to Left',
-      value: 'RL'
-    },
-    {
-      label: 'Top to Bottom',
-      value: 'TB'
-    },
-    {
-      label: 'Bottom to Top',
-      value: 'BT'
-    }
-  ];
+  orientation = 'LR';
   constructor() { }
 
   ngOnChanges() {
     if (this.graph && this.invalid(this.graph)) {
       this.links = [];
       this.nodes = [];
-      this.error = 'outcome found to be parent of the treatment';
       console.log(this.error);
+      return this.error = 'outcome found to be parent of the treatment';
     }
-    //else if (this.graph) {
-    //this.links = this.graph.links;
-    //this.nodes = this.graph.nodes;
-    //}
     if (this.graph) {
       this.links = this.graph.links;
       this.nodes = this.graph.nodes;
@@ -124,7 +108,7 @@ export class GraphComponent implements OnChanges {
 
   getColor(node: GraphNode): string {
     const label = node.label;
-    if (this.graph.correlation.treatment.indexOf(label) > -1) {
+    if (this.graph.correlation.treatment[0] === label) {
       return "rgb(199, 180, 44)";
     } else if (this.graph.correlation.outcome.indexOf(label) > -1) {
       return "rgb(90, 164, 84)";

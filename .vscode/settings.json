@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/Users/coreycole/.local/share/virtualenvs/sc2-ai-KcGnBzzk/bin/python",
+    "python.pythonPath": "/usr/local/bin/python3",
     "python.linting.pylintEnabled": false,
     "editor.formatOnSave": true,
     "editor.detectIndentation": true

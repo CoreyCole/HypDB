@@ -50,6 +50,7 @@ export interface GraphNode {
 @Injectable()
 export class MainService {
   private endpoint = 'http://localhost:5000';
+  files: Observable<string[]> = of([]);
 
   constructor(private http: HttpClient) { }
 
@@ -73,11 +74,22 @@ export class MainService {
     return this.http.get<CsvJson>(`${this.endpoint}/csv-json/download/${filename}`);
   }
 
+  queryNaiveAte(dto: HypDBDto): Observable<any[]> {
+    return this.http.post(`${this.endpoint}/api/bias/ate`, { ...dto })
+      .pipe(
+        catchError(err => of(err))
+      );
+  }
+
   queryHypDb(dto: HypDBDto): Observable<QueryRes> {
     console.log(dto);
     return this.http.post(`${this.endpoint}/api/bias`, { ...dto })
       .pipe(
         catchError(err => of(err))
       );
+  }
+
+  refreshFiles() {
+    this.files = this.getCsvJsonUploadList();
   }
 }

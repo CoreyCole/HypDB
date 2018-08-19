@@ -15,9 +15,9 @@ pre {
   display: inline;
 }
 
-.where {
-  width: 500px;
-}
+// .where {
+//   width: 500px;
+// }
 
 button {
   margin-right: 8px;
@@ -26,4 +26,8 @@ button {
 .error {
   color: red;
   font-size: 16pt;
+}
+
+div.auto-complete {
+  display: inline;
 }

@@ -65,19 +65,28 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
     print(json.dumps(outJSON))
     return outJSON
 
+"""
+par1 parents of the treatments
+cov1 boundary of the treatments
+par2 parents of the outcome
+cov2 boundary of the outcome
+"""
 def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
     print(treatment, cov1, par1)
     print(outcome, cov2, par2)
     outJSON['graph'] = {'nodes': [], 'links': [], 'correlation': {'dashed': True, 'treatment': treatment, 'outcome': outcome}}
     print('\n\n\n\n\n')
     print(treatment, outcome)
-    if outcome[0] in cov1:
+    if outcome[0] in cov1 or treatment[0] in cov2:
         outJSON['graph']['correlation']['dashed'] = False
+    else:
+        outJSON['graph']['links'].append({'source': treatment[0], 'target': outcome[0]})
     #if outcome[0] not in par1:
     #    print('not')
         #outJSON['graph']['links'].append({'source': treatment[0], 'target': outcome[0]})
     for attr in set(cov1 + cov2 + treatment + outcome):
         outJSON['graph']['nodes'].append({'id': attr, 'label': attr})
+
     for attr in set(cov1 + cov2):
         if attr in par1:
             for t in treatment:

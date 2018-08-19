@@ -3,11 +3,11 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Papa } from 'ngx-papaparse';
 import { PapaParseResult } from '../../../../node_modules/ngx-papaparse/lib/interfaces/papa-parse-result';
 import { MainService, CsvJson } from '../../services/main.service';
+import { PapaParseConfig } from 'ngx-papaparse/lib/interfaces/papa-parse-config';
 
 @Component({
   selector: 'hyp-csv-upload',
   template: `
-    <h1>Upload CSV Files</h1>
     <span class="error" *ngIf="error">{{ error }}</span>
     <span class="success" *ngIf="success">Upload Successful!</span>
     <div class="upload" *ngIf="!currentResultJson && !loading">
@@ -41,7 +41,7 @@ export class CsvUploadComponent implements OnInit {
 
   constructor(
     private papa: Papa,
-    private main: MainService 
+    private main: MainService
   ) { }
 
   ngOnInit() {
@@ -73,13 +73,13 @@ export class CsvUploadComponent implements OnInit {
     const uploadJson: CsvJson = { ...this.currentResultJson };
     uploadJson.meta['filename'] = this.currentFileName;
     uploadJson.meta['uploadDate'] = new Date().toLocaleString();
-    
+
     // reset component fields
     this.error = null;
     this.currentResultJson = null;
     this.currentFileName = null;
     this.confirmColumns = null;
-    
+
     // upload the json to the backend
     console.log('uploading file to backend: ', uploadJson);
     this.loading = true;

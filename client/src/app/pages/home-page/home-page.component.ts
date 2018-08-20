@@ -47,6 +47,10 @@ export class HomePageComponent implements OnInit {
 
   displayNaiveAte(data: any[]) {
     console.log('naive data=', data);
+    if (!data || data.length === 0) {
+      return this.error = 'Naive Query Error!';
+    }
+    this.error = null;
     this.naiveAteData = this.parseAte(data['naiveAte']);
     this.naiveGraphData = data['graph'];
   }

@@ -4,15 +4,11 @@ import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 export interface CsvJson {
-  data: any[];
-  errors: any[];
-  meta: {
-    delimeter?: string;
-    linebreak?: string;
-    fields?: string[];
-    filename?: string;
-    uploadDate?: string;
-  }
+  delimeter?: string;
+  linebreak?: string;
+  fields?: string[];
+  filename?: string;
+  uploadDate?: string;
 }
 
 export interface HypDBDto {

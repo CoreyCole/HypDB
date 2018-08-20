@@ -23,7 +23,7 @@ import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main
         </mat-autocomplete>    
       </div>  
       <pre>)</pre>
-      <pre>FROM {{ csvJson.meta.filename.substring(0, csvJson.meta.filename.length - 4) }}</pre>
+      <pre>FROM {{ csvJson.filename.substring(0, csvJson.filename.length - 4) }}</pre>
       <pre *ngIf="where">WHERE {{ where }}</pre>
       <pre>GROUP BY</pre>
       <div class="auto-complete treatment">
@@ -70,7 +70,7 @@ export class PickParamsComponent implements OnChanges {
   }
 
   filterAttributes(val: string) {
-    return val ? this._filter(this.csvJson.meta.fields, val) : this.csvJson.meta.fields;
+    return val ? this._filter(this.csvJson.fields, val) : this.csvJson.fields;
   }
 
   private _filter(attributes: string[], val: string) {

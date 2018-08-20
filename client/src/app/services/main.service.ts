@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 
 export interface CsvJson {
   data: any[];
@@ -51,6 +51,7 @@ export interface GraphNode {
 export class MainService {
   private endpoint = 'http://localhost:5000';
   files: Observable<string[]> = of([]);
+  private queryResCache = new Map<string, QueryRes>();
 
   constructor(private http: HttpClient) { }
 
@@ -83,13 +84,27 @@ export class MainService {
 
   queryHypDb(dto: HypDBDto): Observable<QueryRes> {
     console.log(dto);
-    return this.http.post(`${this.endpoint}/api/bias`, { ...dto })
-      .pipe(
-        catchError(err => of(err))
-      );
+    const key = this.getKey(dto);
+    if (this.queryResCache.has(key)) {
+      const result = this.queryResCache.get(key);
+      console.log('cached result=', result);
+      return of(result);
+    } else {
+      return this.http.post(`${this.endpoint}/api/bias`, { ...dto })
+        .pipe(
+          catchError(err => of(err)),
+          tap((res: QueryRes) => {
+            this.queryResCache.set(key, res);
+          })
+        );
+    }
   }
 
   refreshFiles() {
     this.files = this.getCsvJsonUploadList();
+  }
+
+  private getKey(dto: HypDBDto): string {
+    return dto.filename + dto.outcome + dto.groupingAttributes.toString() + dto.where;
   }
 }

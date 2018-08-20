@@ -98,7 +98,7 @@ export class PickParamsComponent implements OnChanges {
         outcome: this.currentOutcome,
         // groupingAttributes: [this.treatment, ...this.groupingAttributes],
         groupingAttributes: [this.currentTreatment],
-        filename: this.csvJson.meta.filename,
+        filename: this.csvJson.filename,
         where: parsedWhere
       };
       this.main.queryNaiveAte(dto)

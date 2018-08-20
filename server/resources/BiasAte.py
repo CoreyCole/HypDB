@@ -68,19 +68,6 @@ class BiasAteResource(object):
         params = json.load(req.bounded_stream)
         # print(json.dumps(params))
         filename = params['filename']
-        # Convert json of database into csv
-        with open('./uploads/' + filename + '.json', 'rb') as f:
-            data = json.load(f)
-            #print(len(data['data']))
-            #data = pd.read_json(data)
-            #print(reprlib.repr(data['data']))
-            with open('./tmp/' + filename, 'w') as g:
-                fieldnames = data['data'][0].keys()
-                writer = csv.DictWriter(g, fieldnames=fieldnames)
-                writer.writeheader()
-                for line in data['data']:
-                    if len(line) == len(fieldnames):
-                        writer.writerow(line)
         # Create data
         data = read_from_csv('./tmp/' + filename)
         print('data size: ', len(data))

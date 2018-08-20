@@ -261,7 +261,7 @@ class FairDB(object):
         startalg = time.time()
         if target[0] in self.mbs.keys():
             boundary = self.mbs[target[0]]
-            print("already computed: ", target, ':::::: white list:', whitelist, 'optimized: ', optimized)
+            # print("already computed: ", target, ':::::: white list:', whitelist, 'optimized: ', optimized)
             return boundary, self.causes,0
 
         if target[0] in self.rev_mbs.keys():
@@ -269,7 +269,7 @@ class FairDB(object):
         # print(white)
         boundary=[]
 
-        print("Computing boundary of: ",target, ':::::: white list:', whitelist, 'optimized: ',optimized)
+        # print("Computing boundary of: ",target, ':::::: white list:', whitelist, 'optimized: ',optimized)
         optimized=optimized   # if True materlizes selected views
         cndl = copy.copy(self.features)
         cndl = cndl.tolist()
@@ -438,7 +438,7 @@ class FairDB(object):
             self.rev_mbs[item] = target
         self.mbs[target[0]]=B.copy()
         endalg = time.time()
-        print("Boundary of  "+str(target[0]), str(B), ' ::::::: elapsed time:', endalg-startalg)
+        #print("Boundary of  "+str(target[0]), str(B), ' ::::::: elapsed time:', endalg-startalg)
         return B, self.causes,endalg-startalg
 
 
@@ -879,7 +879,7 @@ ratio=0.1, fraction=0.1, num_samples=1000, loc_num_samples=100,
         # print("*****\n")
         # print(parents)
         # print("\n*****")
-        print(parents,'heree')
+        #print(parents,'heree')
         if fullcheck==True and parents:
             if optimized:
                 self.pre_com_view = pd.DataFrame(

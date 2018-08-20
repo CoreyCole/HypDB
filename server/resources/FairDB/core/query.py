@@ -17,49 +17,44 @@ def remove_dup(lst):
 
 # mediatpor and init not needed for total effect
 def adjusted_groupby(data,treatment,outcome,covariates,mediatpor=[],init=[],threshould=0):
+    #print(data)
+    #print(list(data.columns.values))
+    #print(covariates)
     matcheddata ,adj_set,pur=matching(data, treatment, outcome, remove_dup(covariates+mediatpor), threshould=threshould)
-    print(matcheddata.columns)
-    print(covariates)
-    print(mediatpor)
     size = len(matcheddata.index)
     if mediatpor:
        tmp = matcheddata[matcheddata[treatment[0]].isin(init)]
        prob1 = pd.DataFrame({'prob1': tmp.groupby(remove_dup(mediatpor+covariates)).size() / size}).reset_index()
-       print(prob1.columns)
+       #print(prob1)
     if covariates:
        prob2 = pd.DataFrame({'prob2': matcheddata.groupby(covariates).size() / size}).reset_index()
-       print(prob2.columns)
+       #print(prob2)
     counts = pd.DataFrame({'count': matcheddata.groupby(treatment).size()}).reset_index()
-    print(treatment[0])
-    for t in treatment:
-        covariates.insert(0,t)
-        print('t', t)
-    print(covariates, mediatpor)
+    #print(counts)
+    covariates.insert(0,treatment[0])
+    #print(covariates)
+    #print(list(data.columns.values))
     ate = data.groupby(remove_dup(mediatpor+covariates))[outcome].mean().reset_index()
-    print(ate.columns)
+    #print(ate)
     ate.rename(columns={outcome[0]: 'ATE_X'}, inplace=True)
-    #covariates.remove(treatment[0])
-    for t in treatment:
-        covariates.remove(t)
+    covariates.remove(treatment[0])
     if covariates and not mediatpor:
         ate = ate.merge(prob2, on=covariates)
         W_ATEX = ate['ATE_X']  * ate['prob2']
     if mediatpor and covariates:
-        print(covariates)
         ate = ate.merge(prob2, on=covariates)
         ate = ate.merge(prob1, on=mediatpor)
         W_ATEX = ate['ATE_X'] * ate['prob1'] * ate['prob2']
     if mediatpor and not covariates:
         ate = ate.merge(prob1, on=mediatpor)
-        W_ATEX = ate['ATEx`x`_X'] * ate['prob1']
+        W_ATEX = ate['ATE_X'] * ate['prob1']
     ate['WATE_X'] = W_ATEX
-    print('ate.columns', ate.columns)
     wate = pd.DataFrame({outcome[0]: ate.groupby(treatment).sum()['WATE_X']}).reset_index()
     ate = wate.merge(counts, on=treatment, how='inner')
     return ate,matcheddata ,adj_set,pur
 
 def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
-    outJSON = {'ate' : []}
+    outJSON = []
     outcomes = res[outcome[0]].values
     attrs = [[] for index in range(len(outcomes))]
     for i in range(len(outcomes)):
@@ -74,7 +69,7 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
                 temp[treatment[k]] = i[k]
 
         temp[outcome[0]] = j
-        outJSON['ate'].append(temp)
+        outJSON.append(temp)
     #print(outJSON)
     #print(json.dumps(outJSON))
     return outJSON
@@ -100,7 +95,7 @@ def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
                 outJSON['graph']['links'].append({'source': attr, 'target': o})
                 outJSON['graph']['links'].append({'source': o, 'target': attr})
 
-    print(json.dumps(outJSON))
+    #print(json.dumps(outJSON))
 
     # outJSON['graph']['treatment']['attributes'] = treatment
     # outJSON['graph']['treatment']['boundary'] = cov1

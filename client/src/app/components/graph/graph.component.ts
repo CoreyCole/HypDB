@@ -18,28 +18,27 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
       [curve]="curve"
       [enableZoom]="false"
       [draggingEnabled]="true"
-      [panningEnabled]="false"
-      [orientation]="orientation">
+      [panningEnabled]="false">
 
       <ng-template #defsTemplate let-link>
-        <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="8" markerHeight="8" orient="auto">
+        <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
           <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
         </svg:marker>
       </ng-template>
 
       <ng-template #nodeTemplate let-node>
-        <!-- <svg:g class="node"
+        <svg:g class="node"
           ngx-tooltip
           [tooltipPlacement]="'top'"
           [tooltipType]="'tooltip'"
           [tooltipTitle]="node.label">
-          <svg:circle [attr.r]="node.width / 2" [attr.cx]="node.height / 2" [attr.fill]="getColor(node)" fill-opacity="1.0" />
-          <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="(node.height + 10)/ 2">{{node.label}}</svg:text>
-        </svg:g> -->
-        <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label">
-          <svg:circle [attr.r]="35" [attr.cx]="35" [attr.cy]="35" [attr.fill]="getColor(node)" />
-          <svg:text alignment-baseline="top" [attr.x]="10" [attr.y]="35">{{node.label}}</svg:text>
+          <svg:rect [attr.width]="node.width" [attr.height]="node.height" [attr.fill]="getColor(node)" fill-opacity="1.0" />
+          <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}</svg:text>
         </svg:g>
+        <!-- <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label">
+          <svg:circle [attr.r]="node.width / 2" [attr.cx]="node.width / 2" [attr.cy]="node.width / 4" [attr.fill]="getColor(node)" />
+          <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.width / 2">{{node.label}}</svg:text>
+        </svg:g> -->
       </ng-template>
 
       <ng-template #linkTemplate let-link>
@@ -49,7 +48,7 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
             [ngClass]="{'dashed': dashed(link), 'bold': bold(link)}"
             attr.id="{{link.source}}-to-{{link.target}}"
             stroke-width="2"
-            marker-end="url(#arrow)" >
+            marker-end="url(#arrow)">
           </svg:path>
           <svg:path *ngIf="!directed(link)"
             class="line"
@@ -106,11 +105,30 @@ export class GraphComponent implements OnChanges {
     }
   }
 
+  private parseNodes(nodes: GraphNode[]): GraphNode[] {
+    const parsed: GraphNode[] = []
+    const max = nodes.reduce((prev, curr) => Math.max(prev, curr.id.length), 0);
+    for (const node of nodes) {
+      const label = this.normalizeLength(node.label, max - 1);
+      const newNode = { ...node, label };
+      parsed.push(newNode);
+    }
+    return parsed;
+  }
+
+  private normalizeLength(str: string, length: number): string {
+    const difference = length - str.length;
+    const even = difference % 2 === 0;
+    const spacesBefore = '_'.repeat(difference / 2);
+    const spacesAfter = even ? spacesBefore : '_'.repeat(1 + difference / 2);
+    return spacesBefore + str + spacesAfter;
+  }
+
   getColor(node: GraphNode): string {
-    const label = node.label;
-    if (this.graph.correlation.treatment[0] === label) {
+    const id = node.id;
+    if (this.graph.correlation.treatment[0] === id) {
       return "rgb(199, 180, 44)";
-    } else if (this.graph.correlation.outcome.indexOf(label) > -1) {
+    } else if (this.graph.correlation.outcome.indexOf(id) > -1) {
       return "rgb(90, 164, 84)";
     } else {
       return "rgb(170, 170, 170)";

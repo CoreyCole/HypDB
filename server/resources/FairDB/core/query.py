@@ -17,16 +17,25 @@ def remove_dup(lst):
 
 # mediatpor and init not needed for total effect
 def adjusted_groupby(data,treatment,outcome,covariates,mediatpor=[],init=[],threshould=0):
+    #print(data)
+    #print(list(data.columns.values))
+    #print(covariates)
     matcheddata ,adj_set,pur=matching(data, treatment, outcome, remove_dup(covariates+mediatpor), threshould=threshould)
     size = len(matcheddata.index)
     if mediatpor:
        tmp = matcheddata[matcheddata[treatment[0]].isin(init)]
        prob1 = pd.DataFrame({'prob1': tmp.groupby(remove_dup(mediatpor+covariates)).size() / size}).reset_index()
+       #print(prob1)
     if covariates:
        prob2 = pd.DataFrame({'prob2': matcheddata.groupby(covariates).size() / size}).reset_index()
+       #print(prob2)
     counts = pd.DataFrame({'count': matcheddata.groupby(treatment).size()}).reset_index()
+    #print(counts)
     covariates.insert(0,treatment[0])
+    #print(covariates)
+    #print(list(data.columns.values))
     ate = data.groupby(remove_dup(mediatpor+covariates))[outcome].mean().reset_index()
+    #print(ate)
     ate.rename(columns={outcome[0]: 'ATE_X'}, inplace=True)
     covariates.remove(treatment[0])
     if covariates and not mediatpor:
@@ -55,14 +64,14 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
         temp = {}
         for k in range(len(treatment)):
             if type(i[k]).__module__ == 'numpy':
-                temp[treatment[k]] = int(i[k])
+                temp[treatment[k]] = float(i[k])
             else:    
                 temp[treatment[k]] = i[k]
 
         temp[outcome[0]] = j
         outJSON.append(temp)
-    print(outJSON)
-    print(json.dumps(outJSON))
+    #print(outJSON)
+    #print(json.dumps(outJSON))
     return outJSON
 
 """
@@ -72,45 +81,36 @@ par2 parents of the outcome
 cov2 boundary of the outcome
 """
 def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
-    print(treatment, cov1, par1)
-    print(outcome, cov2, par2)
     outJSON['graph'] = {'nodes': [], 'links': [], 'correlation': {'dashed': True, 'treatment': treatment, 'outcome': outcome}}
-    print('\n\n\n\n\n')
-    print(treatment, outcome)
+    # in boundary of each other
     if outcome[0] in cov1 or treatment[0] in cov2:
         outJSON['graph']['correlation']['dashed'] = False
+    # edge doesn't exist but we need it for the graph
     else:
         outJSON['graph']['links'].append({'source': treatment[0], 'target': outcome[0]})
-    #if outcome[0] not in par1:
-    #    print('not')
-        #outJSON['graph']['links'].append({'source': treatment[0], 'target': outcome[0]})
-    for attr in set(cov1 + cov2 + treatment + outcome):
-        outJSON['graph']['nodes'].append({'id': attr, 'label': attr})
+    # nodes
+    for node in set(cov1 + cov2 + treatment + outcome):
+        outJSON['graph']['nodes'].append({'id': node, 'label': node})
+    # directed
+    for node in par1:
+        outJSON['graph']['links'].append({'source': node, 'target': treatment[0]})
+        print('par1', node, treatment[0])
+    for node in par2:
+        outJSON['graph']['links'].append({'source': node, 'target': outcome[0]})
+        print('par2', node, outcome[0])
+    # undirected
+    for node in set(cov1) - set(par1):
+        outJSON['graph']['links'].append({'source': treatment[0], 'target': node})
+        print('cov1', node, treatment[0])
+    for node in set(cov2) - set(par2):
+        outJSON['graph']['links'].append({'source': outcome[0], 'target': node})
+        print('cov2', node, outcome[0])
 
-    for attr in set(cov1 + cov2):
-        if attr in par1:
-            for t in treatment:
-                if attr != t:# and not (attr == outcome[0] and t == treatment[0]):
-                    outJSON['graph']['links'].append({'source': attr, 'target': t})
-        if attr in par2:
-            for o in outcome:
-                if attr != o:# and not (attr == outcome[0] and o == treatment[0]):
-                    outJSON['graph']['links'].append({'source': attr, 'target': o})
-        if attr in cov1 and attr not in par1:
-            for t in treatment:
-                if attr != t:# and {'source': t, 'target': attr} not in outJSON['graph']['links'] and not ((attr == outcome[0] and t == treatment[0]) or (attr == treatment[0] and t == outcome[0])):
-                    #outJSON['graph']['links'].append({'source': attr, 'target': t})
-                    outJSON['graph']['links'].append({'source': t, 'target': attr})
-        if attr in cov2 and attr not in par2:
-            for o in outcome:
-                if attr != o:# and {'source': o, 'target': attr} not in outJSON['graph']['links'] and not ((attr == outcome[0] and o == treatment[0]) or (attr == treatment[0] and o == outcome[0])):
-                    #outJSON['graph']['links'].append({'source': attr, 'target': o})
-                    outJSON['graph']['links'].append({'source': o, 'target': attr})
-        outJSON['graph']['links'] = [dict(t) for t in {tuple(d.items()) for d in outJSON['graph']['links']}]
+    outJSON['graph']['links'] = [dict(t) for t in {tuple(d.items()) for d in outJSON['graph']['links']}]
 
-        print(outJSON['graph']['links'])
+    print(outJSON['graph']['links'])
 
-    print(json.dumps(outJSON))
+    #print(json.dumps(outJSON))
 
     # outJSON['graph']['treatment']['attributes'] = treatment
     # outJSON['graph']['treatment']['boundary'] = cov1

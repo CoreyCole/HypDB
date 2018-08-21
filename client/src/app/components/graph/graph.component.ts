@@ -79,10 +79,10 @@ export class GraphComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges() {
+    this.error = null;
     if (this.graph && this.invalid(this.graph)) {
       this.links = [];
       this.nodes = [];
-      console.log(this.error);
       return this.error = 'outcome found to be parent of the treatment';
     }
     if (this.graph) {
@@ -97,6 +97,9 @@ export class GraphComponent implements OnChanges {
   private invalid(graph: GraphData): boolean {
     const treatment = graph.correlation.treatment[0];
     const outcome = graph.correlation.outcome[0];
+    if (graph.correlation.dashed) {
+      return false;
+    }
     for (const link of graph.links) {
       if (link.source === outcome && link.target === treatment) {
         // outcome cannot be the parent of the treatment
@@ -127,11 +130,11 @@ export class GraphComponent implements OnChanges {
   getColor(node: GraphNode): string {
     const id = node.id;
     if (this.graph.correlation.treatment[0] === id) {
-      return "rgb(199, 180, 44)";
+      return 'rgb(199, 180, 44)';
     } else if (this.graph.correlation.outcome.indexOf(id) > -1) {
-      return "rgb(90, 164, 84)";
+      return 'rgb(90, 164, 84)';
     } else {
-      return "rgb(170, 170, 170)";
+      return 'rgb(170, 170, 170)';
     }
   }
 

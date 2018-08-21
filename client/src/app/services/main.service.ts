@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 export interface CsvJson {
@@ -88,7 +88,7 @@ export class MainService {
     } else {
       return this.http.post(`${this.endpoint}/api/bias`, { ...dto })
         .pipe(
-          catchError(err => of(err)),
+          catchError(err => throwError(err)),
           tap((res: QueryRes) => {
             this.queryResCache.set(key, res);
           })

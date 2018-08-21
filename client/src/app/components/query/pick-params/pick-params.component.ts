@@ -2,6 +2,8 @@ import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core
 import * as SqlWhereParser from 'sql-where-parser';
 
 import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main.service';
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'hyp-pick-params',
@@ -66,7 +68,9 @@ export class PickParamsComponent implements OnChanges {
   constructor(private main: MainService) { }
 
   ngOnChanges() {
-    this.clear.emit();
+    this.clearQuery();
+    this.treatAttrs = this.csvJson.fields;
+    this.outcomeAttrs = this.csvJson.fields;
   }
 
   filterAttributes(val: string) {
@@ -81,7 +85,10 @@ export class PickParamsComponent implements OnChanges {
   clearQuery() {
     this.currentOutcome = null;
     this.currentTreatment = null;
+    this.treatAttrs = [];
+    this.outcomeAttrs = [];
     this.where = '';
+    this.error = null;
     this.clear.emit();
   }
 
@@ -107,6 +114,13 @@ export class PickParamsComponent implements OnChanges {
           this.naiveAte.emit(data);
         });
       this.main.queryHypDb(dto)
+        .pipe(
+          catchError((err) => {
+            this.loading = false;
+            this.results.emit(null);
+            return throwError(err);
+          })
+        )
         .subscribe(data => {
           console.log(data);
           this.results.emit(data);

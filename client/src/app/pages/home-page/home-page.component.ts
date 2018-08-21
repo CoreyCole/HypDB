@@ -66,6 +66,8 @@ export class HomePageComponent implements OnInit {
   }
 
   fileChanged() {
+    this.naiveAteData = null;
+    this.naiveGraphData = null;
     this.ateData = null;
     this.graph = null;
     this.error = null;

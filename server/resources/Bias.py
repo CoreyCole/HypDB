@@ -124,8 +124,10 @@ class BiasResource(object):
             detector = FairDB(data)
 
             # FairDB parameters
-            whitelist = ['origin']
-            black = ['destcityname', 'dest', 'origincityname']
+            # whitelist = ['origin']
+            whitelist = []
+            # black = ['destcityname', 'dest', 'origincityname']
+            black = []
             fraction = 1
             shfraction = 1
             method = 'g2'
@@ -185,7 +187,7 @@ class BiasResource(object):
             print(t2)
             ate2 = sql.naive_groupby(data, t2[::-1], outcome)
             print(ate2)
-
+            '''
             # Adjusting for parents of the treatment for computing total effect
             # mediatpor and init not needed for total effect
             de = None
@@ -234,7 +236,7 @@ class BiasResource(object):
                 if alt1:
                     te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cmi2)
                     print('te2', te)
-
+            '''
             outJSON['cov_treatment'] = cov1
             outJSON['cov_outcome'] = cov2
             outJSON['responsibility'] = res

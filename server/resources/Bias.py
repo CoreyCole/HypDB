@@ -187,7 +187,8 @@ class BiasResource(object):
             t2.append(max(res, key=res.get))
             print(t2)
             ate2 = sql.naive_groupby(data, t2[::-1], outcome)
-            print(ate2)
+            ate_data2 = sql.plot(ate2, t2, outcome)
+            outJSON['responsibleAte'] = ate_data2
 
             '''
             # Adjusting for parents of the treatment for computing total effect

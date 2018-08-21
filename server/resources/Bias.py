@@ -138,8 +138,8 @@ class BiasResource(object):
             detector = FairDB(data)
 
             # FairDB parameters
-            whitelist = []
-            black = ['']
+            whitelist = ['origin']
+            black = ['destcityname', 'dest', 'origincityname']
             fraction = 1
             shfraction = 1
             method = 'g2'
@@ -181,6 +181,19 @@ class BiasResource(object):
             print('outcome: ', outcome)
             print('covariates of the outcome: ', cov2)
             print('parents of the outcome: ', par2)
+
+            # get most responsible attribute
+            res = get_respon(data, treatment, outcome, list(set(cov1 + cov2)))
+            print(len(list(set(cov1 + cov2))))
+            print(res)
+
+            #treatment.append('origin')
+            #print(treatment)
+            t2 = treatment.copy()
+            t2.append(max(res, key=res.get))
+            print(t2)
+            ate2 = sql.naive_groupby(data, t2[::-1], outcome)
+            print(ate2)
 
             # Adjusting for parents of the treatment for computing total effect
             # mediatpor and init not needed for total effect
@@ -231,6 +244,9 @@ class BiasResource(object):
                     te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cmi2)
                     print('te2', te)
 
+            outJSON['cov_treatment'] = cov1
+            outJSON['cov_outcome'] = cov2
+            outJSON['responsibility'] = res
             # print(adj_set,pur)
             # covarite3
             # cov=['age', 'education', 'hoursperweek', 'capitalgain']

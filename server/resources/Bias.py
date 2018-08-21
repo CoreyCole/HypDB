@@ -124,6 +124,7 @@ class BiasResource(object):
             detector = FairDB(data)
 
             # FairDB parameters
+
             #whitelist = ['origin']
             #black = ['destcityname', 'dest', 'origincityname']
             whitelist = []
@@ -237,7 +238,6 @@ class BiasResource(object):
                 if alt1:
                     te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cmi2)
                     print('te2', te)
-
             '''
 
             outJSON['cov_treatment'] = cov1

@@ -79,6 +79,7 @@ export class GraphComponent implements OnChanges {
   constructor() { }
 
   ngOnChanges() {
+    this.error = null;
     if (this.graph && this.invalid(this.graph)) {
       this.links = [];
       this.nodes = [];

@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // angular material components
@@ -16,10 +16,13 @@ import {
   MatSlideToggleModule,
   MatSidenavModule,
   MatInputModule,
+  MatFormFieldModule,
   MatSelectModule,
   MatChipsModule,
   MatProgressSpinnerModule,
-  MatProgressBarModule
+  MatProgressBarModule,
+  MatAutocompleteModule,
+  MatOptionModule
 } from '@angular/material';
 import 'hammerjs';
 
@@ -41,22 +44,33 @@ import { CsvUploadComponent } from './components/csv-upload/csv-upload.component
 import { QueryComponent } from './components/query/query.component';
 import { PickParamsComponent } from './components/query/pick-params/pick-params.component';
 import { DagDemoComponent } from './components/dag-demo/dag-demo.component';
+import { GroupByChartsComponent } from './components/group-by-charts/group-by-charts.component';
+import { GraphComponent } from './components/graph/graph.component';
+import { UploadCsvPageComponent } from './pages/upload-csv-page/upload-csv-page.component';
+import { NaiveGroupByChartComponent } from './components/naive-group-by-chart/naive-group-by-chart.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    // pages
     HomePageComponent,
+    UploadCsvPageComponent,
+    // components
     BarChartDemoComponent,
     CsvUploadComponent,
     QueryComponent,
     PickParamsComponent,
-    DagDemoComponent
+    DagDemoComponent,
+    GroupByChartsComponent,
+    GraphComponent,
+    NaiveGroupByChartComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     // material components
     MatButtonModule,
@@ -73,6 +87,8 @@ import { DagDemoComponent } from './components/dag-demo/dag-demo.component';
     MatChipsModule,
     MatProgressSpinnerModule,
     MatProgressBarModule,
+    MatFormFieldModule,
+    MatAutocompleteModule,
     // ngx charts
     NgxChartsModule,
     BarChartModule,

@@ -3,6 +3,12 @@ mat-card {
   padding: 0;
   padding-bottom: 16px;
   overflow: auto;
+  display: flex;
+  flex-direction: row;
+}
+
+div.chart-div {
+  display: flex;
 }
 
 ngx-charts-bar-vertical, ngx-charts-bar-vertical-2d {

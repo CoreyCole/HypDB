@@ -68,7 +68,9 @@ export class PickParamsComponent implements OnChanges {
   constructor(private main: MainService) { }
 
   ngOnChanges() {
-    this.clear.emit();
+    this.clearQuery();
+    this.treatAttrs = this.csvJson.fields;
+    this.outcomeAttrs = this.csvJson.fields;
   }
 
   filterAttributes(val: string) {
@@ -83,7 +85,10 @@ export class PickParamsComponent implements OnChanges {
   clearQuery() {
     this.currentOutcome = null;
     this.currentTreatment = null;
+    this.treatAttrs = [];
+    this.outcomeAttrs = [];
     this.where = '';
+    this.error = null;
     this.clear.emit();
   }
 

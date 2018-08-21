@@ -69,9 +69,9 @@ export class CsvUploadComponent implements OnInit {
   }
 
   confirmUpload() {
-    const uploadJson: CsvJson = { ...this.currentResultJson };
-    uploadJson.meta['filename'] = this.currentFileName;
-    uploadJson.meta['uploadDate'] = new Date().toLocaleString();
+    const uploadJson = { ...this.currentResultJson };
+    uploadJson['meta']['filename'] = this.currentFileName;
+    uploadJson['meta']['uploadDate'] = new Date().toLocaleString();
 
     // reset component fields
     this.error = null;

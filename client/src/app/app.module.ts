@@ -43,7 +43,6 @@ import { BarChartDemoComponent } from './components/bar-chart-demo/bar-chart-dem
 import { CsvUploadComponent } from './components/csv-upload/csv-upload.component';
 import { QueryComponent } from './components/query/query.component';
 import { PickParamsComponent } from './components/query/pick-params/pick-params.component';
-import { DagDemoComponent } from './components/dag-demo/dag-demo.component';
 import { GroupByChartsComponent } from './components/group-by-charts/group-by-charts.component';
 import { GraphComponent } from './components/graph/graph.component';
 import { UploadCsvPageComponent } from './pages/upload-csv-page/upload-csv-page.component';
@@ -60,7 +59,6 @@ import { NaiveGroupByChartComponent } from './components/naive-group-by-chart/na
     CsvUploadComponent,
     QueryComponent,
     PickParamsComponent,
-    DagDemoComponent,
     GroupByChartsComponent,
     GraphComponent,
     NaiveGroupByChartComponent,

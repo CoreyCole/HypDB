@@ -32,7 +32,7 @@ import { PapaParseConfig } from 'ngx-papaparse/lib/interfaces/papa-parse-config'
 })
 export class CsvUploadComponent implements OnInit {
   error: string;
-  currentResultJson: CsvJson;
+  currentResultJson: any;
   currentFileName: string;
   confirmColumns: string[];
   loading = false;
@@ -58,20 +58,20 @@ export class CsvUploadComponent implements OnInit {
     this.currentFileName = file.name;
     this.papa.parse(file, {
       header: true,
-      complete: parsedResult => this.handleParsedJson(parsedResult.meta as CsvJson),
+      complete: parsedResult => this.handleParsedJson(parsedResult),
       error: () => this.error = 'csv error'
     });
   }
 
-  handleParsedJson(resultJson: CsvJson) {
+  handleParsedJson(resultJson: any) {
     this.currentResultJson = resultJson;
-    this.confirmColumns = resultJson.fields;
+    this.confirmColumns = resultJson.meta.fields;
   }
 
   confirmUpload() {
     const uploadJson = { ...this.currentResultJson };
-    uploadJson['meta']['filename'] = this.currentFileName;
-    uploadJson['meta']['uploadDate'] = new Date().toLocaleString();
+    uploadJson.meta['filename'] = this.currentFileName;
+    uploadJson.meta['uploadDate'] = new Date().toLocaleString();
 
     // reset component fields
     this.error = null;

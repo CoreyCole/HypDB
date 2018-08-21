@@ -24,43 +24,12 @@ from FairDB.core.matching import *
 import time
 import FairDB.core.simdetec as simp
 from FairDB.utils.util import bining, get_distinct
+from Bias import BiasResource
 # import FairDB.modules.statistics.cit as test
 
 
 class BiasAteResource(object):
     """Resource for computing bias statistics"""
-
-    def parseWhere(key, value, data):
-        # print(key, value, len(data))
-        if key == 'AND':
-            key0 = next(iter(value[0]))
-            key1 = next(iter(value[1]))
-            data1 = BiasResource.parseWhere(key0, value[0][key0], data)
-            data2 = BiasResource.parseWhere(key1, value[1][key1], data1)
-            return data2
-        elif key == 'IN':
-            if isinstance(value[0], dict):
-                key = next(iter(value[0]))
-                if key == 'NOT':
-                    if not isinstance(value[1], list):
-                        value[1] = [value[1]]
-                    data = data[~data[value[0][key][0]].isin(value[1])]
-                    return data
-                else:
-                    raise ValueError('Invalid IN statement')
-            else:
-                if not isinstance(value[1], list):
-                    value[1] = [value[1]]
-                data = data[data[value[0]].isin(value[1])]
-            return data
-        elif key == '=':
-            data = data.query(value[0] + '==\'' + str(value[1]) + '\'')
-            return data
-        elif key == '!=':
-            data = data.query(value[0] + '!=\'' + str(value[1]) + '\'')
-            return data
-        else:
-            raise ValueError("Supported where operators include 'AND', 'IN', 'NOT IN', '=', and '!='  ")
 
     def on_post(self, req, resp):
         """endpoint for returning naive group by query results"""
@@ -116,7 +85,6 @@ class BiasAteResource(object):
             }
         }
 
-        print('post worked')
         resp.content_type = 'application/json'
         resp.status = falcon.HTTP_200
         resp.body = json.dumps(outJSON)

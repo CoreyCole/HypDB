@@ -178,9 +178,10 @@ def top_k_explanation(data, treatment, outcome, covariate, k=5, method='2', debu
                 explanation[item] = [agg,ranked_res1[item] , ranked_res2[item], ranked_res3[item], messure_dic[item][2]]
 
         #res = dict()
-
-        res = sorted(explanation.items(), key=lambda e: e[1][0])
+        res = sorted(explanation.items(), key=lambda e: e[1][-1], reverse=True)
+        #print('RES', res)
         res = res[:k]
+        #print('RES', res)
         for exp in res:
             item=exp[0].split(',')+exp[1]
             #print(item)

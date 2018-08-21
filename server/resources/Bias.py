@@ -23,15 +23,15 @@ import FairDB.core.simdetec as simp
 from FairDB.utils.util import bining, get_distinct
 from FairDB.modules.infotheo.info_theo import *
 
+
 class BiasResource(object):
     """Resource for computing bias statistics"""
 
-    def powerset(iterable):
+    def powerset(self, iterable):
         s = list(iterable)
         return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
-
-    def minCMI(treatment, outcome, data, cov1, cov2=[]):
+    def minCMI(self, treatment, outcome, data, cov1, cov2=[]):
         subset = []
         cache = {}
         info = Info(data)
@@ -124,8 +124,10 @@ class BiasResource(object):
             detector = FairDB(data)
 
             # FairDB parameters
-            whitelist = ['origin']
-            black = ['destcityname', 'dest', 'origincityname']
+            #whitelist = ['origin']
+            #black = ['destcityname', 'dest', 'origincityname']
+            whitelist = []
+            black = []
             fraction = 1
             shfraction = 1
             method = 'g2'
@@ -175,17 +177,18 @@ class BiasResource(object):
 
             # get most responsible attribute
             res = get_respon(data, treatment, outcome, list(set(cov1 + cov2)))
-            print(len(list(set(cov1 + cov2))))
             print(res)
 
-            #treatment.append('origin')
-            #print(treatment)
+            # treatment.append('origin')
+            # print(treatment)
             t2 = treatment.copy()
+            #if max(res, key=res.get)
             t2.append(max(res, key=res.get))
             print(t2)
             ate2 = sql.naive_groupby(data, t2[::-1], outcome)
             print(ate2)
 
+            '''
             # Adjusting for parents of the treatment for computing total effect
             # mediatpor and init not needed for total effect
             de = None
@@ -235,26 +238,33 @@ class BiasResource(object):
                     te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cmi2)
                     print('te2', te)
 
+            '''
+
             outJSON['cov_treatment'] = cov1
             outJSON['cov_outcome'] = cov2
             outJSON['responsibility'] = res
-            # print(adj_set,pur)
-            # covarite3
-            # cov=['age', 'education', 'hoursperweek', 'capitalgain']
 
-            #ate, matcheddata, adj_set,pur=sql.adjusted_groupby(data2, treatment, outcome,cov,threshould=0)
-            # print(adj_set,pur)
-
-            # print(res)
-
-            #res=get_respon2(data2,treatment, outcome,cov)
-            # print(res)
-
-            #res=get_respon2(data2,treatment, outcome,covarite1)
-            # print(res)
-
-            #X=top_k_explanation(data2, treatment, outcome, ['hoursperweek'],k=3)
-            # X[:5]
+            outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
+            print(data.columns.values, treatment, outcome, [*res])
+            for attr in set([*res]) - set(treatment) - set(outcome):
+                X=top_k_explanation(data, treatment, outcome, [attr], k=3)
+                print(X.loc[:, attr: outcome[0]])
+                #print(X)
+                columns = list(X.columns.values[:3])
+                columns.append('TotalCorrelation')
+                rows = []
+                for index, row in X.iterrows():
+                    row_data = {}
+                    for column in columns:
+                        row_data[column] = row[column]
+                    row_data['TotalCorrelation'] = row['TotalCorrelation']
+                    rows.append(row_data)
+                #print(rows)
+                #print(columns)
+                outJSON['fine_grained']['attributes'][attr] = {'columns': columns, 'rows': rows}
+            print(json.dumps(outJSON))
+                
+     
 
             #top_k_explanation(data2, treatment, outcome, ['capitalgain'],k=3)
 

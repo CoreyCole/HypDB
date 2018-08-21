@@ -7,95 +7,105 @@ import { CsvJson, HypDBDto, QueryRes, MainService } from '../../../services/main
   selector: 'hyp-pick-params',
   template: `
   <div *ngIf="csvJson">
-    <h1>Query Input</h1>
     <span class="error">{{ error }}</span>
+    <div class="spacer"></div>
     <div class="inputs">
-      <div class="input outcome">
-        <h2>Select Outcome of Interest</h2>
+      <pre>    SELECT avg(</pre>
+      <div class="auto-complete outcome">
         <mat-form-field>
-          <mat-select placeholder="column">
-            <mat-option *ngFor="let column of csvJson.meta.fields" [value]="column" (click)="selectOutcome(column)">
-              {{ column }}
-            </mat-option>
-          </mat-select>
+          <input matInput placeholder="Outcome" [matAutocomplete]="tdAuto" [(ngModel)]="currentOutcome"
+            (ngModelChange)="outcomeAttrs = filterAttributes(currentOutcome)" name="outcome">
         </mat-form-field>
-      </div>
-      <div class="input">
-        <h2>Select Subset of Data</h2>
-        <mat-form-field class="where">
-          <input matInput type="text" placeholder="Subset of data" [(ngModel)]="where" autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="input">
-        <h2>Select Grouping Attributes</h2>
+        <mat-autocomplete #tdAuto="matAutocomplete">
+          <mat-option *ngFor="let attr of outcomeAttrs" [value]="attr">
+            <span>{{ attr }}</span>
+          </mat-option>
+        </mat-autocomplete>    
+      </div>  
+      <pre>)</pre>
+      <pre>FROM {{ csvJson.filename.substring(0, csvJson.filename.length - 4) }}</pre>
+      <pre *ngIf="where">WHERE {{ where }}</pre>
+      <pre>GROUP BY</pre>
+      <div class="auto-complete treatment">
         <mat-form-field>
-          <mat-select placeholder="column">
-            <mat-option *ngFor="let column of csvJson.meta.fields" [value]="column" (click)="selectGroupingAttribute(column)">
-              {{ column }}
-            </mat-option>
-          </mat-select>
+          <input matInput placeholder="Treatment" [matAutocomplete]="tdAuto2" [(ngModel)]="currentTreatment"
+            (ngModelChange)="treatAttrs = filterAttributes(currentTreatment)" name="treatment">
         </mat-form-field>
+        <mat-autocomplete #tdAuto2="matAutocomplete">
+          <mat-option *ngFor="let attr of treatAttrs" [value]="attr">
+            <span>{{ attr }}</span>
+          </mat-option>
+        </mat-autocomplete>    
       </div>
     </div>
-    <pre>SELECT avg({{ outcome }}) </pre>
-    <pre>FROM {{ csvJson.meta.filename }}</pre>
-    <pre *ngIf="where">WHERE {{ where }}</pre>
-    <pre>GROUP BY <span *ngFor="let attribute of groupingAttributes">{{ attribute }} </span></pre>
     <div class="spacer"></div>
-    <div *ngIf="!loading">
-      <button mat-raised-button (click)="clear()">CLEAR</button>
+    <div *ngIf="!loading" class="buttons">
+      <button mat-raised-button (click)="clearQuery()">CLEAR</button>
       <button mat-raised-button color="accent" (click)="query()">QUERY</button>
     </div>
     <mat-spinner *ngIf="loading" color="accent"></mat-spinner>
+    <span *ngIf="loading" class="message">The query is being diagnosed for bias . . .</span>
   </div>
   `,
   styleUrls: ['./pick-params.component.scss']
 })
 export class PickParamsComponent implements OnChanges {
   @Input() csvJson: CsvJson;
+  @Input() where: string;
   @Output() results = new EventEmitter<QueryRes>();
-  outcome: string = null;
-  groupingAttributes: string[] = [];
-  where: string;
+  @Output() naiveAte = new EventEmitter<any[]>();
+  @Output() clear = new EventEmitter<void>();
   error: string;
   whereParser = new SqlWhereParser();
   loading = false;
+  currentTreatment: string = null;
+  currentOutcome: string = null;
+  treatAttrs: string[];
+  outcomeAttrs: string[];
 
   constructor(private main: MainService) { }
 
   ngOnChanges() {
-    this.clear();
+    this.clear.emit();
   }
 
-  clear() {
-    this.outcome = null;
-    this.groupingAttributes = [];
+  filterAttributes(val: string) {
+    return val ? this._filter(this.csvJson.fields, val) : this.csvJson.fields;
+  }
+
+  private _filter(attributes: string[], val: string) {
+    const filterValue = val.toLowerCase();
+    return attributes.filter(attribute => attribute.toLowerCase().startsWith(filterValue));
+  }
+
+  clearQuery() {
+    this.currentOutcome = null;
+    this.currentTreatment = null;
     this.where = '';
-  }
-
-  selectOutcome(column: string) {
-    this.outcome = column;
-  }
-
-  selectGroupingAttribute(column: string) {
-    this.groupingAttributes.push(column);
+    this.clear.emit();
   }
 
   query() {
-    if (!this.outcome) {
-      this.error = 'no outcomes selected!';
-    } else if (!this.groupingAttributes || this.groupingAttributes.length === 0) {
-      this.error = 'no grouping attributes selected!';
+    if (!this.currentOutcome) {
+      this.error = 'no outcome selected!';
+    } else if (!this.currentTreatment) {
+      this.error = 'no treatment selected!';
     } else {
       this.error = null;
       this.loading = true;
       const parsedWhere = this.whereParser.parse(this.where);
       const dto: HypDBDto = {
-        outcome: this.outcome,
-        groupingAttributes: this.groupingAttributes,
-        filename: this.csvJson.meta.filename,
+        outcome: this.currentOutcome,
+        // groupingAttributes: [this.treatment, ...this.groupingAttributes],
+        groupingAttributes: [this.currentTreatment],
+        filename: this.csvJson.filename,
         where: parsedWhere
       };
+      this.main.queryNaiveAte(dto)
+        .subscribe(data => {
+          console.log(data);
+          this.naiveAte.emit(data);
+        });
       this.main.queryHypDb(dto)
         .subscribe(data => {
           console.log(data);

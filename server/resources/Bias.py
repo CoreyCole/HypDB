@@ -62,7 +62,6 @@ class BiasResource(object):
         else:
             raise ValueError("Supported where operators include 'AND', 'IN', 'NOT IN', '=', and '!='  ")
 
-
     def on_post(self, req, resp):
         # try:
 
@@ -72,20 +71,7 @@ class BiasResource(object):
             params = json.load(req.bounded_stream)
             # print(json.dumps(params))
             filename = params['filename']
-            # Convert json of database into csv
-            with open('./uploads/' + filename + '.json', 'rb') as f:
-                data = json.load(f)
-                #print(len(data['data']))
-                #data = pd.read_json(data)
-                #print(reprlib.repr(data['data']))
-                with open('./tmp/' + filename, 'w') as g:
-                    fieldnames = data['data'][0].keys()
-                    writer = csv.DictWriter(g, fieldnames=fieldnames)
-                    writer.writeheader()
-                    for line in data['data']:
-                        if len(line) == len(fieldnames):
-                            writer.writerow(line)
-            # Create data
+
             data = read_from_csv('./tmp/' + filename)
             print('data size: ', len(data))
 
@@ -141,15 +127,21 @@ class BiasResource(object):
             k = 3
 
             # Naive group-by query, followd by a conditional independance test
-            grouping_attributes = []
-            ate_list = []
-            for treat in treatment:
-                grouping_attributes.append(treat)
-                ate = sql.naive_groupby(data, grouping_attributes[::-1], outcome)
-                ate_step = sql.plot(ate, grouping_attributes, outcome)
-                ate_list.append(ate_step)
-            outJSON = {'ate': ate_list}
+            ate = sql.naive_groupby(data, treatment, outcome)
+            ate_data = sql.plot(ate, treatment, outcome)
+            outJSON = {'naiveAte': ate_data}
             print(outJSON)
+
+            # old code for getting ate for each grouping attribute
+            # going to need to do the reverse array trick again once we know the most biased covariate
+            # grouping_attributes = []
+            # ate_list = []
+            # for treat in treatment:
+            #     grouping_attributes.append(treat)
+            #     ate = sql.naive_groupby(data, grouping_attributes[::-1], outcome)
+            #     ate_step = sql.plot(ate, grouping_attributes, outcome)
+            #     ate_list.append(ate_step)
+            # outJSON = {'ate': ate_list}
 
             # Computing parents of the treatment
             start = time.time()

@@ -58,15 +58,14 @@ export class CsvUploadComponent implements OnInit {
     this.currentFileName = file.name;
     this.papa.parse(file, {
       header: true,
-      complete: parsedResult => this.handleParsedJson(parsedResult as CsvJson),
+      complete: parsedResult => this.handleParsedJson(parsedResult.meta as CsvJson),
       error: () => this.error = 'csv error'
     });
   }
 
   handleParsedJson(resultJson: CsvJson) {
-    if (resultJson.errors) console.dir(resultJson.errors)
     this.currentResultJson = resultJson;
-    this.confirmColumns = resultJson.meta.fields;
+    this.confirmColumns = resultJson.fields;
   }
 
   confirmUpload() {

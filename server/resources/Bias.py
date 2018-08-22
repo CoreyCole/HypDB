@@ -125,10 +125,10 @@ class BiasResource(object):
 
             # FairDB parameters
 
-            #whitelist = ['origin']
-            #black = ['destcityname', 'dest', 'origincityname']
-            whitelist = []
-            black = []
+            whitelist = ['origin']
+            black = ['destcityname', 'dest', 'origincityname']
+            # whitelist = []
+            # black = []
             fraction = 1
             shfraction = 1
             method = 'g2'
@@ -252,13 +252,15 @@ class BiasResource(object):
                 print(X.loc[:, attr: outcome[0]])
                 #print(X)
                 columns = list(X.columns.values[:3])
-                columns.append('TotalCorrelation')
+                columns.append('totalCorrelation')
                 rows = []
                 for index, row in X.iterrows():
                     row_data = {}
                     for column in columns:
+                        if (column == 'totalCorrelation'):
+                            column = 'TotalCorrelation'
                         row_data[column] = row[column]
-                    row_data['TotalCorrelation'] = row['TotalCorrelation']
+                    row_data['totalCorrelation'] = str(row['TotalCorrelation'])
                     rows.append(row_data)
                 #print(rows)
                 #print(columns)

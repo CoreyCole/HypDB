@@ -14,3 +14,10 @@ div.chart-cards {
     max-width: 50%;
   }
 }
+
+mat-card.sql {
+  margin: 16px;
+  pre.sql {
+    font-size: 14pt;
+  }
+}

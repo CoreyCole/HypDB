@@ -70,7 +70,7 @@ export class GraphComponent implements OnChanges {
   nodes: GraphNode[];
   error: string;
 
-  view: any[] = [900, 200];
+  view: any[] = [1000, 1000];
   curve = shape.curveLinear; // or some other function from d3-shape
   colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']

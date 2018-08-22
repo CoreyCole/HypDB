@@ -15,9 +15,18 @@ div.chart-cards {
   }
 }
 
+div.datatable-cards {
+  display: flex;
+  flex-direction: row;
+}
+
 mat-card.sql {
   margin: 16px;
   pre.sql {
     font-size: 14pt;
   }
+}
+
+mat-card.query-card {
+  margin: 16px;
 }

@@ -12,8 +12,10 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
     <button mat-raised-button color="accent" routerLink="/upload">UPLOAD CSV FILE</button>
   </mat-toolbar>
   <div class="container">
-    <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
-    <span class="error">{{ error }}</span>
+    <mat-card class="query-card">
+      <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
+      <span class="error">{{ error }}</span>
+    </mat-card>
     <div class="chart-cards">
       <hyp-naive-group-by-chart *ngIf="!error && naiveAteData" [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
       <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
@@ -25,8 +27,10 @@ SELECT WITH BLOCKS ... (dynamic weighted avg query in progress)
         </pre>
       </mat-card>
     </div>
-    <hyp-coarse-grained *ngIf="graph" [responsibility]="responsibility"></hyp-coarse-grained>
-    <hyp-fine-grained *ngIf="graph" [fineGrained]="fineGrained"></hyp-fine-grained>
+    <div class="datatable-cards">
+      <hyp-coarse-grained *ngIf="graph" [responsibility]="responsibility"></hyp-coarse-grained>
+      <hyp-fine-grained *ngIf="graph" [fineGrained]="fineGrained"></hyp-fine-grained>
+    </div>
     <div class="weighted-avg-query">
     </div>
     <h2 *ngIf="graph">Causal Graph</h2>

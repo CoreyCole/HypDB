@@ -20,12 +20,12 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       <hyp-responsible-group-by-chart *ngIf="graph" [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
     </div>
     <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
+    <pre *ngIf="graph">
+SELECT WITH BLOCKS ... (dynamic weighted avg query in progress)
+    </pre>
     <hyp-coarse-grained *ngIf="graph" [responsibility]="responsibility"></hyp-coarse-grained>
     <hyp-fine-grained *ngIf="graph" [fineGrained]="fineGrained"></hyp-fine-grained>
     <div class="weighted-avg-query">
-    <pre *ngIf="graph">
-SELECT WITH BLOCKS ...
-    </pre>
     </div>
     <h2 *ngIf="graph">Causal Graph</h2>
     <hyp-graph [graph]="graph"></hyp-graph>

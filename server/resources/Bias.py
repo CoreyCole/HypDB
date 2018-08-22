@@ -125,10 +125,12 @@ class BiasResource(object):
 
             # FairDB parameters
 
-            whitelist = ['origin']
-            black = ['destcityname', 'dest', 'origincityname']
-            # whitelist = []
-            # black = []
+
+            whitelist = []
+            black = []
+            if filename == 'finpe2.csv':
+                whitelist = ['origin']
+                black = ['destcityname', 'dest', 'origincityname']
             fraction = 1
             shfraction = 1
             method = 'g2'

@@ -197,11 +197,10 @@ class BiasResource(object):
                 outJSON['responsibleAte'] = ate_data2
 
 
-            '''
             # Adjusting for parents of the treatment for computing total effect
             # mediatpor and init not needed for total effect
             de = None
-
+        
             # init for direct effect
             # pass list to iloc to guarantee dataframe
             highestGroup = ate.iloc[[ate[outcome[0]].idxmax()]]
@@ -211,6 +210,19 @@ class BiasResource(object):
             if par1 and par2:
                 de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1, par2, init)
                 print('de1', de)
+                outJSON['weightedDirectEffect'] = {}
+                columns = list(de.columns.values)
+                rows = []
+                for index, row in de.iterrows():
+                    row_data = {}
+                    for column in columns:
+                        row_data[column] = row[column]
+                    rows.append(row_data)
+                outJSON['weightedDirectEffect']['rows'] = rows
+                outJSON['weightedDirectEffect']['columns'] = columns
+            
+            
+            '''
 
             cmi1 = BiasResource.minCMI(treatment, outcome, data, cov1, cov2)
             print('cmi1 = ', cmi1)
@@ -230,9 +242,19 @@ class BiasResource(object):
                     print('de2', de)
 
             # total effect
-            if par1:
-                te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1)
-                print('te1', te)
+            # if par1:
+            #     te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1)
+            #     print('te1', te)
+            #     outJSON['weightedTotalEffect'] = {}
+            #     columns = list(te.columns.values)
+            #     rows = []
+            #     for index, row in te.iterrows():
+            #         row_data = {}
+            #         for column in columns:
+            #             row_data[column] = row[column]
+            #         rows.append(row_data)
+            #     outJSON['weightedTotalEffect']['rows'] = rows
+            #     outJSON['weightedTotalEffect']['columns'] = columns
 
             cmi2 = BiasResource.minCMI(treatment, outcome, data, cov1)
             print('cmi2 = ', cmi2)

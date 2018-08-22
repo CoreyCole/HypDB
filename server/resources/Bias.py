@@ -141,6 +141,7 @@ class BiasResource(object):
 
             # Naive group-by query, followd by a conditional independance test
             ate = sql.naive_groupby(data, treatment, outcome)
+            print(ate)
             ate_data = sql.plot(ate, treatment, outcome)
             outJSON = {'naiveAte': ate_data}
             print(outJSON)
@@ -180,15 +181,21 @@ class BiasResource(object):
             res = get_respon(data, treatment, outcome, list(set(cov1 + cov2)))
             print(res)
 
-            # treatment.append('origin')
-            # print(treatment)
             t2 = treatment.copy()
-            #if max(res, key=res.get)
-            t2.append(max(res, key=res.get))
-            print(t2)
-            ate2 = sql.naive_groupby(data, t2[::-1], outcome)
-            ate_data2 = sql.plot(ate2, t2, outcome)
-            outJSON['responsibleAte'] = ate_data2
+            #print(t2)
+            #res = {'car_accident' : 'car_accident'}
+
+            # remove outcome and treatment
+            newRes = {k:v for (k,v) in res.items() if k != outcome[0] and k != treatment[0]}
+            #print(newRes)
+            if newRes:
+                t2.append(max(newRes, key=newRes.get))
+                print('t2', t2)
+                ate2 = sql.naive_groupby(data, t2[::-1], outcome)
+                print(ate2)
+                ate_data2 = sql.plot(ate2, t2, outcome)
+                outJSON['responsibleAte'] = ate_data2
+
 
             '''
             # Adjusting for parents of the treatment for computing total effect

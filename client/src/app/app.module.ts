@@ -32,6 +32,9 @@ import { NgxChartsModule, BarChartModule } from '@swimlane/ngx-charts';
 // ngx dag
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 
+// ngx datatable
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+
 // csv parser
 import { PapaParseModule } from 'ngx-papaparse';
 
@@ -48,6 +51,8 @@ import { GraphComponent } from './components/graph/graph.component';
 import { UploadCsvPageComponent } from './pages/upload-csv-page/upload-csv-page.component';
 import { NaiveGroupByChartComponent } from './components/naive-group-by-chart/naive-group-by-chart.component';
 import { ResponsibleGroupByChartComponent } from './components/responsible-group-by-chart/responsible-group-by-chart.component';
+import { FineGrainedComponent } from './components/fine-grained/fine-grained.component';
+import { CoarseGrainedComponent } from './components/coarse-grained/coarse-grained.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +69,8 @@ import { ResponsibleGroupByChartComponent } from './components/responsible-group
     GraphComponent,
     NaiveGroupByChartComponent,
     ResponsibleGroupByChartComponent,
+    FineGrainedComponent,
+    CoarseGrainedComponent,
   ],
   imports: [
     BrowserModule,
@@ -94,6 +101,8 @@ import { ResponsibleGroupByChartComponent } from './components/responsible-group
     BarChartModule,
     // ngx dag
     NgxGraphModule,
+    // ngx datatable
+    NgxDatatableModule,
     // csv parser
     PapaParseModule
   ],

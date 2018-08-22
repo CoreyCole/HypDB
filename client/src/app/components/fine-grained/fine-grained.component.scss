@@ -1,0 +1,20 @@
+div.datatable {
+    padding: 16px;
+}
+
+mat-card {
+    margin: 16px;
+    padding: 0;
+    padding-bottom: 16px;
+    overflow: auto;
+    max-width: 95%;
+}
+
+mat-toolbar {
+    display: flex;
+    flex-direction: row;
+}
+
+.select-span > mat-select {
+    max-width: 200px;
+}

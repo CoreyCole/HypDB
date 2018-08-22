@@ -20,10 +20,12 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       <hyp-responsible-group-by-chart *ngIf="graph" [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
     </div>
     <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
+    <hyp-coarse-grained *ngIf="graph" [responsibility]="responsibility"></hyp-coarse-grained>
+    <hyp-fine-grained *ngIf="graph" [fineGrained]="fineGrained"></hyp-fine-grained>
     <div class="weighted-avg-query">
-<pre *ngIf="graph">
+    <pre *ngIf="graph">
 SELECT WITH BLOCKS ...
-</pre>
+    </pre>
     </div>
     <h2 *ngIf="graph">Causal Graph</h2>
     <hyp-graph [graph]="graph"></hyp-graph>
@@ -36,6 +38,8 @@ export class HomePageComponent implements OnInit {
   naiveAteData: any[] = null;
   responsibleAteData: any[] = null;
   mostResponsible: string = null;
+  fineGrained: any;
+  responsibility: { string: number };
   naiveGraphData: GraphData = null;
   graph: GraphData = null;
   error: string = null;
@@ -69,6 +73,8 @@ export class HomePageComponent implements OnInit {
     const covariates = Object.keys(data['responsibility']);
     this.mostResponsible = covariates.reduce((prev, curr) =>
       data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, covariates[0]);
+    this.fineGrained = data['fine_grained'];
+    this.responsibility = data['responsibility'];
     this.graph = data['graph'];
   }
 
@@ -77,6 +83,8 @@ export class HomePageComponent implements OnInit {
     this.naiveGraphData = null;
     this.responsibleAteData = null;
     this.mostResponsible = null;
+    this.responsibility = null
+    this.fineGrained = null;
     this.ateData = null;
     this.graph = null;
     this.error = null;

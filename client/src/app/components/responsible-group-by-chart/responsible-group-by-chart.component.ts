@@ -1,43 +1,43 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, OnChanges, Input } from '@angular/core';
 import { GraphData } from '../../services/main.service';
 
 @Component({
-  selector: 'hyp-naive-group-by-chart',
+  selector: 'hyp-responsible-group-by-chart',
   template: `
   <mat-card>
-    <div class="chart">
-      <h2>Naive Group By Results</h2>
-      <ngx-charts-bar-vertical
+    <div class="chart" *ngIf="data && data.length > 0">
+      <h2>Further grouping by {{ treatment }} and {{ mostResponsible }}</h2>
+      <ngx-charts-bar-vertical-2d
         [view]="view"
         [scheme]="colorScheme"
         [results]="data"
         [xAxis]="true"
         [yAxis]="true"
-        [legend]="false"
+        [legend]="true"
         [showXAxisLabel]="true"
         [showYAxisLabel]="true"
-        xAxisLabel="Treatment ({{ treatment }})"
+        xAxisLabel="Treatment ({{ treatment }}) Further grouped by {{ mostResponsible }}"
         yAxisLabel="Outcome ({{ outcome }})">
-      </ngx-charts-bar-vertical>
+      </ngx-charts-bar-vertical-2d>
     </div>
   </mat-card>
   `,
-  styleUrls: ['./naive-group-by-chart.component.scss']
+  styleUrls: ['./responsible-group-by-chart.component.scss']
 })
-export class NaiveGroupByChartComponent implements OnChanges {
+export class ResponsibleGroupByChartComponent implements OnChanges {
   @Input() data: any[];
   @Input() graphData: GraphData;
+  @Input() mostResponsible: string;
   public view: any[] = [400, 400];
   public colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
-  public treatment: string;
-  public outcome: string;
+  treatment: string = null;
+  outcome: string = null;
 
   constructor() { }
 
   ngOnChanges() {
-    console.log(this.data);
     this.treatment = this.graphData.correlation.treatment[0];
     this.outcome = this.graphData.correlation.outcome[0];
   }

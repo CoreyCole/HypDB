@@ -6,3 +6,11 @@
   color: red;
   font-size: 16pt;
 }
+
+div.chart-cards {
+  display: flex;
+  flex-direction: row;
+  mat-card {
+    max-width: 45%;
+  }
+}

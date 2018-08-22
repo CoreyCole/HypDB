@@ -47,6 +47,7 @@ import { GroupByChartsComponent } from './components/group-by-charts/group-by-ch
 import { GraphComponent } from './components/graph/graph.component';
 import { UploadCsvPageComponent } from './pages/upload-csv-page/upload-csv-page.component';
 import { NaiveGroupByChartComponent } from './components/naive-group-by-chart/naive-group-by-chart.component';
+import { ResponsibleGroupByChartComponent } from './components/responsible-group-by-chart/responsible-group-by-chart.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { NaiveGroupByChartComponent } from './components/naive-group-by-chart/na
     GroupByChartsComponent,
     GraphComponent,
     NaiveGroupByChartComponent,
+    ResponsibleGroupByChartComponent,
   ],
   imports: [
     BrowserModule,

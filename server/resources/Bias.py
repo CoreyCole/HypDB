@@ -94,7 +94,7 @@ class BiasResource(object):
 
             # Process request
             params = json.load(req.bounded_stream)
-            # print(json.dumps(params))
+            print(json.dumps(params))
             filename = params['filename']
 
             data = read_from_csv('./tmp/' + filename)
@@ -189,6 +189,7 @@ class BiasResource(object):
             t2.append(max(res, key=res.get))
             print(t2)
             ate2 = sql.naive_groupby(data, t2[::-1], outcome)
+            print(ate2)
             ate_data2 = sql.plot(ate2, t2, outcome)
             outJSON['responsibleAte'] = ate_data2
 
@@ -196,6 +197,7 @@ class BiasResource(object):
             # Adjusting for parents of the treatment for computing total effect
             # mediatpor and init not needed for total effect
             de = None
+
 
             # init for direct effect
             # pass list to iloc to guarantee dataframe
@@ -207,6 +209,7 @@ class BiasResource(object):
                 de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1, par2, init)
                 print('de1', de)
 
+            print(data)
             cmi1 = BiasResource.minCMI(treatment, outcome, data, cov1, cov2)
             print('cmi1 = ', cmi1)
             if cmi1:
@@ -223,6 +226,7 @@ class BiasResource(object):
                 if alt1 and alt2:
                     de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, alt1, alt2, init)
                     print('de2', de)
+
 
             # total effect
             if par1:
@@ -243,39 +247,90 @@ class BiasResource(object):
                     print('te2', te)
             '''
 
-            outJSON['cov_treatment'] = cov1
-            outJSON['cov_outcome'] = cov2
-            outJSON['responsibility'] = res
+            # outJSON['cov_treatment'] = cov1
+            # outJSON['cov_outcome'] = cov2
+            # outJSON['responsibility'] = res
 
-            outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
-            print(data.columns.values, treatment, outcome, [*res])
-            for attr in set([*res]) - set(treatment) - set(outcome):
-                X=top_k_explanation(data, treatment, outcome, [attr], k=3)
-                print(X.loc[:, attr: outcome[0]])
-                #print(X)
-                columns = list(X.columns.values[:3])
-                columns.append('totalCorrelation')
-                rows = []
-                for index, row in X.iterrows():
-                    row_data = {}
-                    for column in columns:
-                        if (column == 'totalCorrelation'):
-                            column = 'TotalCorrelation'
-                        row_data[column] = row[column]
-                    row_data['totalCorrelation'] = str(row['TotalCorrelation'])
-                    rows.append(row_data)
-                #print(rows)
-                #print(columns)
-                outJSON['fine_grained']['attributes'][attr] = {'columns': columns, 'rows': rows}
-            print(json.dumps(outJSON))
+            # outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
+            # print(data.columns.values, treatment, outcome, [*res])
+            # for attr in set([*res]) - set(treatment) - set(outcome):
+            #     X=top_k_explanation(data, treatment, outcome, [attr], k=3)
+            #     print(X.loc[:, attr: outcome[0]])
+            #     #print(X)
+            #     columns = list(X.columns.values[:3])
+            #     columns.append('TotalCorrelation')
+            #     rows = []
+            #     for index, row in X.iterrows():
+            #         row_data = {}
+            #         for column in columns:
+            #             row_data[column] = row[column]
+            #         row_data['TotalCorrelation'] = row['TotalCorrelation']
+            #         rows.append(row_data)
+            #     #print(rows)
+            #     #print(columns)
+            #     outJSON['fine_grained']['attributes'][attr] = {'columns': columns, 'rows': rows}
+            # print(json.dumps(outJSON))
+
+
+            # REMOVE THIS AFTER COREY's BUGFIX
+            params['whereString'] = "Carrier in ('AA','UA') AND Airport in ('COS','MFE','MTJ','ROC')"
                 
-     
+            # BLOCKS
+            outJSON['rewritten-sql'] = []
+            outJSON['rewritten-sql'].append('WITH Blocks AS')
+            outJSON['rewritten-sql'].append('  (')
+            select = '    SELECT '
+            select += treatment[0]
+            for attribute in list(set(cov1 + cov2)):
+                select += ', ' + attribute
+            select += ', avg(' + outcome[0] + ') AS avge' 
+            outJSON['rewritten-sql'].append(select)
+            outJSON['rewritten-sql'].append('    FROM ' + params['filename'][:-4])
+            if params['whereString']:
+                outJSON['rewritten-sql'].append('    WHERE ' + params['whereString'])
+            group = '    GROUP BY '
+            group += treatment[0]
+            for attribute in list(set(cov1 + cov2)):
+                group += ', ' + attribute
+            outJSON['rewritten-sql'].append(group)
+            outJSON['rewritten-sql'].append('  ),')
 
-            #top_k_explanation(data2, treatment, outcome, ['capitalgain'],k=3)
+            # WEIGHTS
+            outJSON['rewritten-sql'].append('Weights AS')
+            outJSON['rewritten-sql'].append('  (')
+            select = '    SELECT '
+            for attribute in list(set(cov1 + cov2)):
+                select += attribute + ', '
+            select += 'count(*) / '
+            outJSON['rewritten-sql'].append(select)
 
-            #top_k_explanation(data2, treatment, outcome, ['relationship'],k=3)
+            outJSON['rewritten-sql'].append('      (')
+            outJSON['rewritten-sql'].append('        SELECT count(*)')
+            outJSON['rewritten-sql'].append('        FROM ' + params['filename'][:-4])
+            if params['whereString']:
+                outJSON['rewritten-sql'].append('        WHERE ' + params['whereString'])
+            outJSON['rewritten-sql'].append('      ) AS W')
+            outJSON['rewritten-sql'].append('    FROM ' + params['filename'][:-4])
+            if params['whereString']:
+                outJSON['rewritten-sql'].append('    WHERE ' + params['whereString'])
+            group = '    GROUP BY '
+            for attribute in list(set(cov1 + cov2)):
+                group += attribute + ', '
+            if group[-2:] == ', ':
+                group = group[:-2]
+            outJSON['rewritten-sql'].append(group)
+            outJSON['rewritten-sql'].append('    HAVING count(DISTINCT ' + treatment[0] + ') = 2')
+            outJSON['rewritten-sql'].append('  )')
 
-            #top_k_explanation(data2, treatment, outcome, ['occupation'])
+            outJSON['rewritten-sql'].append('SELECT ' + treatment[0] + ', sum(avge * W)')
+            outJSON['rewritten-sql'].append('FROM Blocks, Weights')
+            outJSON['rewritten-sql'].append('GROUP BY ' + treatment[0])
+            where = 'WHERE '
+            for attribute in list(set(cov1 + cov2)):
+                where += 'Blocks.' + attribute + ' = Weights.' + attribute + ' AND '
+            if where[-5:] == ' AND ':
+                where = where[:-5]
+            outJSON['rewritten-sql'].append(where)
 
             # Temporary filler return
             print('post worked')

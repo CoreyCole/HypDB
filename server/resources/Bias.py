@@ -327,12 +327,17 @@ class BiasResource(object):
             outJSON['rewritten-sql'].append('SELECT ' + treatment[0] + ', sum(avge * W)')
             outJSON['rewritten-sql'].append('FROM Blocks, Weights')
             outJSON['rewritten-sql'].append('GROUP BY ' + treatment[0])
-            where = 'WHERE '
+            where = 'WHERE Blocks.'
             for attribute in list(set(cov1 + cov2)):
-                where += 'Blocks.' + attribute + ' = Weights.' + attribute + ' AND '
-            if where[-5:] == ' AND ':
-                where = where[:-5]
-            outJSON['rewritten-sql'].append(where)
+                where += attribute + ' = Weights.' + attribute + ' AND '
+                outJSON['rewritten-sql'].append(where)
+                where = '  Blocks.'
+
+            if outJSON['rewritten-sql'][-1][-5:] == ' AND ':
+                outJSON['rewritten-sql'][-1] = outJSON['rewritten-sql'][-1][:-5]
+
+            for line in outJSON['rewritten-sql']:
+                print(line)
 
             # Temporary filler return
             print('post worked')

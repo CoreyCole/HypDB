@@ -6,3 +6,27 @@
   color: red;
   font-size: 16pt;
 }
+
+div.chart-cards {
+  display: flex;
+  flex-direction: row;
+  mat-card {
+    max-width: 50%;
+  }
+}
+
+div.datatable-cards {
+  display: flex;
+  flex-direction: row;
+}
+
+mat-card.sql {
+  margin: 16px;
+  pre.sql {
+    font-size: 14pt;
+  }
+}
+
+mat-card.query-card {
+  margin: 16px;
+}

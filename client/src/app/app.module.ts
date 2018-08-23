@@ -32,6 +32,9 @@ import { NgxChartsModule, BarChartModule } from '@swimlane/ngx-charts';
 // ngx dag
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 
+// ngx datatable
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+
 // csv parser
 import { PapaParseModule } from 'ngx-papaparse';
 
@@ -47,6 +50,9 @@ import { GroupByChartsComponent } from './components/group-by-charts/group-by-ch
 import { GraphComponent } from './components/graph/graph.component';
 import { UploadCsvPageComponent } from './pages/upload-csv-page/upload-csv-page.component';
 import { NaiveGroupByChartComponent } from './components/naive-group-by-chart/naive-group-by-chart.component';
+import { ResponsibleGroupByChartComponent } from './components/responsible-group-by-chart/responsible-group-by-chart.component';
+import { FineGrainedComponent } from './components/fine-grained/fine-grained.component';
+import { CoarseGrainedComponent } from './components/coarse-grained/coarse-grained.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +68,9 @@ import { NaiveGroupByChartComponent } from './components/naive-group-by-chart/na
     GroupByChartsComponent,
     GraphComponent,
     NaiveGroupByChartComponent,
+    ResponsibleGroupByChartComponent,
+    FineGrainedComponent,
+    CoarseGrainedComponent,
   ],
   imports: [
     BrowserModule,
@@ -92,6 +101,8 @@ import { NaiveGroupByChartComponent } from './components/naive-group-by-chart/na
     BarChartModule,
     // ngx dag
     NgxGraphModule,
+    // ngx datatable
+    NgxDatatableModule,
     // csv parser
     PapaParseModule
   ],

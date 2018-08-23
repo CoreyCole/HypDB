@@ -12,15 +12,26 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
     <button mat-raised-button color="accent" routerLink="/upload">UPLOAD CSV FILE</button>
   </mat-toolbar>
   <div class="container">
-    <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
-    <span class="error">{{ error }}</span>
-    <hyp-naive-group-by-chart *ngIf="!error && naiveAteData" [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
-    <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
-    <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
+    <mat-card class="query-card">
+      <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
+      <span class="error">{{ error }}</span>
+    </mat-card>
+    <div class="chart-cards">
+      <hyp-naive-group-by-chart *ngIf="!error && naiveAteData" [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
+      <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
+      <hyp-responsible-group-by-chart *ngIf="graph" [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+      <mat-card *ngIf="graph" class="sql">
+        <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
+        <pre *ngIf="graph" class="sql">
+SELECT WITH BLOCKS ... (dynamic weighted avg query in progress)
+        </pre>
+      </mat-card>
+    </div>
+    <div class="datatable-cards">
+      <hyp-coarse-grained *ngIf="graph" [responsibility]="responsibility"></hyp-coarse-grained>
+      <hyp-fine-grained *ngIf="graph" [fineGrained]="fineGrained"></hyp-fine-grained>
+    </div>
     <div class="weighted-avg-query">
-<pre *ngIf="graph">
-SELECT WITH BLOCKS ...
-</pre>
     </div>
     <h2 *ngIf="graph">Causal Graph</h2>
     <hyp-graph [graph]="graph"></hyp-graph>
@@ -31,6 +42,10 @@ SELECT WITH BLOCKS ...
 export class HomePageComponent implements OnInit {
   ateData: any[] = null;
   naiveAteData: any[] = null;
+  responsibleAteData: any[] = null;
+  mostResponsible: string = null;
+  fineGrained: any;
+  responsibility: { string: number };
   naiveGraphData: GraphData = null;
   graph: GraphData = null;
   error: string = null;
@@ -56,18 +71,26 @@ export class HomePageComponent implements OnInit {
   }
 
   displayResults(data: QueryRes) {
-    if (!data['naiveAte'] || data['naiveAte'].length === 0) {
+    if (!data['naiveAte'] || data['naiveAte'].length === 0 || !data['responsibleAte']) {
       return this.error = 'Query error!';
     }
     this.error = null;
-    // this.naiveAteData = this.parseAte(data['naiveAte']);
-    // const ate2 = data['ate'][1] ? this.parseAteWithGroupingAttribute(data['ate'][1]) : null;
+    this.responsibleAteData = this.parseAteWithGroupingAttribute(data['responsibleAte']);
+    const covariates = Object.keys(data['responsibility']);
+    this.mostResponsible = covariates.reduce((prev, curr) =>
+      data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, covariates[0]);
+    this.fineGrained = data['fine_grained'];
+    this.responsibility = data['responsibility'];
     this.graph = data['graph'];
   }
 
   fileChanged() {
     this.naiveAteData = null;
     this.naiveGraphData = null;
+    this.responsibleAteData = null;
+    this.mostResponsible = null;
+    this.responsibility = null
+    this.fineGrained = null;
     this.ateData = null;
     this.graph = null;
     this.error = null;

@@ -141,6 +141,7 @@ class BiasResource(object):
 
             # Naive group-by query, followd by a conditional independance test
             ate = sql.naive_groupby(data, treatment, outcome)
+            print(ate)
             ate_data = sql.plot(ate, treatment, outcome)
             outJSON = {'naiveAte': ate_data}
             print(outJSON)
@@ -180,21 +181,26 @@ class BiasResource(object):
             res = get_respon(data, treatment, outcome, list(set(cov1 + cov2)))
             print(res)
 
-            # treatment.append('origin')
-            # print(treatment)
             t2 = treatment.copy()
-            #if max(res, key=res.get)
-            t2.append(max(res, key=res.get))
-            print(t2)
-            ate2 = sql.naive_groupby(data, t2[::-1], outcome)
-            ate_data2 = sql.plot(ate2, t2, outcome)
-            outJSON['responsibleAte'] = ate_data2
+            #print(t2)
+            #res = {'car_accident' : 'car_accident'}
 
-            '''
+            # remove outcome and treatment
+            newRes = {k:v for (k,v) in res.items() if k != outcome[0] and k != treatment[0]}
+            #print(newRes)
+            if newRes:
+                t2.append(max(newRes, key=newRes.get))
+                print('t2', t2)
+                ate2 = sql.naive_groupby(data, t2[::-1], outcome)
+                print(ate2)
+                ate_data2 = sql.plot(ate2, t2, outcome)
+                outJSON['responsibleAte'] = ate_data2
+
+
             # Adjusting for parents of the treatment for computing total effect
             # mediatpor and init not needed for total effect
             de = None
-
+        
             # init for direct effect
             # pass list to iloc to guarantee dataframe
             highestGroup = ate.iloc[[ate[outcome[0]].idxmax()]]
@@ -204,6 +210,19 @@ class BiasResource(object):
             if par1 and par2:
                 de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1, par2, init)
                 print('de1', de)
+                outJSON['weightedDirectEffect'] = {}
+                columns = list(de.columns.values)
+                rows = []
+                for index, row in de.iterrows():
+                    row_data = {}
+                    for column in columns:
+                        row_data[column] = row[column]
+                    rows.append(row_data)
+                outJSON['weightedDirectEffect']['rows'] = rows
+                outJSON['weightedDirectEffect']['columns'] = columns
+            
+            
+            '''
 
             cmi1 = BiasResource.minCMI(treatment, outcome, data, cov1, cov2)
             print('cmi1 = ', cmi1)
@@ -223,9 +242,19 @@ class BiasResource(object):
                     print('de2', de)
 
             # total effect
-            if par1:
-                te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1)
-                print('te1', te)
+            # if par1:
+            #     te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1)
+            #     print('te1', te)
+            #     outJSON['weightedTotalEffect'] = {}
+            #     columns = list(te.columns.values)
+            #     rows = []
+            #     for index, row in te.iterrows():
+            #         row_data = {}
+            #         for column in columns:
+            #             row_data[column] = row[column]
+            #         rows.append(row_data)
+            #     outJSON['weightedTotalEffect']['rows'] = rows
+            #     outJSON['weightedTotalEffect']['columns'] = columns
 
             cmi2 = BiasResource.minCMI(treatment, outcome, data, cov1)
             print('cmi2 = ', cmi2)

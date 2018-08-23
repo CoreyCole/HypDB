@@ -20,13 +20,13 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       <hyp-naive-group-by-chart *ngIf="!error && naiveAteData" [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
       <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
       <hyp-responsible-group-by-chart *ngIf="graph" [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
-      <mat-card *ngIf="graph" class="sql">
-        <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
-        <div *ngIf="graph" class="sql">
-<pre *ngFor="let line of rewrittenSql">{{ line }}</pre>
-        </div>
-      </mat-card>
     </div>
+    <mat-card *ngIf="graph" class="sql">
+      <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
+      <div *ngIf="graph" class="sql">
+<pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
+      </div>
+    </mat-card>
     <div class="datatable-cards">
       <hyp-coarse-grained *ngIf="graph" [responsibility]="responsibility"></hyp-coarse-grained>
       <hyp-fine-grained *ngIf="graph" [fineGrained]="fineGrained"></hyp-fine-grained>

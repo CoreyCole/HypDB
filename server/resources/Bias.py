@@ -247,33 +247,35 @@ class BiasResource(object):
                     print('te2', te)
             '''
 
-            # outJSON['cov_treatment'] = cov1
-            # outJSON['cov_outcome'] = cov2
-            # outJSON['responsibility'] = res
+            outJSON['cov_treatment'] = cov1
+            outJSON['cov_outcome'] = cov2
+            outJSON['responsibility'] = res
 
-            # outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
-            # print(data.columns.values, treatment, outcome, [*res])
-            # for attr in set([*res]) - set(treatment) - set(outcome):
-            #     X=top_k_explanation(data, treatment, outcome, [attr], k=3)
-            #     print(X.loc[:, attr: outcome[0]])
-            #     #print(X)
-            #     columns = list(X.columns.values[:3])
-            #     columns.append('TotalCorrelation')
-            #     rows = []
-            #     for index, row in X.iterrows():
-            #         row_data = {}
-            #         for column in columns:
-            #             row_data[column] = row[column]
-            #         row_data['TotalCorrelation'] = row['TotalCorrelation']
-            #         rows.append(row_data)
-            #     #print(rows)
-            #     #print(columns)
-            #     outJSON['fine_grained']['attributes'][attr] = {'columns': columns, 'rows': rows}
-            # print(json.dumps(outJSON))
+            outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
+            print(data.columns.values, treatment, outcome, [*res])
+            for attr in set([*res]) - set(treatment) - set(outcome):
+                X=top_k_explanation(data, treatment, outcome, [attr], k=3)
+                print(X.loc[:, attr: outcome[0]])
+                #print(X)
+                columns = list(X.columns.values[:3])
+                columns.append('totalCorrelation')
+                rows = []
+                for index, row in X.iterrows():
+                    row_data = {}
+                    for column in columns:
+                        if (column == 'totalCorrelation'):
+                            column = 'TotalCorrelation'
+                        row_data[column] = row[column]
+                    row_data['totalCorrelation'] = str(row['TotalCorrelation'])
+                    rows.append(row_data)
+                #print(rows)
+                #print(columns)
+                outJSON['fine_grained']['attributes'][attr] = {'columns': columns, 'rows': rows}
+            print(json.dumps(outJSON))
 
 
             # REMOVE THIS AFTER COREY's BUGFIX
-            params['whereString'] = "Carrier in ('AA','UA') AND Airport in ('COS','MFE','MTJ','ROC')"
+            # params['whereString'] = "Carrier in ('AA','UA') AND Airport in ('COS','MFE','MTJ','ROC')"
                 
             # BLOCKS
             outJSON['rewritten-sql'] = []
@@ -286,7 +288,7 @@ class BiasResource(object):
             select += ', avg(' + outcome[0] + ') AS avge' 
             outJSON['rewritten-sql'].append(select)
             outJSON['rewritten-sql'].append('    FROM ' + params['filename'][:-4])
-            if params['whereString']:
+            if params['whereString'] and params['whereString'] != 'undefined':
                 outJSON['rewritten-sql'].append('    WHERE ' + params['whereString'])
             group = '    GROUP BY '
             group += treatment[0]

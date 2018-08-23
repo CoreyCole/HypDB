@@ -22,9 +22,9 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       <hyp-responsible-group-by-chart *ngIf="graph" [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
       <mat-card *ngIf="graph" class="sql">
         <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
-        <pre *ngIf="graph" class="sql">
-SELECT WITH BLOCKS ... (dynamic weighted avg query in progress)
-        </pre>
+        <div *ngIf="graph" class="sql">
+<pre *ngFor="let line of rewrittenSql">{{ line }}</pre>
+        </div>
       </mat-card>
     </div>
     <div class="datatable-cards">
@@ -47,6 +47,7 @@ export class HomePageComponent implements OnInit {
   fineGrained: any;
   responsibility: { string: number };
   naiveGraphData: GraphData = null;
+  rewrittenSql: string[];
   graph: GraphData = null;
   error: string = null;
 
@@ -81,6 +82,7 @@ export class HomePageComponent implements OnInit {
       data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, covariates[0]);
     this.fineGrained = data['fine_grained'];
     this.responsibility = data['responsibility'];
+    this.rewrittenSql = data['rewritten-sql'];
     this.graph = data['graph'];
   }
 

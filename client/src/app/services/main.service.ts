@@ -14,7 +14,8 @@ export interface CsvJson {
 export interface HypDBDto {
   outcome: string;
   filename: string;
-  where: string;
+  where: { string: string[] };
+  whereString: string;
   groupingAttributes: string[];
 }
 

@@ -68,7 +68,7 @@ export class PickParamsComponent implements OnChanges {
   constructor(private main: MainService) { }
 
   ngOnChanges() {
-    this.clearQuery();
+    // this.clearQuery();
     if (this.csvJson) {
       this.treatAttrs = this.csvJson.fields;
       this.outcomeAttrs = this.csvJson.fields;
@@ -108,7 +108,8 @@ export class PickParamsComponent implements OnChanges {
         // groupingAttributes: [this.treatment, ...this.groupingAttributes],
         groupingAttributes: [this.currentTreatment],
         filename: this.csvJson.filename,
-        where: parsedWhere
+        where: parsedWhere,
+        whereString: this.where || 'undefined'
       };
       this.main.queryNaiveAte(dto)
         .subscribe(data => {

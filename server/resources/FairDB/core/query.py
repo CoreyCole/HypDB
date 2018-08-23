@@ -67,8 +67,10 @@ def plot(res,treatment,outcome,ylable='',title='',fontsize=10):
                 temp[treatment[k]] = float(i[k])
             else:    
                 temp[treatment[k]] = i[k]
-
-        temp[outcome[0]] = j
+        if type(i[k]).__module__ == 'numpy':
+            temp[outcome[0]] = float(j)
+        else:
+            temp[outcome[0]] = j
         outJSON.append(temp)
     #print(outJSON)
     #print(json.dumps(outJSON))

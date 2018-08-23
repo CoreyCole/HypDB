@@ -326,9 +326,14 @@ class BiasResource(object):
             where = 'WHERE '
             for attribute in list(set(cov1 + cov2)):
                 where += 'Blocks.' + attribute + ' = Weights.' + attribute + ' AND '
-            if where[-5:] == ' AND ':
-                where = where[:-5]
-            outJSON['rewritten-sql'].append(where)
+                outJSON['rewritten-sql'].append(where)
+                where = ''
+
+            if outJSON['rewritten-sql'][-1][-5:] == ' AND ':
+                outJSON['rewritten-sql'][-1] = outJSON['rewritten-sql'][-1][:-5]
+
+            # for line in outJSON['rewritten-sql']:
+            #     print(line)
 
             # Temporary filler return
             print('post worked')

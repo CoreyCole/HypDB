@@ -276,7 +276,7 @@ class BiasResource(object):
 
             # REMOVE THIS AFTER COREY's BUGFIX
             # params['whereString'] = "Carrier in ('AA','UA') AND Airport in ('COS','MFE','MTJ','ROC')"
-                
+
             # BLOCKS
             outJSON['rewritten-sql'] = []
             outJSON['rewritten-sql'].append('WITH Blocks AS')
@@ -309,11 +309,11 @@ class BiasResource(object):
             outJSON['rewritten-sql'].append('      (')
             outJSON['rewritten-sql'].append('        SELECT count(*)')
             outJSON['rewritten-sql'].append('        FROM ' + params['filename'][:-4])
-            if params['whereString']:
+            if params['whereString'] and params['whereString'] != 'undefined':
                 outJSON['rewritten-sql'].append('        WHERE ' + params['whereString'])
             outJSON['rewritten-sql'].append('      ) AS W')
             outJSON['rewritten-sql'].append('    FROM ' + params['filename'][:-4])
-            if params['whereString']:
+            if params['whereString'] and params['whereString'] != 'undefined':
                 outJSON['rewritten-sql'].append('    WHERE ' + params['whereString'])
             group = '    GROUP BY '
             for attribute in list(set(cov1 + cov2)):

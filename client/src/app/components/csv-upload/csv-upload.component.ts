@@ -16,13 +16,19 @@ import { PapaParseConfig } from 'ngx-papaparse/lib/interfaces/papa-parse-config'
     </div>
     <div class="confirm" *ngIf="currentResultJson && !loading">
       <h2>Confirm Columns</h2>
+      <h3>Click on a column to remove it from the upload</h3>
       <button mat-raised-button color="accent" (click)="confirmUpload()">LOOKS GOOD</button>
       <mat-list>
-        <mat-list-item *ngFor="let column of confirmColumns">
-          <i class="material-icons" mat-list-icon>
-            done
-          </i> 
-          <h4 mat-line>{{ column }}</h4>
+        <mat-list-item *ngFor="let column of confirmColumns">       
+          <h4 mat-line (click)="column.enabled = !column.enabled">
+            <i class="material-icons" mat-list-icon *ngIf="column.enabled">
+              done
+            </i>
+            <i class="material-icons" mat-list-icon *ngIf="!column.enabled">
+              close
+            </i> 
+            {{ column.columnName }}
+          </h4>
         </mat-list-item>
       </mat-list>
     </div>
@@ -34,7 +40,7 @@ export class CsvUploadComponent implements OnInit {
   error: string;
   currentResultJson: any;
   currentFileName: string;
-  confirmColumns: string[];
+  confirmColumns: { columnName: string, enabled: boolean }[];
   loading = false;
   success = false;
   @Output() uploadedFile = new EventEmitter<void>();
@@ -65,11 +71,28 @@ export class CsvUploadComponent implements OnInit {
 
   handleParsedJson(resultJson: any) {
     this.currentResultJson = resultJson;
-    this.confirmColumns = resultJson.meta.fields;
+    this.confirmColumns = resultJson.meta.fields.map(field => {
+      return { columnName: field, enabled: true };
+    });
   }
 
   confirmUpload() {
     const uploadJson = { ...this.currentResultJson };
+    const ignoreColumns = new Set<string>();
+    for (const column of this.confirmColumns) {
+      if (!column.enabled) ignoreColumns.add(column.columnName);
+    }
+
+    if (ignoreColumns.size > 0) {
+      uploadJson.meta.fields = uploadJson.meta.fields.filter(field => !ignoreColumns.has(field));
+      uploadJson.data = uploadJson.data.map(row => {
+        ignoreColumns.forEach(column => {
+          delete row[column];
+        });
+        return row;
+      });
+    }
+
     uploadJson.meta['filename'] = this.currentFileName;
     uploadJson.meta['uploadDate'] = new Date().toLocaleString();
 

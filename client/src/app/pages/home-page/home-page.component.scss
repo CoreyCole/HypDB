@@ -1,32 +1,51 @@
 .container {
-  padding: 16px;
+  padding: 0;
 }
 
 .error {
   color: red;
-  font-size: 16pt;
+  font-size: 14pt;
 }
 
-div.chart-cards {
+mat-card.sql {
+  margin: 8px;
+}
+
+
+.query-chart-row {
   display: flex;
   flex-direction: row;
-  mat-card {
-    max-width: 50%;
+  h1 {
+    font-size: 14pt;
+  }
+
+  mat-card.query-card {
+    margin: 8px;
+    width: 33%;
+    padding: 8px;
+  }
+  
+  div.chart-cards {
+    max-width: 100%;
+    mat-card {
+      width: 100%;
+    }
   }
 }
 
 div.datatable-cards {
   display: flex;
   flex-direction: row;
-}
-
-mat-card.sql {
-  margin: 16px;
-  pre.sql {
-    font-size: 14pt;
+  hyp-coarse-grained {
+    min-width: 33%;
+  }
+  hyp-fine-grained {
+    width: 100%;
   }
 }
 
-mat-card.query-card {
-  margin: 16px;
+div.graph {
+  h2 {
+    margin-left: 16px;
+  }
 }

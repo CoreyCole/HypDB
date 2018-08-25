@@ -12,7 +12,7 @@ import { catchError } from 'rxjs/operators';
     <span class="error">{{ error }}</span>
     <div class="spacer"></div>
     <div class="inputs">
-      <pre>    SELECT avg(</pre>
+      <pre>       SELECT avg(</pre>
       <div class="auto-complete outcome">
         <mat-form-field>
           <input matInput placeholder="Outcome" [matAutocomplete]="tdAuto" [(ngModel)]="currentOutcome"
@@ -25,9 +25,11 @@ import { catchError } from 'rxjs/operators';
         </mat-autocomplete>    
       </div>  
       <pre>)</pre>
-      <pre>FROM {{ csvJson.filename.substring(0, csvJson.filename.length - 4) }}</pre>
+      <br />
+      <pre>       FROM {{ csvJson.filename.substring(0, csvJson.filename.length - 4) }}</pre>
       <pre *ngIf="where">WHERE {{ where }}</pre>
-      <pre>GROUP BY</pre>
+      <br />
+      <pre>       GROUP BY</pre>
       <div class="auto-complete treatment">
         <mat-form-field>
           <input matInput placeholder="Treatment" [matAutocomplete]="tdAuto2" [(ngModel)]="currentTreatment"
@@ -45,8 +47,10 @@ import { catchError } from 'rxjs/operators';
       <button mat-raised-button (click)="clearQuery()">CLEAR</button>
       <button mat-raised-button color="accent" (click)="query()">QUERY</button>
     </div>
-    <mat-spinner *ngIf="loading" color="accent"></mat-spinner>
-    <span *ngIf="loading" class="message">The query is being diagnosed for bias . . .</span>
+    <div class="loading">
+      <mat-spinner *ngIf="loading" color="accent"></mat-spinner>
+      <span *ngIf="loading" class="message">The query is being diagnosed for bias . . .</span>
+    </div>
   </div>
   `,
   styleUrls: ['./pick-params.component.scss']

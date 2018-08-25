@@ -1,5 +1,6 @@
 div.container {
     display: flex;
+    padding: 16px;
     flex-direction: row;
 }
 
@@ -7,5 +8,6 @@ div.input {
     margin-right: 64px;
     h1 {
         display: block;
+        font-size: 14pt;
     }
 }

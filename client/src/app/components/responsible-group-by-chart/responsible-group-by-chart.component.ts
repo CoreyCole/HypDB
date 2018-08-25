@@ -16,8 +16,8 @@ import { GraphData } from '../../services/main.service';
         [legend]="true"
         [showXAxisLabel]="true"
         [showYAxisLabel]="true"
-        xAxisLabel="Treatment ({{ treatment }}) Further grouped by {{ mostResponsible }}"
-        yAxisLabel="Outcome ({{ outcome }})">
+        xAxisLabel="{{ treatment }} Further grouped by {{ mostResponsible }}"
+        yAxisLabel="{{ outcome }}">
       </ngx-charts-bar-vertical-2d>
     </div>
   </mat-card>

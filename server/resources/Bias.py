@@ -144,19 +144,22 @@ class BiasResource(object):
             # Naive group-by query, followd by a conditional independance test
             ate = sql.naive_groupby(data, treatment, outcome)
             ate_data = sql.plot(ate, treatment, outcome)
-            outJSON = {'naiveAte': ate_data}
-            print(outJSON)
+            outJSON = {'queries' : {}}
+            outJSON['queries']['naiveAte'] = {}
+            outJSON['queries']['naiveAte']['query'] = []
+            outJSON['queries']['naiveAte']['query'].append('SELECT ' + outcome[0])
+            outJSON['queries']['naiveAte']['query'].append('FROM ' + params['filename'][:-4])
+            if params['whereString'] and params['whereString'] != 'undefined':
+                outJSON['queries']['naiveAte']['query'].append('WHERE ' + params['whereString'])
+            outJSON['queries']['naiveAte']['query'].append('GROUP BY ' + treatment[0])
+            outJSON['queries']['naiveAte']['chart'] = ate_data
 
-            # old code for getting ate for each grouping attribute
-            # going to need to do the reverse array trick again once we know the most biased covariate
-            # grouping_attributes = []
-            # ate_list = []
-            # for treat in treatment:
-            #     grouping_attributes.append(treat)
-            #     ate = sql.naive_groupby(data, grouping_attributes[::-1], outcome)
-            #     ate_step = sql.plot(ate, grouping_attributes, outcome)
-            #     ate_list.append(ate_step)
-            # outJSON = {'ate': ate_list}
+            for line in outJSON['queries']['naiveAte']['query']:
+                print(line)
+
+            #outJSON = {'naiveAte': ate_data}
+
+            print(outJSON)
 
             # Computing parents of the treatment
             cov1, par1 = detector.get_parents(treatment, pvalue=pvalue, method=method, ratio=1, fraction=fraction,
@@ -182,16 +185,40 @@ class BiasResource(object):
             res = get_respon(data, treatment, outcome, list(set(cov1 + cov2)))
             print(res)
 
-            # treatment.append('origin')
-            # print(treatment)
             t2 = treatment.copy()
+            newRes = {k:v for (k,v) in res.items() if k != outcome[0] and k != treatment[0]}
+            if newRes:
+                t2.append(max(newRes, key=newRes.get))
+                ate2 = sql.naive_groupby(data, t2[::-1], outcome)
+                ate_data2 = sql.plot(ate2, t2, outcome)
+                outJSON['queries']['responsibleAte'] = {}
+                outJSON['queries']['responsibleAte']['query'] = []
+                outJSON['queries']['responsibleAte']['query'].append('SELECT ' + outcome[0])
+                outJSON['queries']['responsibleAte']['query'].append('FROM ' + params['filename'][:-4])
+                if params['whereString'] and params['whereString'] != 'undefined':
+                    outJSON['queries']['responsibleAte']['query'].append('WHERE ' + params['whereString'])
+                outJSON['queries']['responsibleAte']['query'].append('GROUP BY ' + t2[0] + ', ' + t2[1])
+                outJSON['queries']['responsibleAte']['chart'] = ate_data2
+                
+                for line in outJSON['queries']['responsibleAte']['query']:
+                    print(line)
+            #outJSON['responsibleAte'] = ate_data2
+
             #if max(res, key=res.get)
-            t2.append(max(res, key=res.get))
-            print(t2)
-            ate2 = sql.naive_groupby(data, t2[::-1], outcome)
-            print(ate2)
-            ate_data2 = sql.plot(ate2, t2, outcome)
-            outJSON['responsibleAte'] = ate_data2
+            # t2.append(max(res, key=res.get))
+            # print(t2)
+            # ate2 = sql.naive_groupby(data, t2[::-1], outcome)
+            # print(ate2)
+            # ate_data2 = sql.plot(ate2, t2, outcome)
+            # outJSON['queries']['responsibleAte'] = {}
+            # outJSON['queries']['responsibleAte']['query'] = []
+            # outJSON['queries']['responsibleAte']['query'].append('SELECT ' + outcome[0])
+            # outJSON['queries']['responsibleAte']['query'].append('FROM ' + params['filename'][:-4])
+            # if params['whereString'] and params['whereString'] != 'undefined':
+            #     outJSON['queries']['responsibleAte']['query'].append('WHERE ' + params['whereString'])
+            # outJSON['queries']['responsibleAte']['query'].append('GROUP BY ' + t2[0] + ',' + t2[1])
+
+            # outJSON['responsibleAte'] = ate_data2
 
             '''
             # Adjusting for parents of the treatment for computing total effect

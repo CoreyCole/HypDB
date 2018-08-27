@@ -254,19 +254,19 @@ class BiasResource(object):
             outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
             print(data.columns.values, treatment, outcome, [*res])
             for attr in set([*res]) - set(treatment) - set(outcome):
-                X=top_k_explanation(data, treatment, outcome, [attr], k=3)
+                X=top_k_explanation(data, treatment, outcome, [attr], k=10)
                 print(X.loc[:, attr: outcome[0]])
                 #print(X)
                 columns = list(X.columns.values[:3])
-                columns.append('totalCorrelation')
+                #columns.append('totalCorrelation')
                 rows = []
                 for index, row in X.iterrows():
                     row_data = {}
                     for column in columns:
-                        if (column == 'totalCorrelation'):
-                            column = 'TotalCorrelation'
+                        #if (column == 'totalCorrelation'):
+                        #    column = 'TotalCorrelation'
                         row_data[column] = row[column]
-                    row_data['totalCorrelation'] = str(row['TotalCorrelation'])
+                    #row_data['totalCorrelation'] = str(row['TotalCorrelation'])
                     rows.append(row_data)
                 #print(rows)
                 #print(columns)
@@ -276,6 +276,8 @@ class BiasResource(object):
 
             # REMOVE THIS AFTER COREY's BUGFIX
             # params['whereString'] = "Carrier in ('AA','UA') AND Airport in ('COS','MFE','MTJ','ROC')"
+
+            print('all cov', set(cov1 + cov2))
 
             # BLOCKS
             outJSON['rewritten-sql'] = []

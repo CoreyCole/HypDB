@@ -32,16 +32,20 @@ class BiasResource(object):
         return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
     def minCMI(treatment, outcome, data, cov1, cov2=[]):
+        #print(info.cmi())
         subset = []
         cache = {}
         info = Info(data)
+        #print(info.CMI(treatment, outcome, ['distancegroup', 'origin']))
+        #print(info.CMI(treatment, outcome, ['crsdeptime', 'year']))
+        #print(info.CMI(treatment, outcome, ['year', 'arrdelay', 'origin', 'distancegroup']))
         #print(treatment, outcome, cov1 + cov2)
         for attrs in BiasResource.powerset(set(cov1 + cov2)):
+            #print(list(attrs))
             cmi1 = info.CMI(treatment, outcome, list(attrs))
             cmi2 = info.CMI(treatment, outcome, subset)
             if cmi1 < cmi2:
                 subset = list(attrs)
-        print(subset)
         return subset
 
     def writeQuery(treatment, outcome, filename, whereString, naive=True, covariates=[]):
@@ -79,14 +83,14 @@ class BiasResource(object):
                 if where != '      ':
                     query.append(where)
             group = '    GROUP BY '
-            group += treatment[0]
+            group += treatment[0] + ', '
             for attribute in covariates:
-                group += ', ' + attribute
+                group += attribute + ', '
                 if len(group) > 50:
                     query.append(group)
                     group = '      '
             if group != '      ':
-            	query.append(group)
+                query.append(group)
             query.append('  ),')
 
             # WEIGHTS
@@ -231,8 +235,6 @@ class BiasResource(object):
             detector = FairDB(data)
 
             # FairDB parameters
-
-
             whitelist = []
             black = []
             if filename == 'finpe2.csv':
@@ -251,6 +253,7 @@ class BiasResource(object):
             # Naive group-by query, followd by a conditional independance test
             ate = sql.naive_groupby(data, treatment, outcome)
             ate_data = sql.plot(ate, treatment, outcome)
+            print(ate_data)
             outJSON = {'data' : []}
 
             temp_ate = {'type' : 'naiveAte'}
@@ -285,9 +288,38 @@ class BiasResource(object):
             print('covariates of the outcome: ', cov2)
             print('parents of the outcome: ', par2)
 
+            # cov
+            #cov = BiasResource.minCMI(treatment, outcome, data, cov1)
+            cov = None
+            if par1:
+                cov = par1
+            else:
+                cov = detector.recommend_covarite(treatment, outcome, cov1)
+            #cov = ['distancegroup', 'origin']
+            for item in cov:
+                if item in cov2:
+                    cov2.remove(item)
+            print('cov = ', cov)
+            # med
+            #med = BiasResource.minCMI(treatment, outcome, data, cov2)
+            med = None
+            if par2:
+                med = par2
+            else:
+                med = detector.recommend_covarite(treatment, outcome, cov2)
+            #med = ['crsdeptime', 'year']
+            print('med = ', med)
+            if treatment[0] in cov:
+                cov.remove(treatment[0])
+            if treatment[0] in med:
+                med.remove(treatment[0])
+            if outcome[0] in cov:
+                cov.remove(outcome[0])
+            if outcome[0] in med:
+                med.remove(outcome[0])
             # get most responsible attribute
-            res = get_respon(data, treatment, outcome, list(set(cov1 + cov2)))
-            print(res)
+            res = get_respon(data, treatment, outcome, list(set(cov + med)))
+            print('res', res)
 
             t2 = treatment.copy()
             newRes = {k:v for (k,v) in res.items() if k != outcome[0] and k != treatment[0]}
@@ -309,74 +341,53 @@ class BiasResource(object):
             # mediatpor and init not needed for total effect
             de = None
 
-
             # init for direct effect
             # pass list to iloc to guarantee dataframe
             highestGroup = ate.iloc[[ate[outcome[0]].idxmax()]]
             init = highestGroup[treatment].values[0]
+            print('init = ', init)
 
             # direct effect
-            if par1 and par2:
-                de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1, par2, init)
-                print('de1', de)
-                temp_ate = {'type' : 'direct-effect'}
-                temp_ate['query'] = ''
-                temp_ate['chart'] = sql.plot(de, treatment, outcome)
-                outJSON['data'].append(temp_ate)
+            # if par1 and par2:
+            #     de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1, par2, init)
+            #     print('de1', de)
+            #     temp_ate = {'type' : 'direct-effect'}
+            #     temp_ate['query'] = ''
+            #     temp_ate['chart'] = sql.plot(de, treatment, outcome)
+            #     outJSON['data'].append(temp_ate)
 
             
             # print(data)
-            cmi1 = BiasResource.minCMI(treatment, outcome, data, cov1, cov2)
-            print('cmi1 = ', cmi1)
-            if cmi1:
-                alt1 = []
-                alt2 = []
-                for attr in cmi1:
-                    if attr in cov2 and attr != outcome:
-                        alt2.append(attr)
-                    elif attr in cov1 and attr != outcome:
-                        alt1.append(attr)
-                    else:
-                        # This should never happen
-                        raise ValueError('attr == outcome')
-                if alt1 and alt2:
-                    de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, alt1, alt2, init)
-                    print('de2', de)
-                    temp_ate = {'type' : 'direct-effect-cmi'}
-                    temp_ate['query'] = ''
-                    temp_ate['chart'] = sql.plot(de, treatment, outcome)
-                    outJSON['data'].append(temp_ate)
 
             # total effect
-            if par1:
-                te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1)
-                print('te1', te)
-                temp_ate = {'type' : 'rewritten-sql'}
-                temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=par1)
-                temp_ate['chart'] = sql.plot(te, treatment, outcome)
-                outJSON['data'].append(temp_ate)
-                for line in temp_ate['query']:
-                    print(line)
+            # if par1:
+            #     te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1)
+            #     print('te1', te)
+            #     temp_ate = {'type' : 'rewritten-sql'}
+            #     temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=par1)
+            #     temp_ate['chart'] = sql.plot(te, treatment, outcome)
+            #     outJSON['data'].append(temp_ate)
+            #     for line in temp_ate['query']:
+            #         print(line)
 
-            cmi2 = BiasResource.minCMI(treatment, outcome, data, cov1)
-            print('cmi2 = ', cmi2)
-            if cmi2:
-                alt1 = []
-                for attr in cmi2:
-                    if attr in cov1 and attr != outcome:
-                        alt1.append(attr)
-                    else:
-                        raise ValueError('attr == outcome')
-                if alt1:
-                    te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cmi2)
-                    print('te2', te)
-                    temp_ate = {'type' : 'total-effect-cmi'}
-                    temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=cmi2)
-                    temp_ate['chart'] = sql.plot(te, treatment, outcome)
-                    outJSON['data'].append(temp_ate)
+            # DE
+            de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov, med, init)
+            print('de2', de)
+            temp_ate = {'type' : 'direct-effect-cmi'}
+            temp_ate['query'] = ''
+            temp_ate['chart'] = sql.plot(de, treatment, outcome)
+            outJSON['data'].append(temp_ate)
 
-                    for line in temp_ate['query']:
-                    	print(line)
+            # TE
+            te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov)
+            print('te2', te)
+            temp_ate = {'type' : 'total-effect-cmi'}
+            temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=med)
+            temp_ate['chart'] = sql.plot(te, treatment, outcome)
+            outJSON['data'].append(temp_ate)
+
+            for line in temp_ate['query']:
+                print(line)
 
             outJSON['cov_treatment'] = cov1
             outJSON['cov_outcome'] = cov2

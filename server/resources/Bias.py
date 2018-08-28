@@ -321,7 +321,8 @@ class BiasResource(object):
             if outcome[0] in med:
                 med.remove(outcome[0])
             # get most responsible attribute
-            res = get_respon(data, treatment, outcome, list(set(cov + med)))
+            print(treatment, outcome)
+            res = get_respon(data, outcome, treatment, list(set(cov + med)))
             print('res', res)
 
             t2 = treatment.copy()

@@ -252,6 +252,7 @@ class BiasResource(object):
             ate = sql.naive_groupby(data, treatment, outcome)
             ate_data = sql.plot(ate, treatment, outcome)
             outJSON = {'data' : []}
+            outJSON['naiveAte'] = ate_data
 
             temp_ate = {'type' : 'naiveAte'}
             temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'])

@@ -18,41 +18,29 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
         <span class="error">{{ error }}</span>
       </mat-card>
       <div class="chart-cards" *ngIf="!error && naiveAteData">
-        <hyp-naive-group-by-chart [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
+        <hyp-naive-group-by-chart [data]="naiveAteData" [graphData]="naiveGraphData" title="Naive Group By Results"></hyp-naive-group-by-chart>
         <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
       </div>
     </div>
     <div class="query-chart-row" *ngIf="graph">
       <mat-card class="query-card">
-        <h1>Further Grouping by Most Biased Covariate</h1>
-        <pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
+        <h1>{{ mostResponsible }} has the highest responsibility for making this query biased</h1>
+        <pre *ngFor="let line of queryChartData[1].query" class="sql">{{ line }}</pre>
       </mat-card>
       <div class="chart-cards">
-        <hyp-responsible-group-by-chart [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+        <hyp-responsible-group-by-chart [data]="queryChartData[1].chart" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
       </div>
     </div>
     <div class="query-chart-row" *ngIf="graph">
       <mat-card class="query-card">
-        <h1>Total Effect</h1>
-        <span class="error">Bias Detected! Try weighted average query instead...</span>
-        <div class="sql">
-          <pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
-        </div>
+        <h1>Total Effect Query</h1>
+        <pre *ngFor="let line of queryChartData[3].query" class="sql">{{ line }}</pre>
       </mat-card>
       <div class="chart-cards">
-        <hyp-responsible-group-by-chart [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+        <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
       </div>
-    </div>
-    <div class="query-chart-row" *ngIf="graph">
-      <mat-card class="query-card">
-        <h1>Direct Effect</h1>
-        <span class="error">Bias Detected! Try weighted average query instead...</span>
-        <div class="sql">
-          <pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
-        </div>
-      </mat-card>
       <div class="chart-cards">
-        <hyp-responsible-group-by-chart [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+        <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
       </div>
     </div>
     <div class="datatable-cards" *ngIf="graph">
@@ -80,6 +68,7 @@ export class HomePageComponent implements OnInit {
   rewrittenSql: string[];
   graph: GraphData = null;
   error: string = null;
+  queryChartData: { type: string, query: string[], chart: any[] }[];
 
   constructor(
     public main: MainService
@@ -102,17 +91,27 @@ export class HomePageComponent implements OnInit {
   }
 
   displayResults(data: QueryRes) {
-    if (!data['naiveAte'] || data['naiveAte'].length === 0 || !data['responsibleAte']) {
+    if (!data['naiveAte'] || data['naiveAte'].length === 0) {
       return this.error = 'Query error!';
     }
     this.error = null;
-    this.responsibleAteData = this.parseAteWithGroupingAttribute(data['responsibleAte']);
+    this.queryChartData = [];
+    for (const queryChart of data['data']) {
+      if (queryChart.type === 'responsibleAte') {
+        queryChart.chart = this.parseAteWithGroupingAttribute(queryChart.chart);
+      } else {
+        queryChart.chart = queryChart.chart.map(row => {
+          const keys = Object.keys(row);
+          return { name: row[keys[0]], value: row[keys[1]] };
+        });
+      }
+      this.queryChartData.push(queryChart);
+    }
     const covariates = Object.keys(data['responsibility']);
     this.mostResponsible = covariates.reduce((prev, curr) =>
       data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, covariates[0]);
     this.fineGrained = data['fine_grained'];
     this.responsibility = data['responsibility'];
-    this.rewrittenSql = data['rewritten-sql'];
     this.graph = data['graph'];
   }
 

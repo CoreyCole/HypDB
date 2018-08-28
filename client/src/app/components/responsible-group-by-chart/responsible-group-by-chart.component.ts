@@ -6,7 +6,7 @@ import { GraphData } from '../../services/main.service';
   template: `
   <mat-card>
     <div class="chart" *ngIf="data && data.length > 0">
-      <h2>Further grouping by {{ treatment }} and {{ mostResponsible }}</h2>
+      <h2>{{ mostResponsible }} has the highest responsibility for making this query biased</h2>
       <ngx-charts-bar-vertical-2d
         [view]="view"
         [scheme]="colorScheme"

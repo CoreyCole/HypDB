@@ -6,7 +6,7 @@ import { GraphData } from '../../services/main.service';
   template: `
   <mat-card>
     <div class="chart">
-      <h2>Naive Group By Results</h2>
+      <h2>{{ title }}</h2>
       <ngx-charts-bar-vertical
         [view]="view"
         [scheme]="colorScheme"
@@ -27,6 +27,7 @@ import { GraphData } from '../../services/main.service';
 export class NaiveGroupByChartComponent implements OnChanges {
   @Input() data: any[];
   @Input() graphData: GraphData;
+  @Input() title: string;
   public view: any[] = [400, 400];
   public colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']

@@ -9,6 +9,18 @@ import { Component, OnChanges, Input } from '@angular/core';
       <span class="flex-span"></span>
       <span class="select-span">
         <mat-select
+          #currK
+          [placeholder]="'k = 3'"
+          [value]="3"
+          (valueChange)="kSelected(currK.value)">
+          <mat-option *ngFor="let row of fineGrained.attributes[currentCovariate].rows; index as i" [value]="i+1">
+            k = {{ i+1 }}
+          </mat-option>
+        </mat-select>
+      </span>
+      <span class="flex-span"></span>
+      <span class="select-span">
+        <mat-select
           #selectedAttribute
           placeholder="attribute"
           [value]="currentCovariate"
@@ -42,6 +54,8 @@ export class FineGrainedComponent implements OnChanges {
   currentCovariate: string;
   columns: any[];
   rows: any[];
+  maxK: number;
+  currK: number;
 
   constructor() { }
 
@@ -52,8 +66,15 @@ export class FineGrainedComponent implements OnChanges {
       this.columns = this.fineGrained.attributes[this.currentCovariate].columns.map(column => {
         return { name: column };
       });
-      this.rows = this.fineGrained.attributes[this.currentCovariate].rows;
+      this.maxK = this.fineGrained.attributes[this.currentCovariate].rows.length;
+      this.currK = 3;
+      this.rows = this.fineGrained.attributes[this.currentCovariate].rows.slice(0, this.currK);
     }
+  }
+
+  kSelected(newK: number) {
+    this.currK = newK;
+    this.rows = this.fineGrained.attributes[this.currentCovariate].rows.slice(0, this.currK);
   }
 
   attributeSelected(attribute: string) {

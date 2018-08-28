@@ -1,8 +1,11 @@
 # HypDB
-To run the demo, first install Node, NPM, @angular/cli, and python 3.6
+To run the demo, first install Node, NPM, @angular/cli, pipenv, and python 3.6
 ```
 # to start the server, first install dependencies with pipenv
 cd server && pipenv install
+
+# open a shell in your new pipenv virtual environment (inside the server directory)
+pipenv shell
 
 # also inside the server directory, run this inside your pip virtual environment
 source env.sh

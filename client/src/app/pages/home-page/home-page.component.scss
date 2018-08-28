@@ -11,6 +11,25 @@ mat-card.sql {
   margin: 8px;
 }
 
+.further-query {
+  font-size: 18pt;
+}
+
+.tede {
+  display: flex;
+  flex-direction: column;
+
+  .covariates {
+    margin: 8px;
+    width: 100%;
+  }
+}
+
+.tede-chart-cards {
+  display: flex;
+  flex-direction: row;
+}
+
 
 .query-chart-row {
   display: flex;

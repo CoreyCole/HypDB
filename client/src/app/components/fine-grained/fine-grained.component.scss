@@ -15,8 +15,16 @@ mat-toolbar {
     flex-direction: row;
 }
 
+.select-span {
+    margin: 16px;
+}
+
 .select-span > mat-select {
     max-width: 200px;
+}
+
+.k > mat-select {
+    max-width: 100px;
 }
 
 .ngx-datatable.material {

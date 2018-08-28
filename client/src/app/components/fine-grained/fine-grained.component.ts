@@ -5,12 +5,11 @@ import { Component, OnChanges, Input } from '@angular/core';
   template: `
   <div class="datatable">
     <mat-toolbar color="accent">
-      <span>Fine Grained Attribute Data</span>
-      <span class="flex-span"></span>
-      <span class="select-span">
+      <span>Top</span>
+      <span class="select-span k">
         <mat-select
           #currK
-          [placeholder]="'k = 3'"
+          placeholder="k"
           [value]="3"
           (valueChange)="kSelected(currK.value)">
           <mat-option *ngFor="let row of fineGrained.attributes[currentCovariate].rows; index as i" [value]="i+1">
@@ -18,7 +17,7 @@ import { Component, OnChanges, Input } from '@angular/core';
           </mat-option>
         </mat-select>
       </span>
-      <span class="flex-span"></span>
+      <span>Fine Grained Explanations for</span>
       <span class="select-span">
         <mat-select
           #selectedAttribute
@@ -61,6 +60,7 @@ export class FineGrainedComponent implements OnChanges {
 
   ngOnChanges() {
     if (this.fineGrained) {
+      console.log(this.fineGrained);
       this.covariates = Object.keys(this.fineGrained.attributes);
       this.currentCovariate = this.covariates[0];
       this.columns = this.fineGrained.attributes[this.currentCovariate].columns.map(column => {
@@ -82,7 +82,12 @@ export class FineGrainedComponent implements OnChanges {
     this.columns = this.fineGrained.attributes[attribute].columns.map(column => {
       return { name: column };
     });
-    this.rows = this.fineGrained.attributes[attribute].rows;
+    if (this.fineGrained.attributes[this.currentCovariate].rows.length <= this.currK) {
+      this.currK = this.fineGrained.attributes[this.currentCovariate].rows.length;
+      this.rows = this.fineGrained.attributes[this.currentCovariate].rows
+    } else {
+      this.rows = this.fineGrained.attributes[this.currentCovariate].rows.slice(0, this.currK);
+    }
   }
 
 }

@@ -79,14 +79,17 @@ class BiasResource(object):
                 if where != '      ':
                     query.append(where)
             group = '    GROUP BY '
-            group += treatment[0]
+            group += treatment[0] + ', '
             for attribute in covariates:
-                group += ', ' + attribute
+                group += attribute + ', '
                 if len(group) > 50:
                     query.append(group)
                     group = '      '
+            if group[-2:] == ', ':
+                group = group[:-2]
             if group != '      ':
             	query.append(group)
+            
             query.append('  ),')
 
             # WEIGHTS

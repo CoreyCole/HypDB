@@ -5,7 +5,7 @@ import { Component, OnChanges, Input } from '@angular/core';
   template: `
   <div class="datatable">
     <mat-toolbar color="accent">
-      <span>Coarse Grained Attribute Data</span>
+      <span>Coarse Grained Explanations</span>
     </mat-toolbar>
     <ngx-datatable
       class="material"

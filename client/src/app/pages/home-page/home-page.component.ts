@@ -24,8 +24,9 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
     </div>
     <div class="query-chart-row" *ngIf="graph">
       <mat-card class="query-card">
-        <h1>{{ mostResponsible }} has the highest responsibility for making this query biased</h1>
-        <pre *ngFor="let line of queryChartData[1].query" class="sql">{{ line }}</pre>
+        <h1>Further grouping by {{ mostResponsible }}</h1>
+        <span class="spacer"></span>
+        <pre *ngFor="let line of queryChartData[1].query" class="sql further-query">{{ line }}</pre>
       </mat-card>
       <div class="chart-cards">
         <hyp-responsible-group-by-chart [data]="queryChartData[1].chart" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
@@ -36,11 +37,17 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
         <h1>Total Effect Query</h1>
         <pre *ngFor="let line of queryChartData[3].query" class="sql">{{ line }}</pre>
       </mat-card>
-      <div class="chart-cards">
-        <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
-      </div>
-      <div class="chart-cards">
-        <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
+      <div class="tede">
+        <div class="tede-chart-cards">
+          <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
+          <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
+        </div>
+        <mat-card class="covariates">
+          <h3>Covariates</h3>
+          <span *ngFor="let cov of covariates; index as i">{{ cov }}{{ (i < covariates.length - 1) ? ', ' : ''}}</span>
+          <h3>Mediator</h3>
+          <span *ngFor="let cov of covariates; index as i">{{ cov }}{{ (i < covariates.length - 1) ? ', ' : ''}}</span>
+        </mat-card>
       </div>
     </div>
     <div class="datatable-cards" *ngIf="graph">
@@ -69,6 +76,7 @@ export class HomePageComponent implements OnInit {
   graph: GraphData = null;
   error: string = null;
   queryChartData: { type: string, query: string[], chart: any[] }[];
+  covariates: string[];
 
   constructor(
     public main: MainService
@@ -87,6 +95,10 @@ export class HomePageComponent implements OnInit {
     }
     this.error = null;
     this.naiveAteData = this.parseAte(data['naiveAte']);
+    // this.naiveAteData = [
+    //   { name: "AA", value: 0.0598 },
+    //   { name: "UA", value: 0.0644 }
+    // ]
     this.naiveGraphData = data['graph'];
   }
 
@@ -107,9 +119,16 @@ export class HomePageComponent implements OnInit {
       }
       this.queryChartData.push(queryChart);
     }
-    const covariates = Object.keys(data['responsibility']);
-    this.mostResponsible = covariates.reduce((prev, curr) =>
-      data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, covariates[0]);
+    this.covariates = Object.keys(data['responsibility']);
+    this.mostResponsible = this.covariates.reduce((prev, curr) =>
+      data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, this.covariates[0]);
+    const keys = Object.keys(data['fine_grained'].attributes);
+    for (const key of keys) {
+      data['fine_grained'].attributes[key].columns.unshift('k');
+      data['fine_grained'].attributes[key].rows = data['fine_grained'].attributes[key].rows.map((row, index) => {
+        return { k: index + 1, ...row };
+      });
+    }
     this.fineGrained = data['fine_grained'];
     this.responsibility = data['responsibility'];
     this.graph = data['graph'];

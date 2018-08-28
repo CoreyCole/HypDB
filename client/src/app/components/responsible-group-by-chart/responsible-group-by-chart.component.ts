@@ -28,7 +28,7 @@ export class ResponsibleGroupByChartComponent implements OnChanges {
   @Input() data: any[];
   @Input() graphData: GraphData;
   @Input() mostResponsible: string;
-  public view: any[] = [400, 400];
+  public view: any[] = [1000, 400];
   public colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };

@@ -12,29 +12,59 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
     <button mat-raised-button color="accent" routerLink="/upload">UPLOAD CSV FILE</button>
   </mat-toolbar>
   <div class="container">
-    <mat-card class="query-card">
-      <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
-      <span class="error">{{ error }}</span>
-    </mat-card>
-    <div class="chart-cards">
-      <hyp-naive-group-by-chart *ngIf="!error && naiveAteData" [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
-      <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
-      <hyp-responsible-group-by-chart *ngIf="graph" [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
-    </div>
-    <mat-card *ngIf="graph" class="sql">
-      <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
-      <div *ngIf="graph" class="sql">
-<pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
+    <div class="query-chart-row">
+      <mat-card class="query-card main-query">
+        <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
+        <span class="error">{{ error }}</span>
+      </mat-card>
+      <div class="chart-cards" *ngIf="!error && naiveAteData">
+        <hyp-naive-group-by-chart [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
+        <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
       </div>
-    </mat-card>
-    <div class="datatable-cards">
-      <hyp-coarse-grained *ngIf="graph" [responsibility]="responsibility"></hyp-coarse-grained>
-      <hyp-fine-grained *ngIf="graph" [fineGrained]="fineGrained"></hyp-fine-grained>
+    </div>
+    <div class="query-chart-row" *ngIf="graph">
+      <mat-card class="query-card">
+        <h1>Further Grouping by Most Biased Covariate</h1>
+        <pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
+      </mat-card>
+      <div class="chart-cards">
+        <hyp-responsible-group-by-chart [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+      </div>
+    </div>
+    <div class="query-chart-row" *ngIf="graph">
+      <mat-card class="query-card">
+        <h1>Total Effect</h1>
+        <span class="error">Bias Detected! Try weighted average query instead...</span>
+        <div class="sql">
+          <pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
+        </div>
+      </mat-card>
+      <div class="chart-cards">
+        <hyp-responsible-group-by-chart [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+      </div>
+    </div>
+    <div class="query-chart-row" *ngIf="graph">
+      <mat-card class="query-card">
+        <h1>Direct Effect</h1>
+        <span class="error">Bias Detected! Try weighted average query instead...</span>
+        <div class="sql">
+          <pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
+        </div>
+      </mat-card>
+      <div class="chart-cards">
+        <hyp-responsible-group-by-chart [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+      </div>
+    </div>
+    <div class="datatable-cards" *ngIf="graph">
+      <hyp-coarse-grained [responsibility]="responsibility"></hyp-coarse-grained>
+      <hyp-fine-grained [fineGrained]="fineGrained"></hyp-fine-grained>
     </div>
     <div class="weighted-avg-query">
     </div>
-    <h2 *ngIf="graph">Causal Graph</h2>
-    <hyp-graph [graph]="graph"></hyp-graph>
+    <div class="graph" *ngIf="graph">
+      <h2>Causal Graph</h2>
+      <hyp-graph [graph]="graph"></hyp-graph>
+    </div>
   </div>
   `,
   styleUrls: ['./home-page.component.scss']

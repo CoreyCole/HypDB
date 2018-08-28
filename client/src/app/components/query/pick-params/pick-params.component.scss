@@ -1,12 +1,12 @@
-.inputs {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  .input {
-    flex: 1;
-    width: 200px;
-  }
-}
+// .inputs {
+//   display: flex;
+//   flex-direction: row;
+//   width: 100%;
+//   .input {
+//     flex: 1;
+//     width: 200px;
+//   }
+// }
 
 pre {
   font-size: 16pt;
@@ -34,4 +34,12 @@ div.auto-complete {
 
 .mat-option {
   background-color: #fafafa;
+}
+
+.loading {
+  text-align: center;
+  mat-spinner, span.message {
+    margin: auto;
+    display: block;
+  }
 }

@@ -6,7 +6,7 @@ import { GraphData } from '../../services/main.service';
   template: `
   <mat-card>
     <div class="chart" *ngIf="data && data.length > 0">
-      <h2>Further grouping by {{ treatment }} and {{ mostResponsible }}</h2>
+      <h2>{{ mostResponsible }} has the highest responsibility for making this query biased</h2>
       <ngx-charts-bar-vertical-2d
         [view]="view"
         [scheme]="colorScheme"
@@ -16,8 +16,8 @@ import { GraphData } from '../../services/main.service';
         [legend]="true"
         [showXAxisLabel]="true"
         [showYAxisLabel]="true"
-        xAxisLabel="Treatment ({{ treatment }}) Further grouped by {{ mostResponsible }}"
-        yAxisLabel="Outcome ({{ outcome }})">
+        xAxisLabel="{{ treatment }} further grouped by {{ mostResponsible }}"
+        yAxisLabel="{{ outcome }}">
       </ngx-charts-bar-vertical-2d>
     </div>
   </mat-card>
@@ -28,7 +28,7 @@ export class ResponsibleGroupByChartComponent implements OnChanges {
   @Input() data: any[];
   @Input() graphData: GraphData;
   @Input() mostResponsible: string;
-  public view: any[] = [400, 400];
+  public view: any[] = [1000, 400];
   public colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };

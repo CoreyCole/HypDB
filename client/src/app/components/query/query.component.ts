@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   template: `
   <div class="container">
     <div class="input">
-      <h1>Select CSV file</h1>
+      <h1>Select CSV</h1>
       <mat-form-field>
         <mat-select placeholder="input file">
           <mat-option *ngFor="let file of files" [value]="file" (blur)="getCsvJson(file)">
@@ -17,7 +17,7 @@ import { Observable } from 'rxjs';
       </mat-form-field>
     </div>
     <div class="input">
-      <h1>Select Subset of Data</h1>
+      <h1>Data Subset</h1>
       <mat-form-field class="where">
         <input matInput type="text" placeholder="Subset of data" [(ngModel)]="where" autocomplete="off">
       </mat-form-field>

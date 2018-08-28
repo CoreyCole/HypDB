@@ -12,29 +12,54 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
     <button mat-raised-button color="accent" routerLink="/upload">UPLOAD CSV FILE</button>
   </mat-toolbar>
   <div class="container">
-    <mat-card class="query-card">
-      <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
-      <span class="error">{{ error }}</span>
-    </mat-card>
-    <div class="chart-cards">
-      <hyp-naive-group-by-chart *ngIf="!error && naiveAteData" [data]="naiveAteData" [graphData]="naiveGraphData"></hyp-naive-group-by-chart>
-      <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
-      <hyp-responsible-group-by-chart *ngIf="graph" [data]="responsibleAteData" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
-    </div>
-    <mat-card *ngIf="graph" class="sql">
-      <span *ngIf="graph" class="error">Bias Detected! Try weighted average query instead...</span>
-      <div *ngIf="graph" class="sql">
-<pre *ngFor="let line of rewrittenSql" class="sql">{{ line }}</pre>
+    <div class="query-chart-row">
+      <mat-card class="query-card main-query">
+        <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
+        <span class="error">{{ error }}</span>
+      </mat-card>
+      <div class="chart-cards" *ngIf="!error && naiveAteData">
+        <hyp-naive-group-by-chart [data]="naiveAteData" [graphData]="naiveGraphData" title="Naive Group By Results"></hyp-naive-group-by-chart>
+        <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
       </div>
-    </mat-card>
-    <div class="datatable-cards">
-      <hyp-coarse-grained *ngIf="graph" [responsibility]="responsibility"></hyp-coarse-grained>
-      <hyp-fine-grained *ngIf="graph" [fineGrained]="fineGrained"></hyp-fine-grained>
+    </div>
+    <div class="query-chart-row" *ngIf="graph">
+      <mat-card class="query-card">
+        <h1>Further grouping by {{ mostResponsible }} may lead to a different insight...</h1>
+        <span class="spacer"></span>
+        <pre *ngFor="let line of queryChartData[1].query" class="sql further-query">{{ line }}</pre>
+      </mat-card>
+      <div class="chart-cards">
+        <hyp-responsible-group-by-chart [data]="queryChartData[1].chart" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+      </div>
+    </div>
+    <div class="query-chart-row" *ngIf="graph">
+      <mat-card class="query-card">
+        <h1>Total Effect Query</h1>
+        <pre *ngFor="let line of queryChartData[3].query" class="sql">{{ line }}</pre>
+      </mat-card>
+      <div class="tede">
+        <div class="tede-chart-cards">
+          <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
+          <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
+        </div>
+        <mat-card class="covariates">
+          <h3>Covariates</h3>
+          <span *ngFor="let cov of covariates; index as i">{{ cov }}{{ (i < covariates.length - 1) ? ', ' : ''}}</span>
+          <h3>Mediator</h3>
+          <span *ngFor="let cov of covariates; index as i">{{ cov }}{{ (i < covariates.length - 1) ? ', ' : ''}}</span>
+        </mat-card>
+      </div>
+    </div>
+    <div class="datatable-cards" *ngIf="graph">
+      <hyp-coarse-grained [responsibility]="responsibility"></hyp-coarse-grained>
+      <hyp-fine-grained [fineGrained]="fineGrained"></hyp-fine-grained>
     </div>
     <div class="weighted-avg-query">
     </div>
-    <h2 *ngIf="graph">Causal Graph</h2>
-    <hyp-graph [graph]="graph"></hyp-graph>
+    <div class="graph" *ngIf="graph">
+      <h2>Causal Graph</h2>
+      <hyp-graph [graph]="graph"></hyp-graph>
+    </div>
   </div>
   `,
   styleUrls: ['./home-page.component.scss']
@@ -50,6 +75,8 @@ export class HomePageComponent implements OnInit {
   rewrittenSql: string[];
   graph: GraphData = null;
   error: string = null;
+  queryChartData: { type: string, query: string[], chart: any[] }[];
+  covariates: string[];
 
   constructor(
     public main: MainService
@@ -68,21 +95,42 @@ export class HomePageComponent implements OnInit {
     }
     this.error = null;
     this.naiveAteData = this.parseAte(data['naiveAte']);
+    // this.naiveAteData = [
+    //   { name: "AA", value: 0.0598 },
+    //   { name: "UA", value: 0.0644 }
+    // ]
     this.naiveGraphData = data['graph'];
   }
 
   displayResults(data: QueryRes) {
-    if (!data['naiveAte'] || data['naiveAte'].length === 0 || !data['responsibleAte']) {
+    if (!data['naiveAte'] || data['naiveAte'].length === 0) {
       return this.error = 'Query error!';
     }
     this.error = null;
-    this.responsibleAteData = this.parseAteWithGroupingAttribute(data['responsibleAte']);
-    const covariates = Object.keys(data['responsibility']);
-    this.mostResponsible = covariates.reduce((prev, curr) =>
-      data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, covariates[0]);
+    this.queryChartData = [];
+    for (const queryChart of data['data']) {
+      if (queryChart.type === 'responsibleAte') {
+        queryChart.chart = this.parseAteWithGroupingAttribute(queryChart.chart);
+      } else {
+        queryChart.chart = queryChart.chart.map(row => {
+          const keys = Object.keys(row);
+          return { name: row[keys[0]], value: row[keys[1]] };
+        });
+      }
+      this.queryChartData.push(queryChart);
+    }
+    this.covariates = Object.keys(data['responsibility']);
+    this.mostResponsible = this.covariates.reduce((prev, curr) =>
+      data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, this.covariates[0]);
+    const keys = Object.keys(data['fine_grained'].attributes);
+    for (const key of keys) {
+      data['fine_grained'].attributes[key].columns.unshift('k');
+      data['fine_grained'].attributes[key].rows = data['fine_grained'].attributes[key].rows.map((row, index) => {
+        return { k: index + 1, ...row };
+      });
+    }
     this.fineGrained = data['fine_grained'];
     this.responsibility = data['responsibility'];
-    this.rewrittenSql = data['rewritten-sql'];
     this.graph = data['graph'];
   }
 

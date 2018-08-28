@@ -237,9 +237,9 @@ class BiasResource(object):
             # FairDB parameters
             whitelist = []
             black = []
-            if filename == 'finpe2.csv':
-                whitelist = ['origin']
-                black = ['destcityname', 'dest', 'origincityname']
+            # if filename == 'finpe2.csv':
+            #     whitelist = ['origin']
+            #     black = ['destcityname', 'dest', 'origincityname']
             fraction = 1
             shfraction = 1
             method = 'g2'
@@ -389,8 +389,10 @@ class BiasResource(object):
             for line in temp_ate['query']:
                 print(line)
 
-            outJSON['cov_treatment'] = cov1
-            outJSON['cov_outcome'] = cov2
+            outJSON['covariates'] = cov
+            outJSON['mediator'] = med
+            # outJSON['cov_treatment'] = cov1
+            # outJSON['cov_outcome'] = cov2
             outJSON['responsibility'] = res
 
             outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}

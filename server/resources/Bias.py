@@ -63,7 +63,7 @@ class BiasResource(object):
             select += treatment[0] + ', '
             for attribute in covariates:
                 select += attribute + ', '
-                if len(select) > 50:
+                if len(select) > 40:
                     query.append(select)
                     select = '      '
             select += 'avg(' + outcome[0] + ') AS avge' 
@@ -73,7 +73,7 @@ class BiasResource(object):
                 where = '    WHERE '
                 for word in whereString.split(' '):
                     where += word + ' '
-                    if len(where) > 50:
+                    if len(where) > 40:
                         query.append(where)
                         where = '      '
                 if where != '      ':
@@ -82,7 +82,7 @@ class BiasResource(object):
             group += treatment[0] + ', '
             for attribute in covariates:
                 group += attribute + ', '
-                if len(group) > 50:
+                if len(group) > 40:
                     query.append(group)
                     group = '      '
             if group[-2:] == ', ':
@@ -98,7 +98,7 @@ class BiasResource(object):
             select = '    SELECT '
             for attribute in covariates:
                 select += attribute + ', '
-                if len(select) > 50:
+                if len(select) > 40:
                     query.append(select)
                     select = '      '
             select += 'count(*) / '
@@ -110,7 +110,7 @@ class BiasResource(object):
                 where = '        WHERE '
                 for word in whereString.split(' '):
                     where += word + ' '
-                    if len(where) > 50:
+                    if len(where) > 40:
                         query.append(where)
                         where = '          '
                 if where != '          ':
@@ -121,7 +121,7 @@ class BiasResource(object):
                 where = '    WHERE '
                 for word in whereString.split(' '):
                     where += word + ' '
-                    if len(where) > 50:
+                    if len(where) > 40:
                         query.append(where)
                         where = '      '
                 if where != '      ':
@@ -129,7 +129,7 @@ class BiasResource(object):
             group = '    GROUP BY '
             for attribute in covariates:
                 group += attribute + ', '
-                if len(group) > 50:
+                if len(group) > 40:
                     query.append(group)
                     group = '      '
             if group[-2:] == ', ':

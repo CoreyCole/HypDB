@@ -10,7 +10,7 @@ import { Component, OnChanges, Input } from '@angular/core';
         <mat-select
           #currK
           placeholder="k"
-          [value]="3"
+          [value]="2"
           (valueChange)="kSelected(currK.value)">
           <mat-option *ngFor="let row of fineGrained.attributes[currentCovariate].rows; index as i" [value]="i+1">
             k = {{ i+1 }}
@@ -67,7 +67,7 @@ export class FineGrainedComponent implements OnChanges {
         return { name: column };
       });
       this.maxK = this.fineGrained.attributes[this.currentCovariate].rows.length;
-      this.currK = 3;
+      this.currK = 2;
       this.rows = this.fineGrained.attributes[this.currentCovariate].rows.slice(0, this.currK);
     }
   }
@@ -83,11 +83,10 @@ export class FineGrainedComponent implements OnChanges {
       return { name: column };
     });
     if (this.fineGrained.attributes[this.currentCovariate].rows.length <= this.currK) {
-      this.currK = this.fineGrained.attributes[this.currentCovariate].rows.length;
       this.rows = this.fineGrained.attributes[this.currentCovariate].rows
-    } else {
-      this.rows = this.fineGrained.attributes[this.currentCovariate].rows.slice(0, this.currK);
+      this.currK = this.fineGrained.attributes[this.currentCovariate].rows.length;
     }
+    this.rows = this.fineGrained.attributes[this.currentCovariate].rows.slice(0, this.currK);
   }
 
 }

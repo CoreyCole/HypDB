@@ -24,7 +24,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
     </div>
     <div class="query-chart-row" *ngIf="graph">
       <mat-card class="query-card">
-        <h1>Further grouping by {{ mostResponsible }}</h1>
+        <h1>Further grouping by {{ mostResponsible }} may lead to a different insight...</h1>
         <span class="spacer"></span>
         <pre *ngFor="let line of queryChartData[1].query" class="sql further-query">{{ line }}</pre>
       </mat-card>

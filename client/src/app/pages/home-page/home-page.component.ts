@@ -17,10 +17,12 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
         <hyp-query [files]="main.files | async" (naiveAte)="displayNaiveAte($event)" (results)="displayResults($event)" (clear)="fileChanged()"></hyp-query>
         <span class="error">{{ error }}</span>
       </mat-card>
+      <span class="flex-span"></span>
       <div class="chart-cards" *ngIf="!error && naiveAteData">
         <hyp-naive-group-by-chart [data]="naiveAteData" [graphData]="naiveGraphData" title="Naive Group By Results"></hyp-naive-group-by-chart>
         <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
       </div>
+      <span class="flex-span"></span>
     </div>
     <div class="query-chart-row" *ngIf="graph">
       <mat-card class="query-card">
@@ -28,9 +30,11 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
         <span class="spacer"></span>
         <pre *ngFor="let line of queryChartData[1].query" class="sql further-query">{{ line }}</pre>
       </mat-card>
+      <span class="flex-span"></span>
       <div class="chart-cards">
         <hyp-responsible-group-by-chart [data]="queryChartData[1].chart" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
       </div>
+      <span class="flex-span"></span>
     </div>
     <div class="query-chart-row" *ngIf="graph">
       <mat-card class="query-card">
@@ -39,20 +43,29 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       </mat-card>
       <div class="tede">
         <div class="tede-chart-cards">
+          <span class="flex-span"></span>
           <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
+          <span class="flex-span"></span>
           <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
+          <span class="flex-span"></span>
         </div>
-        <mat-card class="covariates">
-          <h3>Covariates</h3>
-          <span *ngFor="let cov of covariates; index as i">{{ cov }}{{ (i < covariates.length - 1) ? ', ' : ''}}</span>
-          <h3>Mediator</h3>
-          <span *ngFor="let cov of covariates; index as i">{{ cov }}{{ (i < covariates.length - 1) ? ', ' : ''}}</span>
-        </mat-card>
+        <div class="cov-container">
+          <span class="flex-span"></span>
+          <mat-card class="covariates">
+            <h3>Covariates</h3>
+            <span *ngFor="let cov of covariates; index as i">{{ cov }}{{ (i < covariates.length - 1) ? ', ' : ''}}</span>
+            <h3>Mediator</h3>
+            <span *ngFor="let cov of mediator; index as i">{{ cov }}{{ (i < mediator.length - 1) ? ', ' : ''}}</span>
+          </mat-card>
+          <span class="flex-span"></span>
+        </div>
       </div>
     </div>
     <div class="datatable-cards" *ngIf="graph">
+      <span class="flex-span"></span>
       <hyp-coarse-grained [responsibility]="responsibility"></hyp-coarse-grained>
       <hyp-fine-grained [fineGrained]="fineGrained"></hyp-fine-grained>
+      <span class="flex-span"></span>
     </div>
     <div class="weighted-avg-query">
     </div>
@@ -77,6 +90,7 @@ export class HomePageComponent implements OnInit {
   error: string = null;
   queryChartData: { type: string, query: string[], chart: any[] }[];
   covariates: string[];
+  mediator: string[];
 
   constructor(
     public main: MainService
@@ -119,9 +133,11 @@ export class HomePageComponent implements OnInit {
       }
       this.queryChartData.push(queryChart);
     }
-    this.covariates = Object.keys(data['responsibility']);
-    this.mostResponsible = this.covariates.reduce((prev, curr) =>
-      data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, this.covariates[0]);
+    this.covariates = data['covariates'];
+    this.mediator = data['mediator'];
+    const resKeys = Object.keys(data['responsibility']);
+    this.mostResponsible = resKeys.reduce((prev, curr) =>
+      data['responsibility'][curr] > data['responsibility'][prev] ? curr : prev, resKeys[0]);
     const keys = Object.keys(data['fine_grained'].attributes);
     for (const key of keys) {
       data['fine_grained'].attributes[key].columns.unshift('k');

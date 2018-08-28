@@ -13,15 +13,23 @@ mat-card.sql {
 
 .further-query {
   font-size: 18pt;
+  pre {
+    margin-left: 16px;
+  }
 }
 
 .tede {
   display: flex;
   flex-direction: column;
+  width: 77%;
 
-  .covariates {
-    margin: 8px;
+  div.cov-container {
+    display: flex;
+    flex-direction: row;
     width: 100%;
+    mat-card.covariates {
+      max-width: 500px;
+    }
   }
 }
 
@@ -40,8 +48,11 @@ mat-card.sql {
 
   mat-card.query-card {
     margin: 8px;
-    width: 33%;
+    min-width: 33%;
     padding: 8px;
+    h1 {
+      margin: 16px;
+    }
   }
   
   div.chart-cards {
@@ -56,11 +67,11 @@ div.datatable-cards {
   display: flex;
   flex-direction: row;
   hyp-coarse-grained {
-    min-width: 33%;
+    min-width: 20%;
   }
-  hyp-fine-grained {
-    width: 100%;
-  }
+  // hyp-fine-grained {
+  //   width: 100%;
+  // }
 }
 
 div.graph {

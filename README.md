@@ -8,7 +8,7 @@ cd server && pipenv install
 pipenv shell
 
 # also inside the server directory, run this inside your pip virtual environment
-source env.sh
+source ./env.sh
 
 # then cd back into the root and run the server
 npm run start-server

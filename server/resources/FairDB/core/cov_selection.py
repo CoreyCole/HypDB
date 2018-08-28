@@ -18,6 +18,22 @@ def diff(list1, list2):
         return [x for x in list1 if x not in list2]
 
 class FairDB(object):
+    def recommend_covarite(self, treatment, outcome, potential):
+        inf = info.Info(self.data)
+        init_cmi = inf.CMI(treatment,outcome)
+        recom_cov=[]
+        while 1>0:
+            cur_recom_cov=recom_cov.copy()
+            for item in potential:
+                    ad_cmi=inf.CMI(treatment, outcome, [item] + recom_cov)
+                    if  ad_cmi<init_cmi:
+                        if item not in recom_cov:
+                            recom_cov=[item] + recom_cov
+                            init_cmi=ad_cmi
+            if  cur_recom_cov ==recom_cov:
+                break
+        return recom_cov
+
     def __init__(self, data, fraction=1,cube=False, database=False,cubename='',tablename=''):
         self.orgdata = data
         self.data = data

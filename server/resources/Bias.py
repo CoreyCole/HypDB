@@ -27,11 +27,11 @@ from FairDB.modules.infotheo.info_theo import *
 class BiasResource(object):
     """Resource for computing bias statistics"""
 
-    def powerset(self, iterable):
+    def powerset(iterable):
         s = list(iterable)
         return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
-    def minCMI(self, treatment, outcome, data, cov1, cov2=[]):
+    def minCMI(treatment, outcome, data, cov1, cov2=[]):
         subset = []
         cache = {}
         info = Info(data)
@@ -43,6 +43,113 @@ class BiasResource(object):
                 subset = list(attrs)
         print(subset)
         return subset
+
+    def writeQuery(treatment, outcome, filename, whereString, naive=True, covariates=[]):
+        query = []
+        if naive:
+            query.append('SELECT ' + outcome[0])
+            query.append('FROM ' + filename)
+            if whereString and whereString != 'undefined':
+                query.append('WHERE ' + whereString)
+            if len(treatment) > 1:
+                query.append('GROUP BY ' + treatment[0] + ', ' + treatment[1])
+            else:
+                query.append('GROUP BY ' + treatment[0])
+        else:
+            # BLOCKS
+            query.append('WITH Blocks AS')
+            query.append('  (')
+            select = '    SELECT '
+            select += treatment[0] + ', '
+            for attribute in covariates:
+                select += attribute + ', '
+                if len(select) > 50:
+                    query.append(select)
+                    select = '      '
+            select += 'avg(' + outcome[0] + ') AS avge' 
+            query.append(select)
+            query.append('    FROM ' + filename)
+            if whereString and whereString != 'undefined':
+                where = '    WHERE '
+                for word in whereString.split(' '):
+                    where += word + ' '
+                    if len(where) > 50:
+                        query.append(where)
+                        where = '      '
+                if where != '      ':
+                    query.append(where)
+            group = '    GROUP BY '
+            group += treatment[0]
+            for attribute in covariates:
+                group += ', ' + attribute
+                if len(group) > 50:
+                    query.append(group)
+                    group = '      '
+            if group != '      ':
+            	query.append(group)
+            query.append('  ),')
+
+            # WEIGHTS
+            query.append('Weights AS')
+            query.append('  (')
+            select = '    SELECT '
+            for attribute in covariates:
+                select += attribute + ', '
+                if len(select) > 50:
+                    query.append(select)
+                    select = '      '
+            select += 'count(*) / '
+            query.append(select)
+            query.append('      (')
+            query.append('        SELECT count(*)')
+            query.append('        FROM ' + filename)
+            if whereString and whereString != 'undefined':
+                where = '        WHERE '
+                for word in whereString.split(' '):
+                    where += word + ' '
+                    if len(where) > 50:
+                        query.append(where)
+                        where = '          '
+                if where != '          ':
+                    query.append(where)
+            query.append('      ) AS W')
+            query.append('    FROM ' + filename)
+            if whereString and whereString != 'undefined':
+                where = '    WHERE '
+                for word in whereString.split(' '):
+                    where += word + ' '
+                    if len(where) > 50:
+                        query.append(where)
+                        where = '      '
+                if where != '      ':
+                    query.append(where)
+            group = '    GROUP BY '
+            for attribute in covariates:
+                group += attribute + ', '
+                if len(group) > 50:
+                    query.append(group)
+                    group = '      '
+            if group[-2:] == ', ':
+                group = group[:-2]
+            if group != '      ':
+                query.append(group)
+            query.append('    HAVING count(DISTINCT ' + treatment[0] + ') = 2')
+            query.append('  )')
+
+            query.append('SELECT ' + treatment[0] + ', sum(avge * W)')
+            query.append('FROM Blocks, Weights')
+            query.append('GROUP BY ' + treatment[0])
+            where = 'WHERE Blocks.'
+            for attribute in covariates:
+                where += attribute + ' = Weights.' + attribute + ' AND '
+                query.append(where)
+                where = '  Blocks.'
+            if query[-1][-5:] == ' AND ':
+                query[-1] = query[-1][:-5]
+        return query 
+            
+
+
 
     def parseWhere(key, value, data):
         if key == 'AND':
@@ -144,19 +251,19 @@ class BiasResource(object):
             # Naive group-by query, followd by a conditional independance test
             ate = sql.naive_groupby(data, treatment, outcome)
             ate_data = sql.plot(ate, treatment, outcome)
-            outJSON = {'naiveAte': ate_data}
-            print(outJSON)
+            outJSON = {'data' : []}
 
-            # old code for getting ate for each grouping attribute
-            # going to need to do the reverse array trick again once we know the most biased covariate
-            # grouping_attributes = []
-            # ate_list = []
-            # for treat in treatment:
-            #     grouping_attributes.append(treat)
-            #     ate = sql.naive_groupby(data, grouping_attributes[::-1], outcome)
-            #     ate_step = sql.plot(ate, grouping_attributes, outcome)
-            #     ate_list.append(ate_step)
-            # outJSON = {'ate': ate_list}
+            temp_ate = {'type' : 'naiveAte'}
+            temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'])
+            temp_ate['chart'] = ate_data
+            outJSON['data'].append(temp_ate)
+
+            for line in temp_ate['query']:
+                print(line)
+
+            #outJSON = {'naiveAte': ate_data}
+
+            print(outJSON)
 
             # Computing parents of the treatment
             cov1, par1 = detector.get_parents(treatment, pvalue=pvalue, method=method, ratio=1, fraction=fraction,
@@ -182,18 +289,22 @@ class BiasResource(object):
             res = get_respon(data, treatment, outcome, list(set(cov1 + cov2)))
             print(res)
 
-            # treatment.append('origin')
-            # print(treatment)
             t2 = treatment.copy()
-            #if max(res, key=res.get)
-            t2.append(max(res, key=res.get))
-            print(t2)
-            ate2 = sql.naive_groupby(data, t2[::-1], outcome)
-            print(ate2)
-            ate_data2 = sql.plot(ate2, t2, outcome)
-            outJSON['responsibleAte'] = ate_data2
+            newRes = {k:v for (k,v) in res.items() if k != outcome[0] and k != treatment[0]}
+            if newRes:
+                t2.append(max(newRes, key=newRes.get))
+                ate2 = sql.naive_groupby(data, t2[::-1], outcome)
+                ate_data2 = sql.plot(ate2, t2, outcome)
 
-            '''
+                temp_ate = {'type' : 'responsibleAte'}
+                temp_ate['query'] = BiasResource.writeQuery(t2, outcome, params['filename'][:-4], params['whereString'])
+                temp_ate['chart'] = ate_data2
+                outJSON['data'].append(temp_ate)
+                
+                for line in temp_ate['query']:
+                    print(line)
+
+            
             # Adjusting for parents of the treatment for computing total effect
             # mediatpor and init not needed for total effect
             de = None
@@ -208,8 +319,13 @@ class BiasResource(object):
             if par1 and par2:
                 de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1, par2, init)
                 print('de1', de)
+                temp_ate = {'type' : 'direct-effect'}
+                temp_ate['query'] = ''
+                temp_ate['chart'] = sql.plot(de, treatment, outcome)
+                outJSON['data'].append(temp_ate)
 
-            print(data)
+            
+            # print(data)
             cmi1 = BiasResource.minCMI(treatment, outcome, data, cov1, cov2)
             print('cmi1 = ', cmi1)
             if cmi1:
@@ -226,12 +342,21 @@ class BiasResource(object):
                 if alt1 and alt2:
                     de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, alt1, alt2, init)
                     print('de2', de)
-
+                    temp_ate = {'type' : 'direct-effect-cmi'}
+                    temp_ate['query'] = ''
+                    temp_ate['chart'] = sql.plot(de, treatment, outcome)
+                    outJSON['data'].append(temp_ate)
 
             # total effect
             if par1:
                 te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, par1)
                 print('te1', te)
+                temp_ate = {'type' : 'rewritten-sql'}
+                temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=par1)
+                temp_ate['chart'] = sql.plot(te, treatment, outcome)
+                outJSON['data'].append(temp_ate)
+                for line in temp_ate['query']:
+                    print(line)
 
             cmi2 = BiasResource.minCMI(treatment, outcome, data, cov1)
             print('cmi2 = ', cmi2)
@@ -245,7 +370,13 @@ class BiasResource(object):
                 if alt1:
                     te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cmi2)
                     print('te2', te)
-            '''
+                    temp_ate = {'type' : 'total-effect-cmi'}
+                    temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=cmi2)
+                    temp_ate['chart'] = sql.plot(te, treatment, outcome)
+                    outJSON['data'].append(temp_ate)
+
+                    for line in temp_ate['query']:
+                    	print(line)
 
             outJSON['cov_treatment'] = cov1
             outJSON['cov_outcome'] = cov2
@@ -254,90 +385,24 @@ class BiasResource(object):
             outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
             print(data.columns.values, treatment, outcome, [*res])
             for attr in set([*res]) - set(treatment) - set(outcome):
-                X=top_k_explanation(data, treatment, outcome, [attr], k=3)
+                X=top_k_explanation(data, treatment, outcome, [attr], k=10)
                 print(X.loc[:, attr: outcome[0]])
                 #print(X)
                 columns = list(X.columns.values[:3])
-                columns.append('totalCorrelation')
+                #columns.append('totalCorrelation')
                 rows = []
                 for index, row in X.iterrows():
                     row_data = {}
                     for column in columns:
-                        if (column == 'totalCorrelation'):
-                            column = 'TotalCorrelation'
+                        #if (column == 'totalCorrelation'):
+                        #    column = 'TotalCorrelation'
                         row_data[column] = row[column]
-                    row_data['totalCorrelation'] = str(row['TotalCorrelation'])
+                    #row_data['totalCorrelation'] = str(row['TotalCorrelation'])
                     rows.append(row_data)
                 #print(rows)
                 #print(columns)
                 outJSON['fine_grained']['attributes'][attr] = {'columns': columns, 'rows': rows}
             print(json.dumps(outJSON))
-
-
-            # REMOVE THIS AFTER COREY's BUGFIX
-            # params['whereString'] = "Carrier in ('AA','UA') AND Airport in ('COS','MFE','MTJ','ROC')"
-
-            # BLOCKS
-            outJSON['rewritten-sql'] = []
-            outJSON['rewritten-sql'].append('WITH Blocks AS')
-            outJSON['rewritten-sql'].append('  (')
-            select = '    SELECT '
-            select += treatment[0]
-            for attribute in list(set(cov1 + cov2)):
-                select += ', ' + attribute
-            select += ', avg(' + outcome[0] + ') AS avge' 
-            outJSON['rewritten-sql'].append(select)
-            outJSON['rewritten-sql'].append('    FROM ' + params['filename'][:-4])
-            if params['whereString'] and params['whereString'] != 'undefined':
-                outJSON['rewritten-sql'].append('    WHERE ' + params['whereString'])
-            group = '    GROUP BY '
-            group += treatment[0]
-            for attribute in list(set(cov1 + cov2)):
-                group += ', ' + attribute
-            outJSON['rewritten-sql'].append(group)
-            outJSON['rewritten-sql'].append('  ),')
-
-            # WEIGHTS
-            outJSON['rewritten-sql'].append('Weights AS')
-            outJSON['rewritten-sql'].append('  (')
-            select = '    SELECT '
-            for attribute in list(set(cov1 + cov2)):
-                select += attribute + ', '
-            select += 'count(*) / '
-            outJSON['rewritten-sql'].append(select)
-
-            outJSON['rewritten-sql'].append('      (')
-            outJSON['rewritten-sql'].append('        SELECT count(*)')
-            outJSON['rewritten-sql'].append('        FROM ' + params['filename'][:-4])
-            if params['whereString'] and params['whereString'] != 'undefined':
-                outJSON['rewritten-sql'].append('        WHERE ' + params['whereString'])
-            outJSON['rewritten-sql'].append('      ) AS W')
-            outJSON['rewritten-sql'].append('    FROM ' + params['filename'][:-4])
-            if params['whereString'] and params['whereString'] != 'undefined':
-                outJSON['rewritten-sql'].append('    WHERE ' + params['whereString'])
-            group = '    GROUP BY '
-            for attribute in list(set(cov1 + cov2)):
-                group += attribute + ', '
-            if group[-2:] == ', ':
-                group = group[:-2]
-            outJSON['rewritten-sql'].append(group)
-            outJSON['rewritten-sql'].append('    HAVING count(DISTINCT ' + treatment[0] + ') = 2')
-            outJSON['rewritten-sql'].append('  )')
-
-            outJSON['rewritten-sql'].append('SELECT ' + treatment[0] + ', sum(avge * W)')
-            outJSON['rewritten-sql'].append('FROM Blocks, Weights')
-            outJSON['rewritten-sql'].append('GROUP BY ' + treatment[0])
-            where = 'WHERE Blocks.'
-            for attribute in list(set(cov1 + cov2)):
-                where += attribute + ' = Weights.' + attribute + ' AND '
-                outJSON['rewritten-sql'].append(where)
-                where = '  Blocks.'
-
-            if outJSON['rewritten-sql'][-1][-5:] == ' AND ':
-                outJSON['rewritten-sql'][-1] = outJSON['rewritten-sql'][-1][:-5]
-
-            for line in outJSON['rewritten-sql']:
-                print(line)
 
             # Temporary filler return
             print('post worked')

@@ -15,7 +15,7 @@ import { catchError } from 'rxjs/operators';
       <pre>       SELECT avg(</pre>
       <div class="auto-complete outcome">
         <mat-form-field>
-          <input matInput placeholder="Outcome" [matAutocomplete]="tdAuto" [(ngModel)]="currentOutcome"
+          <input matInput placeholder="" [matAutocomplete]="tdAuto" [(ngModel)]="currentOutcome"
             (ngModelChange)="outcomeAttrs = filterAttributes(currentOutcome)" name="outcome">
         </mat-form-field>
         <mat-autocomplete #tdAuto="matAutocomplete">
@@ -32,7 +32,7 @@ import { catchError } from 'rxjs/operators';
       <pre>       GROUP BY</pre>
       <div class="auto-complete treatment">
         <mat-form-field>
-          <input matInput placeholder="Treatment" [matAutocomplete]="tdAuto2" [(ngModel)]="currentTreatment"
+          <input matInput placeholder="" [matAutocomplete]="tdAuto2" [(ngModel)]="currentTreatment"
             (ngModelChange)="treatAttrs = filterAttributes(currentTreatment)" name="treatment">
         </mat-form-field>
         <mat-autocomplete #tdAuto2="matAutocomplete">

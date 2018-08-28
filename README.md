@@ -10,7 +10,7 @@ source env.sh
 # then cd back into the root and run the server
 npm run start-server
 
-# to start the client, first install node_modules
+# (in another terminal window) to start the client, first install node_modules
 cd client && npm i
 
 # then cd back into the root and run the client

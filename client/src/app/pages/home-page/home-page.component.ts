@@ -38,7 +38,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       <span class="flex-span"></span>
     </div>
     <div class="query-chart-row" *ngIf="graph">
-      <mat-card class="query-card">
+      <mat-card class="query-card" *ngIf="queryChartData[3].chart && queryChartData[3].chart.length > 0">
         <h1>Total Effect Query</h1>
         <pre *ngFor="let line of queryChartData[3].query" class="sql">{{ line }}</pre>
       </mat-card>

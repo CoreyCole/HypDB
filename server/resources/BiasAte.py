@@ -85,8 +85,9 @@ class BiasAteResource(object):
                                                   debug=debug,loc_num_samples=loc_num_samples,
                                                   num_samples=num_samples,view=False)
 
-        low = '%.3f' % (low)
-        high = '%.3f' % (high)
+        low = '%.3f' % (low) if low else 0
+        high = '%.3f' % (high) if high else 0
+        I = '%.6f' % (I) if I else 0
 
         outJSON = {
             'low' : low,

@@ -260,9 +260,9 @@ class BiasResource(object):
                                                   debug=debug,loc_num_samples=loc_num_samples,
                                                   num_samples=num_samples,view=False)
 
-            low = '%.3f' % (low)
-            high = '%.3f' % (high)
-            I = '%.3f' % (I)
+            low = '%.3f' % (low) if low else 0
+            high = '%.3f' % (high) if high else 0
+            I = '%.6f' % (I) if I else 0
             print('pval', low, high, I)
 
             outJSON = {'data' : []}
@@ -350,9 +350,9 @@ class BiasResource(object):
                                                         debug=debug,loc_num_samples=loc_num_samples,
                                                         num_samples=num_samples,view=False)
 
-                low = '%.3f' % (low)
-                high = '%.3f' % (high)
-                I = '%.3f' % (I)
+                low = '%.3f' % (low) if low else 0
+                high = '%.3f' % (high) if high else 0
+                I = '%.6f' % (I) if I else 0
                 print('pval', low, high, I)
 
                 temp_ate = {'type' : 'responsibleAte'}
@@ -408,9 +408,9 @@ class BiasResource(object):
                                                   debug=debug, loc_num_samples=loc_num_samples,
                                                   num_samples=num_samples, view=False)
 
-            low = '%.3f' % (low)
-            high = '%.3f' % (high)
-            I = '%.3f' % (I)
+            low = '%.3f' % (low) if low else 0
+            high = '%.3f' % (high) if high else 0
+            I = '%.6f' % (I) if I else 0
             print('pval', low, high, I)
 
             temp_ate = {'type' : 'direct-effect'}
@@ -430,9 +430,9 @@ class BiasResource(object):
                                                   debug=debug, loc_num_samples=loc_num_samples,
                                                   num_samples=num_samples, view=False)
 
-            low = '%.3f' % (low)
-            high = '%.3f' % (high)
-            I = '%.3f' % (I)
+            low = '%.3f' % (low) if low else 0
+            high = '%.3f' % (high) if high else 0
+            I = '%.6f' % (I) if I else 0
             print('pval', low, high, I)
 
             temp_ate = {'type' : 'total-effect'}

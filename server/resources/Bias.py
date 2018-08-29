@@ -248,8 +248,8 @@ class BiasResource(object):
             num_samples = 1000
             loc_num_samples = 1000
             if filename == 'AdultData.csv':
-            	num_samples = 100
-            	loc_num_samples = 100
+                num_samples = 100
+                loc_num_samples = 100
             debug = False
             coutious = 'no'
             k = 3
@@ -317,7 +317,6 @@ class BiasResource(object):
             for item in cov:
                 if item in cov2:
                     cov2.remove(item)
-            print('cov = ', cov)
             # med
             #med = BiasResource.minCMI(treatment, outcome, data, cov2)
             med = None
@@ -326,7 +325,7 @@ class BiasResource(object):
             else:
                 med = detector.recommend_covarite(treatment, outcome, cov2)
             #med = ['crsdeptime', 'year']
-            print('med = ', med)
+            
             if treatment[0] in cov:
                 cov.remove(treatment[0])
             if treatment[0] in med:
@@ -335,6 +334,8 @@ class BiasResource(object):
                 cov.remove(outcome[0])
             if outcome[0] in med:
                 med.remove(outcome[0])
+            print('cov = ', cov)
+            print('med = ', med)
             # get most responsible attribute
             print(treatment, outcome)
             res = get_respon(data, outcome, treatment, list(set(cov + med)))
@@ -404,47 +405,53 @@ class BiasResource(object):
             #         print(line)
 
             # DE
-            de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov, med, init)
-            print('de', de)
+            if cov and med:
+                de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov, med, init)
+                print('de', de)
 
-            low, high, I = test.ulti_fast_permutation_tst(matcheddata, treatment, outcome, list(set(cov + med)), pvalue=pvalue,
+                low, high, I = test.ulti_fast_permutation_tst(matcheddata, treatment, outcome, list(set(cov + med)), pvalue=pvalue,
                                                   debug=debug, loc_num_samples=loc_num_samples,
                                                   num_samples=num_samples, view=False)
 
-            low = '%.3f' % (low) if low else 0
-            high = '%.3f' % (high) if high else 0
-            I = '%.6f' % (I) if I else 0
-            print('pval', low, high, I)
+                low = '%.3f' % (low) if low else 0
+                high = '%.3f' % (high) if high else 0
+                I = '%.6f' % (I) if I else 0
+                print('pval', low, high, I)
 
-            temp_ate = {'type' : 'direct-effect'}
-            temp_ate['query'] = ''
-            temp_ate['chart'] = sql.plot(de, treatment, outcome)
-            temp_ate['low'] = low
-            temp_ate['high'] = high
-            temp_ate['cmi'] = I
-            outJSON['data'].append(temp_ate)
+                temp_ate = {'type' : 'direct-effect'}
+                temp_ate['query'] = ''
+                temp_ate['chart'] = sql.plot(de, treatment, outcome)
+                temp_ate['low'] = low
+                temp_ate['high'] = high
+                temp_ate['cmi'] = I
+                outJSON['data'].append(temp_ate)
+            else:
+                outJSON['data'].append({})
 
 
             # TE
-            te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov)
-            print('te', te)
+            if cov:
+                te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov)
+                print('te', te)
 
-            low, high, I = test.ulti_fast_permutation_tst(matcheddata, treatment, outcome, cov, pvalue=pvalue,
-                                                  debug=debug, loc_num_samples=loc_num_samples,
-                                                  num_samples=num_samples, view=False)
+                low, high, I = test.ulti_fast_permutation_tst(matcheddata, treatment, outcome, cov, pvalue=pvalue,
+                                                      debug=debug, loc_num_samples=loc_num_samples,
+                                                      num_samples=num_samples, view=False)
 
-            low = '%.3f' % (low) if low else 0
-            high = '%.3f' % (high) if high else 0
-            I = '%.6f' % (I) if I else 0
-            print('pval', low, high, I)
+                low = '%.3f' % (low) if low else 0
+                high = '%.3f' % (high) if high else 0
+                I = '%.6f' % (I) if I else 0
+                print('pval', low, high, I)
 
-            temp_ate = {'type' : 'total-effect'}
-            temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=med)
-            temp_ate['chart'] = sql.plot(te, treatment, outcome)
-            temp_ate['low'] = low
-            temp_ate['high'] = high
-            temp_ate['cmi'] = I
-            outJSON['data'].append(temp_ate)
+                temp_ate = {'type' : 'total-effect'}
+                temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=med)
+                temp_ate['chart'] = sql.plot(te, treatment, outcome)
+                temp_ate['low'] = low
+                temp_ate['high'] = high
+                temp_ate['cmi'] = I
+                outJSON['data'].append(temp_ate)
+            else:
+                outJSON['data'].append({})
 
             for line in temp_ate['query']:
                 print(line)

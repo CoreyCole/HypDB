@@ -76,6 +76,11 @@ class BiasAteResource(object):
         ate = sql.naive_groupby(data, treatment, outcome)
         ate_data = sql.plot(ate, treatment, outcome)
 
+        pvalue = 0.01
+        debug = False
+        loc_num_samples = 1000
+        num_samples = 1000
+
         low, high, I = test.ulti_fast_permutation_tst(data, treatment, outcome, pvalue=pvalue,
                                                   debug=debug,loc_num_samples=loc_num_samples,
                                                   num_samples=num_samples,view=False)

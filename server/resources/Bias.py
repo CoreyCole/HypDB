@@ -200,7 +200,7 @@ class BiasResource(object):
             raise ValueError("Supported where operators include 'AND', 'IN', 'NOT IN', '=', '!=', '>', '>=', '<', and '<='")
 
     def on_post(self, req, resp):
-        #try:
+        try:
 
             """Endpoint for returning bias statistics about a query"""
 
@@ -405,7 +405,7 @@ class BiasResource(object):
             #         print(line)
 
             # DE
-            if cov and med:
+            if med:
                 de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov, med, init)
                 print('de', de)
 
@@ -464,7 +464,11 @@ class BiasResource(object):
 
             outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
             # print(data.columns.values, treatment, outcome, [*res])
-            for attr in set([*res]) - set(treatment) - set(outcome):
+            for key in res:
+                if res == outcome[0] or res == treatment[0]:
+                    res.pop(key)
+
+            for attr in res:
                 X=top_k_explanation(data, treatment, outcome, [attr], k=10)
                 print(X.loc[:, attr: outcome[0]])
                 #print(X)
@@ -492,9 +496,9 @@ class BiasResource(object):
             resp.status = falcon.HTTP_200
             resp.body = json.dumps(outJSON)
             return resp
-        #except Exception as e:
-        #   print(e)
-        #   resp.content_type = 'application/json'
-        #   resp.status = falcon.HTTP_422
-        #   resp.body = str(e)
-        #   return resp
+        except Exception as e:
+          print(e)
+          resp.content_type = 'application/json'
+          resp.status = falcon.HTTP_422
+          resp.body = str(e)
+          return resp

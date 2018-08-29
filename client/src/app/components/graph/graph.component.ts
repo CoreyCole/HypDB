@@ -16,8 +16,8 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
       [nodes]="nodes"
       [scheme]="colorScheme"
       [curve]="curve"
-      [enableZoom]="false"
-      [draggingEnabled]="true"
+      [enableZoom]="true"
+      [draggingEnabled]="false"
       [panningEnabled]="false"
       [zoomLevel]="'2.0'"
       [autoCenter]="true">

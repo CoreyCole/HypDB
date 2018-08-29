@@ -20,7 +20,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       </mat-card>
       <span class="flex-span"></span>
       <div class="chart-cards" *ngIf="!error && naiveAteData">
-        <hyp-naive-group-by-chart [data]="naiveAteData" [graphData]="naiveGraphData" title="Naive Group By Results"></hyp-naive-group-by-chart>
+        <hyp-naive-group-by-chart [data]="naiveAteData" [cmi]="naiveCmi" [low]="naiveLow" [high]="naiveHigh" [graphData]="naiveGraphData" title="Naive Group By Results"></hyp-naive-group-by-chart>
         <!-- <hyp-group-by-charts *ngIf="!error && ateData" [data]="ateData" [graphData]="graph"></hyp-group-by-charts> -->
       </div>
       <span class="flex-span"></span>
@@ -33,7 +33,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       </mat-card>
       <span class="flex-span"></span>
       <div class="chart-cards">
-        <hyp-responsible-group-by-chart [data]="queryChartData[1].chart" [low]="queryChartData[1]['low']" [high]="queryChartData[1]['high']" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+        <hyp-responsible-group-by-chart [data]="queryChartData[1].chart" [cmi]="queryChartData[1]['cmi']" [low]="queryChartData[1]['low']" [high]="queryChartData[1]['high']" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
       </div>
       <span class="flex-span"></span>
     </div>
@@ -45,9 +45,9 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       <div class="tede">
         <div class="tede-chart-cards">
           <span class="flex-span"></span>
-          <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [low]="queryChartData[3]['low']" [high]="queryChartData[3]['high']" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
+          <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [cmi]="queryChartData[3]['cmi']" [low]="queryChartData[3]['low']" [high]="queryChartData[3]['high']" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
           <span class="flex-span"></span>
-          <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [low]="queryChartData[2]['low']" [high]="queryChartData[2]['high']" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
+          <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [cmi]="queryChartData[2]['cmi']" [low]="queryChartData[2]['low']" [high]="queryChartData[2]['high']" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
           <span class="flex-span"></span>
         </div>
         <div class="cov-container">
@@ -92,6 +92,9 @@ export class HomePageComponent implements OnInit {
   queryChartData: { type: string, query: string[], chart: any[] }[];
   covariates: string[];
   mediator: string[];
+  naiveLow: string;
+  naiveHigh: string;
+  naiveCmi: string;
 
   constructor(
     public main: MainService
@@ -110,6 +113,9 @@ export class HomePageComponent implements OnInit {
     }
     this.error = null;
     this.naiveAteData = this.parseAte(data['naiveAte']);
+    this.naiveLow = data['low'];
+    this.naiveHigh = data['high'];
+    this.naiveCmi = data['cmi'];
     // this.naiveAteData = [
     //   { name: "AA", value: 0.0598 },
     //   { name: "UA", value: 0.0644 }

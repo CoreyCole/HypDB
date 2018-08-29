@@ -19,7 +19,7 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
       [enableZoom]="true"
       [draggingEnabled]="false"
       [panningEnabled]="false"
-      [zoomLevel]="'2.0'"
+      [zoomLevel]="'1.5'"
       [autoCenter]="true">
 
       <ng-template #defsTemplate let-link>

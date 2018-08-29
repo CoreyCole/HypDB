@@ -7,6 +7,7 @@ import { GraphData } from '../../services/main.service';
   <mat-card>
     <div class="chart" *ngIf="data && data.length > 0">
       <h2>{{ mostResponsible }} has the highest responsibility for making this query biased</h2>
+      <h3>CMI: {{ cmi }}</h3>
       <h3>95% confidence interval for p-value: ({{ low }}, {{ high }})</h3>
       <ngx-charts-bar-vertical-2d
         [view]="view"
@@ -17,7 +18,7 @@ import { GraphData } from '../../services/main.service';
         [legend]="true"
         [showXAxisLabel]="true"
         [showYAxisLabel]="true"
-        xAxisLabel="{{ treatment }} further grouped by {{ mostResponsible }}"
+        xAxisLabel="{{ mostResponsible }}"
         yAxisLabel="{{ outcome }}">
       </ngx-charts-bar-vertical-2d>
     </div>
@@ -29,6 +30,7 @@ export class ResponsibleGroupByChartComponent implements OnChanges {
   @Input() data: any[];
   @Input() graphData: GraphData;
   @Input() mostResponsible: string;
+  @Input() cmi: string;
   @Input() low: string;
   @Input() high: string;
   public view: any[] = [1000, 400];

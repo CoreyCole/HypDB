@@ -22,31 +22,32 @@ import time
 import FairDB.core.simdetec as simp
 from FairDB.utils.util import bining, get_distinct
 from FairDB.modules.infotheo.info_theo import *
+import FairDB.modules.statistics.cit as test
 
 
 class BiasResource(object):
     """Resource for computing bias statistics"""
 
-    def powerset(iterable):
-        s = list(iterable)
-        return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+    # def powerset(iterable):
+    #     s = list(iterable)
+    #     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
-    def minCMI(treatment, outcome, data, cov1, cov2=[]):
-        #print(info.cmi())
-        subset = []
-        cache = {}
-        info = Info(data)
-        #print(info.CMI(treatment, outcome, ['distancegroup', 'origin']))
-        #print(info.CMI(treatment, outcome, ['crsdeptime', 'year']))
-        #print(info.CMI(treatment, outcome, ['year', 'arrdelay', 'origin', 'distancegroup']))
-        #print(treatment, outcome, cov1 + cov2)
-        for attrs in BiasResource.powerset(set(cov1 + cov2)):
-            #print(list(attrs))
-            cmi1 = info.CMI(treatment, outcome, list(attrs))
-            cmi2 = info.CMI(treatment, outcome, subset)
-            if cmi1 < cmi2:
-                subset = list(attrs)
-        return subset
+    # def minCMI(treatment, outcome, data, cov1, cov2=[]):
+    #     #print(info.cmi())
+    #     subset = []
+    #     cache = {}
+    #     info = Info(data)
+    #     #print(info.CMI(treatment, outcome, ['distancegroup', 'origin']))
+    #     #print(info.CMI(treatment, outcome, ['crsdeptime', 'year']))
+    #     #print(info.CMI(treatment, outcome, ['year', 'arrdelay', 'origin', 'distancegroup']))
+    #     #print(treatment, outcome, cov1 + cov2)
+    #     for attrs in BiasResource.powerset(set(cov1 + cov2)):
+    #         #print(list(attrs))
+    #         cmi1 = info.CMI(treatment, outcome, list(attrs))
+    #         cmi2 = info.CMI(treatment, outcome, subset)
+    #         if cmi1 < cmi2:
+    #             subset = list(attrs)
+    #     return subset
 
     def writeQuery(treatment, outcome, filename, whereString, naive=True, covariates=[]):
         query = []
@@ -92,7 +93,7 @@ class BiasResource(object):
             if group[-2:] == ', ':
                 group = group[:-2]
             if group != '      ':
-            	query.append(group)
+                query.append(group)
             query.append('  ),')
 
             # WEIGHTS
@@ -155,8 +156,6 @@ class BiasResource(object):
         return query 
             
 
-
-
     def parseWhere(key, value, data):
         if key == 'AND':
             key0 = next(iter(value[0]))
@@ -216,7 +215,7 @@ class BiasResource(object):
             # Process where clause
             # TODO: need support for multiple where statements separated by or
             if 'where' in params and params['where'] != 'undefined':
-                print(params['where'])
+                #print(params['where'])
                 key = next(iter(params['where']))
                 data = BiasResource.parseWhere(key, params['where'][key], data)
                 # print('data size (post where clause): ', len(data))
@@ -247,7 +246,7 @@ class BiasResource(object):
             method = 'g2'
             pvalue = 0.01
             num_samples = 1000
-            loc_num_samples = 100
+            loc_num_samples = 1000
             debug = False
             coutious = 'no'
             k = 3
@@ -255,13 +254,24 @@ class BiasResource(object):
             # Naive group-by query, followd by a conditional independance test
             ate = sql.naive_groupby(data, treatment, outcome)
             ate_data = sql.plot(ate, treatment, outcome)
-            print(ate_data)
+            print(ate)
+
+            low, high, I = test.ulti_fast_permutation_tst(data, treatment, outcome, pvalue=pvalue,
+                                                  debug=debug,loc_num_samples=loc_num_samples,
+                                                  num_samples=num_samples,view=False)
+
+            low = '%.3f' % (low)
+            high = '%.3f' % (high)
+            print('pval', low, high)
+
             outJSON = {'data' : []}
             outJSON['naiveAte'] = ate_data
 
             temp_ate = {'type' : 'naiveAte'}
             temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'])
             temp_ate['chart'] = ate_data
+            temp_ate['low'] = low
+            temp_ate['high'] = high
             outJSON['data'].append(temp_ate)
 
             for line in temp_ate['query']:
@@ -323,6 +333,8 @@ class BiasResource(object):
             # get most responsible attribute
             print(treatment, outcome)
             res = get_respon(data, outcome, treatment, list(set(cov + med)))
+            for key in res:
+            	res[key] = "%.3f" % (res[key])
             print('res', res)
 
             t2 = treatment.copy()
@@ -331,10 +343,20 @@ class BiasResource(object):
                 t2.append(max(newRes, key=newRes.get))
                 ate2 = sql.naive_groupby(data, t2[::-1], outcome)
                 ate_data2 = sql.plot(ate2, t2, outcome)
+                print(ate2)
+                low, high, I = test.ulti_fast_permutation_tst(data, treatment, outcome, [t2[1]], pvalue=pvalue,
+                                                        debug=debug,loc_num_samples=loc_num_samples,
+                                                        num_samples=num_samples,view=False)
+
+                low = '%.3f' % (low)
+                high = '%.3f' % (high)
+                print('pval', low, high)
 
                 temp_ate = {'type' : 'responsibleAte'}
                 temp_ate['query'] = BiasResource.writeQuery(t2, outcome, params['filename'][:-4], params['whereString'])
                 temp_ate['chart'] = ate_data2
+                temp_ate['low'] = low
+                temp_ate['high'] = high
                 outJSON['data'].append(temp_ate)
                 
                 for line in temp_ate['query']:
@@ -376,18 +398,41 @@ class BiasResource(object):
 
             # DE
             de, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov, med, init)
-            print('de2', de)
-            temp_ate = {'type' : 'direct-effect-cmi'}
+            print('de', de)
+
+            low, high, I = test.ulti_fast_permutation_tst(matcheddata, treatment, outcome, list(set(cov + med)), pvalue=pvalue,
+                                                  debug=debug, loc_num_samples=loc_num_samples,
+                                                  num_samples=num_samples, view=False)
+
+            low = '%.3f' % (low)
+            high = '%.3f' % (high)
+            print('pval', low, high)
+
+            temp_ate = {'type' : 'direct-effect'}
             temp_ate['query'] = ''
             temp_ate['chart'] = sql.plot(de, treatment, outcome)
+            temp_ate['low'] = low
+            temp_ate['high'] = high
             outJSON['data'].append(temp_ate)
+
 
             # TE
             te, matcheddata, adj_set,pur=sql.adjusted_groupby(data, treatment, outcome, cov)
-            print('te2', te)
-            temp_ate = {'type' : 'total-effect-cmi'}
+            print('te', te)
+
+            low, high, I = test.ulti_fast_permutation_tst(matcheddata, treatment, outcome, cov, pvalue=pvalue,
+                                                  debug=debug, loc_num_samples=loc_num_samples,
+                                                  num_samples=num_samples, view=False)
+
+            low = '%.3f' % (low)
+            high = '%.3f' % (high)
+            print('pval', low, high)
+
+            temp_ate = {'type' : 'total-effect'}
             temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=med)
             temp_ate['chart'] = sql.plot(te, treatment, outcome)
+            temp_ate['low'] = low
+            temp_ate['high'] = high
             outJSON['data'].append(temp_ate)
 
             for line in temp_ate['query']:
@@ -400,7 +445,7 @@ class BiasResource(object):
             outJSON['responsibility'] = res
 
             outJSON['fine_grained'] = {'treatment': treatment, 'outcome': outcome, 'attributes': {}}
-            print(data.columns.values, treatment, outcome, [*res])
+            # print(data.columns.values, treatment, outcome, [*res])
             for attr in set([*res]) - set(treatment) - set(outcome):
                 X=top_k_explanation(data, treatment, outcome, [attr], k=10)
                 print(X.loc[:, attr: outcome[0]])

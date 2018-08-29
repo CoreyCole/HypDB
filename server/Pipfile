@@ -12,6 +12,7 @@ scipy = "*"
 "psycopg2" = "*"
 numpy-indexed = "*"
 numba = "*"
+"rpy2" = "*"
 
 [dev-packages]
 

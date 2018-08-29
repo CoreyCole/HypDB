@@ -97,21 +97,21 @@ def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
     # directed
     for node in par1:
         outJSON['graph']['links'].append({'source': node, 'target': treatment[0]})
-        print('par1', node, treatment[0])
+        #print('par1', node, treatment[0])
     for node in par2:
         outJSON['graph']['links'].append({'source': node, 'target': outcome[0]})
-        print('par2', node, outcome[0])
+        #print('par2', node, outcome[0])
     # undirected
     for node in set(cov1) - set(par1):
         outJSON['graph']['links'].append({'source': treatment[0], 'target': node})
-        print('cov1', node, treatment[0])
+        #print('cov1', node, treatment[0])
     for node in set(cov2) - set(par2):
         outJSON['graph']['links'].append({'source': outcome[0], 'target': node})
-        print('cov2', node, outcome[0])
+        #print('cov2', node, outcome[0])
 
     outJSON['graph']['links'] = [dict(t) for t in {tuple(d.items()) for d in outJSON['graph']['links']}]
 
-    print(outJSON['graph']['links'])
+    #print(outJSON['graph']['links'])
 
     #print(json.dumps(outJSON))
 

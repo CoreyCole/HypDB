@@ -39,7 +39,7 @@ class BiasAteResource(object):
         filename = params['filename']
         # Create data
         data = read_from_csv('./tmp/' + filename)
-        print('data size: ', len(data))
+        # print('data size: ', len(data))
 
         # Processwhere clause
         # TODO: need support for multiple where statements separated by or
@@ -54,7 +54,7 @@ class BiasAteResource(object):
             #print(len(data))
             key = next(iter(params['where']))
             data = BiasResource.parseWhere(key, params['where'][key], data)
-            print('data size (post where clause): ', len(data))
+            # print('data size (post where clause): ', len(data))
         if len(data) == 0:
             raise ValueError('No rows remaining in database after where clause')
             #if params['where']:

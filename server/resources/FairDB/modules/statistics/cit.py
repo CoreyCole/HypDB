@@ -9,7 +9,7 @@ from FairDB.utils.read_data import read_from_csv
 # from rpy2.robjects.packages import importr
 import FairDB.modules.infotheo.info_theo as info
 from FairDB.utils.util import get_distinct,remove_dup
-# from rpy2 import robjects as ro
+from rpy2 import robjects as ro
 import time
 import random
 import sys
@@ -903,7 +903,8 @@ def ulti_fast_permutation_tst(data, x, y ,z=[], ratio=0.5, pvalue=0.05, num_samp
         print(k)
         print((ci_low,ci_hight))
         print("#####")
-    return [max(ci_hight, 1.0/num_samples),stat_0]
+    # return [max(ci_hight, 1.0/num_samples),stat_0]
+    return ci_low, ci_hight, stat_0
 
 def ulti_fast_permutation_tst_cmi4(data, x, y, z=[], ratio=0.5, pvalue=0.05, num_samples=5000, debug=False,
                                     fraction=1, k=100, optimized=False):

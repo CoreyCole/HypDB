@@ -45,9 +45,23 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       <div class="tede">
         <div class="tede-chart-cards">
           <span class="flex-span"></span>
-          <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [cmi]="queryChartData[3]['cmi']" [low]="queryChartData[3]['low']" [high]="queryChartData[3]['high']" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
+          <hyp-naive-group-by-chart *ngIf="queryChartData[3].chart && queryChartData[3].chart.length > 0" 
+            [data]="queryChartData[3].chart" 
+            [cmi]="queryChartData[3]['cmi']" 
+            [low]="queryChartData[3]['low']" 
+            [high]="queryChartData[3]['high']" 
+            [graphData]="graph" 
+            title="Total Effect">
+          </hyp-naive-group-by-chart>
           <span class="flex-span"></span>
-          <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [cmi]="queryChartData[2]['cmi']" [low]="queryChartData[2]['low']" [high]="queryChartData[2]['high']" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
+          <hyp-naive-group-by-chart *ngIf="queryChartData[3].chart && queryChartData[3].chart.length > 0" 
+            [data]="queryChartData[2].chart" 
+            [cmi]="queryChartData[2]['cmi']" 
+            [low]="queryChartData[2]['low']" 
+            [high]="queryChartData[2]['high']" 
+            [graphData]="graph" 
+            title="Direct Effect">
+          </hyp-naive-group-by-chart>
           <span class="flex-span"></span>
         </div>
         <div class="cov-container">
@@ -130,15 +144,19 @@ export class HomePageComponent implements OnInit {
     this.error = null;
     this.queryChartData = [];
     for (const queryChart of data['data']) {
-      if (queryChart.type === 'responsibleAte') {
-        queryChart.chart = this.parseAteWithGroupingAttribute(queryChart.chart);
+      if (queryChart.chart && queryChart.chart.length > 0) {
+        if (queryChart.type === 'responsibleAte') {
+          queryChart.chart = this.parseAteWithGroupingAttribute(queryChart.chart);
+        } else {
+          queryChart.chart = queryChart.chart.map(row => {
+            const keys = Object.keys(row);
+            return { name: row[keys[0]], value: row[keys[1]] };
+          });
+        }
+        this.queryChartData.push(queryChart);
       } else {
-        queryChart.chart = queryChart.chart.map(row => {
-          const keys = Object.keys(row);
-          return { name: row[keys[0]], value: row[keys[1]] };
-        });
+        this.queryChartData.push({ type: '', chart: [], query: [] });
       }
-      this.queryChartData.push(queryChart);
     }
     this.covariates = data['covariates'];
     this.mediator = data['mediator'];

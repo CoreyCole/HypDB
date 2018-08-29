@@ -44,7 +44,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       </mat-card>
       <div class="tede">
         <div class="tede-chart-cards">
-          <span class="flex-span"></span>
+          <span class="flex-span" *ngIf="queryChartData[3].chart && queryChartData[3].chart.length > 0"></span>
           <hyp-naive-group-by-chart *ngIf="queryChartData[3].chart && queryChartData[3].chart.length > 0" 
             [data]="queryChartData[3].chart" 
             [cmi]="queryChartData[3]['cmi']" 
@@ -62,7 +62,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
             [graphData]="graph" 
             title="Direct Effect">
           </hyp-naive-group-by-chart>
-          <span class="flex-span"></span>
+          <span class="flex-span" *ngIf="queryChartData[2].chart && queryChartData[2].chart.length > 0"></span>
         </div>
         <div class="cov-container">
           <span class="flex-span"></span>

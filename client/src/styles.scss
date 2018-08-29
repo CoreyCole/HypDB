@@ -120,6 +120,11 @@ body {
   }
 }
 
+// ngx chart legend
+span.legend-title-text {
+  font-weight: normal !important;
+}
+
 datatable-body-cell, div.page-count {
   font-size: 16pt !important;
 }

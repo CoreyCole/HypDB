@@ -85,13 +85,13 @@ export class MainService {
     if (this.queryResCache.has(key)) {
       const result = this.queryResCache.get(key);
       console.log('cached result=', result);
-      return of(result);
+      return of(JSON.parse(JSON.stringify(result)));
     } else {
       return this.http.post(`${this.endpoint}/api/bias`, { ...dto })
         .pipe(
           catchError(err => throwError(err)),
           tap((res: QueryRes) => {
-            this.queryResCache.set(key, res);
+            this.queryResCache.set(key, JSON.parse(JSON.stringify(res)));
           })
         );
     }

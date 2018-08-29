@@ -6,7 +6,7 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
 @Component({
   selector: 'hyp-graph',
   template: `
-  <span>{{error}}</span>
+  <span class="error">{{error}}</span>
   <div class="ngx-graph-container">
     <ngx-graph *ngIf="graph"
       class="chart-container"

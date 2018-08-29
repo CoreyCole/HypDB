@@ -4,7 +4,7 @@ import { Component, OnChanges, Input } from '@angular/core';
   selector: 'hyp-coarse-grained',
   template: `
   <div class="datatable">
-    <mat-toolbar color="accent">
+    <mat-toolbar color="primary">
       <span>Coarse Grained Explanations</span>
     </mat-toolbar>
     <ngx-datatable

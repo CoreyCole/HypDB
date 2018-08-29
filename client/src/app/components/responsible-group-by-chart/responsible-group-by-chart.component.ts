@@ -35,7 +35,7 @@ export class ResponsibleGroupByChartComponent implements OnChanges {
   @Input() high: string;
   public view: any[] = [1000, 400];
   public colorScheme = {
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+    domain: ['#675d82', '#4b2e83', '#b7a57a', '#C7B42C']
   };
   treatment: string = null;
   outcome: string = null;

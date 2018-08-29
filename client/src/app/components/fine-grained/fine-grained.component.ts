@@ -4,7 +4,7 @@ import { Component, OnChanges, Input } from '@angular/core';
   selector: 'hyp-fine-grained',
   template: `
   <div class="datatable">
-    <mat-toolbar color="accent">
+    <mat-toolbar color="primary">
       <span>Top</span>
       <span class="select-span k">
         <mat-select

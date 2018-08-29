@@ -74,8 +74,8 @@ export class GraphComponent implements OnChanges {
 
   view: any[] = [1000, 1000];
   curve = shape.curveLinear; // or some other function from d3-shape
-  colorScheme = {
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+  public colorScheme = {
+    domain: ['#675d82', '#4b2e83', '#b7a57a', '#C7B42C']
   };
   orientation = 'LR';
   constructor() { }
@@ -132,9 +132,9 @@ export class GraphComponent implements OnChanges {
   getColor(node: GraphNode): string {
     const id = node.id;
     if (this.graph.correlation.treatment[0] === id) {
-      return 'rgb(199, 180, 44)';
+      return '#b7a57a';
     } else if (this.graph.correlation.outcome.indexOf(id) > -1) {
-      return 'rgb(90, 164, 84)';
+      return '#4b2e83';
     } else {
       return 'rgb(170, 170, 170)';
     }

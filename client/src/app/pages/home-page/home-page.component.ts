@@ -54,7 +54,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
             title="Total Effect">
           </hyp-naive-group-by-chart>
           <span class="flex-span"></span>
-          <hyp-naive-group-by-chart *ngIf="queryChartData[3].chart && queryChartData[3].chart.length > 0" 
+          <hyp-naive-group-by-chart *ngIf="queryChartData[2].chart && queryChartData[2].chart.length > 0" 
             [data]="queryChartData[2].chart" 
             [cmi]="queryChartData[2]['cmi']" 
             [low]="queryChartData[2]['low']" 

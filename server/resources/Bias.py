@@ -247,6 +247,9 @@ class BiasResource(object):
             pvalue = 0.01
             num_samples = 1000
             loc_num_samples = 1000
+            if filename == 'AdultData.csv':
+            	num_samples = 100
+            	loc_num_samples = 100
             debug = False
             coutious = 'no'
             k = 3

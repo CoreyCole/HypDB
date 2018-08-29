@@ -7,6 +7,7 @@ import { GraphData } from '../../services/main.service';
   <mat-card>
     <div class="chart">
       <h2>{{ title }}</h2>
+      <h3>95% confidence interval for p-value: ({{ low }}, {{ high }})</h3>
       <ngx-charts-bar-vertical
         [view]="view"
         [scheme]="colorScheme"
@@ -28,6 +29,8 @@ export class NaiveGroupByChartComponent implements OnChanges {
   @Input() data: any[];
   @Input() graphData: GraphData;
   @Input() title: string;
+  @Input() low: string;
+  @Input() high: string;
   public view: any[] = [400, 400];
   public colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']

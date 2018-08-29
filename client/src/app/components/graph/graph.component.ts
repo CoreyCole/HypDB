@@ -18,7 +18,9 @@ import { GraphLink, GraphNode, GraphData } from '../../services/main.service';
       [curve]="curve"
       [enableZoom]="false"
       [draggingEnabled]="true"
-      [panningEnabled]="false">
+      [panningEnabled]="false"
+      [zoomLevel]="'2.0'"
+      [autoCenter]="true">
 
       <ng-template #defsTemplate let-link>
         <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">

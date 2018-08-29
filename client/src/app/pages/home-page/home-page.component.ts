@@ -33,7 +33,7 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       </mat-card>
       <span class="flex-span"></span>
       <div class="chart-cards">
-        <hyp-responsible-group-by-chart [data]="queryChartData[1].chart" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
+        <hyp-responsible-group-by-chart [data]="queryChartData[1].chart" [low]="queryChartData[1]['low']" [high]="queryChartData[1]['high']" [graphData]="graph" [mostResponsible]="mostResponsible"></hyp-responsible-group-by-chart>
       </div>
       <span class="flex-span"></span>
     </div>
@@ -45,9 +45,9 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
       <div class="tede">
         <div class="tede-chart-cards">
           <span class="flex-span"></span>
-          <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
+          <hyp-naive-group-by-chart [data]="queryChartData[3].chart" [low]="queryChartData[3]['low']" [high]="queryChartData[3]['high']" [graphData]="graph" title="Total Effect"></hyp-naive-group-by-chart>
           <span class="flex-span"></span>
-          <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
+          <hyp-naive-group-by-chart [data]="queryChartData[2].chart" [low]="queryChartData[2]['low']" [high]="queryChartData[2]['high']" [graphData]="graph" title="Direct Effect"></hyp-naive-group-by-chart>
           <span class="flex-span"></span>
         </div>
         <div class="cov-container">

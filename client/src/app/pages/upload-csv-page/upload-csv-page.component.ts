@@ -5,7 +5,7 @@ import { MainService } from '../../services/main.service';
   selector: 'hyp-upload-csv-page',
   template: `
   <mat-toolbar class="main-toolbar" color="primary">
-    <img src="/assets/scale.jpg" alt="hypdb logo">
+    <img src="/assets/scale.png" alt="hypdb logo">
     HypDB - Upload CSV
     <span class="flex-span"></span>
     <button mat-raised-button color="accent" routerLink="/home">HOME PAGE</button>

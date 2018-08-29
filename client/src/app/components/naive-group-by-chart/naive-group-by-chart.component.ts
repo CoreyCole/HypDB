@@ -33,7 +33,7 @@ export class NaiveGroupByChartComponent implements OnChanges {
   @Input() cmi: string;
   @Input() low: string;
   @Input() high: string;
-  public view: any[] = [400, 400];
+  public view: any[] = [500, 300];
   public colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };

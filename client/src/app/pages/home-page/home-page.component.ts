@@ -6,7 +6,8 @@ import { MainService, CsvJson, GraphData, QueryRes } from '../../services/main.s
 @Component({
   selector: 'hyp-home-page',
   template: `
-  <mat-toolbar color="primary">
+  <mat-toolbar class="main-toolbar" color="primary">
+    <img src="/assets/scale.png" alt="hypdb logo">
     HypDB
     <span class="flex-span"></span>
     <button mat-raised-button color="accent" routerLink="/upload">UPLOAD CSV FILE</button>

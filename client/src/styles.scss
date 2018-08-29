@@ -113,6 +113,22 @@ body {
   background-color: #e5e5e5;
 }
 
+.main-toolbar {
+  img {
+    height: 32px;
+    margin-right: 16px;
+  }
+}
+
+datatable-body-cell, div.page-count {
+  font-size: 16pt !important;
+}
+
+datatable-header-cell {
+  font-size: 18pt !important;
+  font-weight: bold !important;
+}
+
 .markdown-pre {
   background: rgba(0, 0, 0, 0.1);
   border: 0.5px solid rgba(0, 0, 0, 0.03);

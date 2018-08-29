@@ -9,7 +9,6 @@ import { catchError } from 'rxjs/operators';
   selector: 'hyp-pick-params',
   template: `
   <div *ngIf="csvJson">
-    <span class="error">{{ error }}</span>
     <div class="spacer"></div>
     <div class="inputs">
       <pre>       SELECT avg(</pre>
@@ -51,6 +50,7 @@ import { catchError } from 'rxjs/operators';
       <mat-spinner *ngIf="loading" color="accent"></mat-spinner>
       <span *ngIf="loading" class="message">The query is being diagnosed for bias . . .</span>
     </div>
+    <span class="error">{{ error }}</span>
   </div>
   `,
   styleUrls: ['./pick-params.component.scss']
@@ -129,6 +129,7 @@ export class PickParamsComponent implements OnChanges {
         .pipe(
           catchError((err) => {
             this.loading = false;
+            this.error = err.message;
             this.results.emit(null);
             return throwError(err);
           })

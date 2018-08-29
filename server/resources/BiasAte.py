@@ -25,7 +25,7 @@ import time
 import FairDB.core.simdetec as simp
 from FairDB.utils.util import bining, get_distinct
 from Bias import BiasResource
-# import FairDB.modules.statistics.cit as test
+import FairDB.modules.statistics.cit as test
 
 
 class BiasAteResource(object):
@@ -75,7 +75,18 @@ class BiasAteResource(object):
         # Naive group-by query, followd by a conditional independance test
         ate = sql.naive_groupby(data, treatment, outcome)
         ate_data = sql.plot(ate, treatment, outcome)
+
+        low, high, I = test.ulti_fast_permutation_tst(data, treatment, outcome, pvalue=pvalue,
+                                                  debug=debug,loc_num_samples=loc_num_samples,
+                                                  num_samples=num_samples,view=False)
+
+        low = '%.3f' % (low)
+        high = '%.3f' % (high)
+
         outJSON = {
+            'low' : low,
+            'high' : high,
+            'cmi' : I,
             'naiveAte': ate_data,
             'graph': {
                 'correlation': {

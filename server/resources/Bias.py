@@ -262,7 +262,8 @@ class BiasResource(object):
 
             low = '%.3f' % (low)
             high = '%.3f' % (high)
-            print('pval', low, high)
+            I = '%.3f' % (I)
+            print('pval', low, high, I)
 
             outJSON = {'data' : []}
             outJSON['naiveAte'] = ate_data
@@ -272,6 +273,7 @@ class BiasResource(object):
             temp_ate['chart'] = ate_data
             temp_ate['low'] = low
             temp_ate['high'] = high
+            temp_ate['cmi'] = I
             outJSON['data'].append(temp_ate)
 
             for line in temp_ate['query']:
@@ -334,7 +336,7 @@ class BiasResource(object):
             print(treatment, outcome)
             res = get_respon(data, outcome, treatment, list(set(cov + med)))
             for key in res:
-            	res[key] = "%.3f" % (res[key])
+                res[key] = "%.3f" % (res[key])
             print('res', res)
 
             t2 = treatment.copy()
@@ -350,13 +352,15 @@ class BiasResource(object):
 
                 low = '%.3f' % (low)
                 high = '%.3f' % (high)
-                print('pval', low, high)
+                I = '%.3f' % (I)
+                print('pval', low, high, I)
 
                 temp_ate = {'type' : 'responsibleAte'}
                 temp_ate['query'] = BiasResource.writeQuery(t2, outcome, params['filename'][:-4], params['whereString'])
                 temp_ate['chart'] = ate_data2
                 temp_ate['low'] = low
                 temp_ate['high'] = high
+                temp_ate['cmi'] = I
                 outJSON['data'].append(temp_ate)
                 
                 for line in temp_ate['query']:
@@ -406,13 +410,15 @@ class BiasResource(object):
 
             low = '%.3f' % (low)
             high = '%.3f' % (high)
-            print('pval', low, high)
+            I = '%.3f' % (I)
+            print('pval', low, high, I)
 
             temp_ate = {'type' : 'direct-effect'}
             temp_ate['query'] = ''
             temp_ate['chart'] = sql.plot(de, treatment, outcome)
             temp_ate['low'] = low
             temp_ate['high'] = high
+            temp_ate['cmi'] = I
             outJSON['data'].append(temp_ate)
 
 
@@ -426,13 +432,15 @@ class BiasResource(object):
 
             low = '%.3f' % (low)
             high = '%.3f' % (high)
-            print('pval', low, high)
+            I = '%.3f' % (I)
+            print('pval', low, high, I)
 
             temp_ate = {'type' : 'total-effect'}
             temp_ate['query'] = BiasResource.writeQuery(treatment, outcome, params['filename'][:-4], params['whereString'], naive=False, covariates=med)
             temp_ate['chart'] = sql.plot(te, treatment, outcome)
             temp_ate['low'] = low
             temp_ate['high'] = high
+            temp_ate['cmi'] = I
             outJSON['data'].append(temp_ate)
 
             for line in temp_ate['query']:
@@ -456,6 +464,7 @@ class BiasResource(object):
                 for index, row in X.iterrows():
                     row_data = {}
                     for column in columns:
+
                         #if (column == 'totalCorrelation'):
                         #    column = 'TotalCorrelation'
                         row_data[column] = row[column]

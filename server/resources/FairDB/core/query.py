@@ -88,8 +88,9 @@ def graph(cov1, par1, cov2, par2, treatment, outcome, outJSON):
     # in boundary of each other
     if treatment[0] in par2:
         outJSON['graph']['correlation']['dashed'] = False
+
     # edge doesn't exist but we need it for the graph
-    elif not outcome[0] in cov1 and not treatment[0] in cov2:
+    if not outcome[0] in cov1 and not treatment[0] in cov2:
         outJSON['graph']['links'].append({'source': treatment[0], 'target': outcome[0]})
     # nodes
     for node in set(cov1 + cov2 + treatment + outcome):

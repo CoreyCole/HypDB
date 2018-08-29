@@ -4,7 +4,8 @@ import { MainService } from '../../services/main.service';
 @Component({
   selector: 'hyp-upload-csv-page',
   template: `
-  <mat-toolbar color="primary">
+  <mat-toolbar class="main-toolbar" color="primary">
+    <img src="/assets/scale.jpg" alt="hypdb logo">
     HypDB - Upload CSV
     <span class="flex-span"></span>
     <button mat-raised-button color="accent" routerLink="/home">HOME PAGE</button>

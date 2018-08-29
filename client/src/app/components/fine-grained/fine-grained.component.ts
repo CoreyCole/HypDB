@@ -64,7 +64,7 @@ export class FineGrainedComponent implements OnChanges {
       this.covariates = Object.keys(this.fineGrained.attributes);
       this.currentCovariate = this.covariates[0];
       this.columns = this.fineGrained.attributes[this.currentCovariate].columns.map(column => {
-        return { name: column };
+        return { name: column, prop: column };
       });
       this.maxK = this.fineGrained.attributes[this.currentCovariate].rows.length;
       this.currK = 2;
@@ -80,7 +80,7 @@ export class FineGrainedComponent implements OnChanges {
   attributeSelected(attribute: string) {
     this.currentCovariate = attribute;
     this.columns = this.fineGrained.attributes[attribute].columns.map(column => {
-      return { name: column };
+      return { name: column, prop: column };
     });
     if (this.fineGrained.attributes[this.currentCovariate].rows.length <= this.currK) {
       this.rows = this.fineGrained.attributes[this.currentCovariate].rows

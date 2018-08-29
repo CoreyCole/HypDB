@@ -16,6 +16,7 @@ import { GraphData } from '../../services/main.service';
         [xAxis]="true"
         [yAxis]="true"
         [legend]="true"
+        [legendTitle]="'by ' + treatment"
         [showXAxisLabel]="true"
         [showYAxisLabel]="true"
         xAxisLabel="{{ mostResponsible }}"

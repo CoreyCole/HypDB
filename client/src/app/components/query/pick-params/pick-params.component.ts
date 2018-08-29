@@ -78,8 +78,6 @@ export class PickParamsComponent implements OnChanges {
       this.outcomeAttrs = this.csvJson.fields;
       this.currentOutcome = null;
       this.currentTreatment = null;
-      this.treatAttrs = [];
-      this.outcomeAttrs = [];
       this.where = '';
       this.error = null;
     }

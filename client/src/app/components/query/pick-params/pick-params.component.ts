@@ -108,6 +108,7 @@ export class PickParamsComponent implements OnChanges {
     } else if (!this.currentTreatment) {
       this.error = 'no treatment selected!';
     } else {
+      this.clear.emit();
       this.error = null;
       this.loading = true;
       const parsedWhere = this.whereParser.parse(this.where);

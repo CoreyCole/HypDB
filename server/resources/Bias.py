@@ -312,7 +312,8 @@ class BiasResource(object):
             if par1:
                 cov = par1
             else:
-                cov = detector.recommend_covarite(treatment, outcome, cov1)
+            	if filename != 'LungCancer.csv':
+                	cov = detector.recommend_covarite(treatment, outcome, cov1)
             #cov = ['distancegroup', 'origin']
             for item in cov:
                 if item in cov2:
@@ -323,7 +324,8 @@ class BiasResource(object):
             if par2:
                 med = par2
             else:
-                med = detector.recommend_covarite(treatment, outcome, cov2)
+            	if filename != 'LungCancer.csv':
+                	med = detector.recommend_covarite(treatment, outcome, cov2)
             #med = ['crsdeptime', 'year']
             
             if treatment[0] in cov:

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.poetry]
+name = "HypDB"
+version = "0.0.2"
+description = "HypDB: Detect, Explain And Resolve Bias in OLAP (think twice about your group-by query)"
+
+license = "MIT"
+
+authors = [
+    "Corey Cole <coreylc@uw.edu>",
+    "Peter Li <pzli97@cs.washington.edu>",
+    "Babak Salimi <bsalimi@cs.washington.edu>",
+    "Johannes Gehrke <johannes@microsoft.com>",
+    "Dan Suciu <suciu@@cs.washington.edu>"
+]
+
+readme = "README.md"
+
+repository = "https://github.com/CoreyCole/HypDB"
+homepage = "http://db.cs.washington.edu/projects/hypdb/"
+
+keywords = ['detect', 'bias', 'query', 'queries', 'OLAP']
+
+[tool.poetry.dependencies]
+python = "^3.5"
+pandas = "^0.23.4"
+matplotlib = "^2.2.3"
+scipy = "^1.1.0"
+psycopg2 = "^2.7.5"
+numpy-indexed = "^0.3.5"
+numba = "^0.39.0"
+rpy2 = "^2.9.4"

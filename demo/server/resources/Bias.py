@@ -200,7 +200,7 @@ class BiasResource(object):
             raise ValueError("Supported where operators include 'AND', 'IN', 'NOT IN', '=', '!=', '>', '>=', '<', and '<='")
 
     def on_post(self, req, resp):
-        try:
+        #try:
 
             """Endpoint for returning bias statistics about a query"""
 
@@ -308,22 +308,24 @@ class BiasResource(object):
 
             # cov
             #cov = BiasResource.minCMI(treatment, outcome, data, cov1)
-            cov = None
+            cov = []
             if par1:
                 cov = par1
             else:
-                cov = detector.recommend_covarite(treatment, outcome, cov1)
+            	if filename != 'LungCancer.csv':
+                	cov = detector.recommend_covarite(treatment, outcome, cov1)
             #cov = ['distancegroup', 'origin']
             for item in cov:
                 if item in cov2:
                     cov2.remove(item)
             # med
             #med = BiasResource.minCMI(treatment, outcome, data, cov2)
-            med = None
+            med = []
             if par2:
                 med = par2
             else:
-                med = detector.recommend_covarite(treatment, outcome, cov2)
+            	if filename != 'LungCancer.csv':
+                	med = detector.recommend_covarite(treatment, outcome, cov2)
             #med = ['crsdeptime', 'year']
             
             if treatment[0] in cov:
@@ -496,9 +498,9 @@ class BiasResource(object):
             resp.status = falcon.HTTP_200
             resp.body = json.dumps(outJSON)
             return resp
-        except Exception as e:
-          print(e)
-          resp.content_type = 'application/json'
-          resp.status = falcon.HTTP_422
-          resp.body = str(e)
-          return resp
+        # except Exception as e:
+        #   print(e)
+        #   resp.content_type = 'application/json'
+        #   resp.status = falcon.HTTP_422
+        #   resp.body = str(e)
+        #   return resp

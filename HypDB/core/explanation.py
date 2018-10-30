@@ -1,8 +1,8 @@
 
 from math import *
 import numpy as np
-from FairDB.utils.read_data import *
-from FairDB.utils.util import *
+from hypdb.utils.read_data import *
+from hypdb.utils.util import *
 import numpy as np
 from itertools import combinations, permutations
 

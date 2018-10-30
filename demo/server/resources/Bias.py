@@ -14,15 +14,15 @@ from itertools import chain, combinations
 
 # HypDB imports
 from os import chdir
-from FairDB.core.cov_selection import FairDB
-from FairDB.core.explanation import top_k_explanation
-import FairDB.core.query as sql
-from FairDB.core.matching import *
+from hypdb.core.cov_selection import hypdb
+from hypdb.core.explanation import top_k_explanation
+import hypdb.core.query as sql
+from hypdb.core.matching import *
 import time
-import FairDB.core.simdetec as simp
-from FairDB.utils.util import bining, get_distinct
-from FairDB.modules.infotheo.info_theo import *
-import FairDB.modules.statistics.cit as test
+import hypdb.core.simdetec as simp
+from hypdb.utils.util import bining, get_distinct
+from hypdb.modules.infotheo.info_theo import *
+import hypdb.modules.statistics.cit as test
 
 
 class BiasResource(object):
@@ -232,10 +232,10 @@ class BiasResource(object):
             # Process select
             outcome = [params['outcome']]
 
-            # Initialize FairDB
-            detector = FairDB(data)
+            # Initialize hypdb
+            detector = hypdb(data)
 
-            # FairDB parameters
+            # hypdb parameters
             whitelist = []
             black = []
             # if filename == 'finpe2.csv':

@@ -17,15 +17,15 @@ import falcon
 
 # HypDB imports
 from os import chdir
-from FairDB.core.cov_selection import FairDB
-from FairDB.core.explanation import top_k_explanation
-import FairDB.core.query as sql
-from FairDB.core.matching import *
+from hypdb.core.cov_selection import hypdb
+from hypdb.core.explanation import top_k_explanation
+import hypdb.core.query as sql
+from hypdb.core.matching import *
 import time
-import FairDB.core.simdetec as simp
-from FairDB.utils.util import bining, get_distinct
-from Bias import BiasResource
-import FairDB.modules.statistics.cit as test
+import hypdb.core.simdetec as simp
+from hypdb.utils.util import bining, get_distinct
+from resources.Bias import BiasResource
+import hypdb.modules.statistics.cit as test
 
 
 class BiasAteResource(object):

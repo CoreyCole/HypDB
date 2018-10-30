@@ -1,8 +1,8 @@
 
 
-from FairDB.utils.read_data import *
-from FairDB.core.matching import matching
-from FairDB.utils.util import *
+from hypdb.utils.read_data import *
+from hypdb.core.matching import matching
+from hypdb.utils.util import *
 from pylab import *
 import json
 import numpy

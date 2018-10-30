@@ -1,8 +1,8 @@
 import copy
-import FairDB.modules.statistics.cit as test
-from FairDB.utils.read_data import *
-import FairDB.modules.infotheo.info_theo as info
-from FairDB.utils.util import *
+import hypdb.modules.statistics.cit as test
+from hypdb.utils.read_data import *
+import hypdb.modules.infotheo.info_theo as info
+from hypdb.utils.util import *
 import time
 from scipy.stats import chi2,spearmanr,pearsonr
 from math import sqrt
@@ -17,7 +17,7 @@ def diff(list1, list2):
           return list1
         return [x for x in list1 if x not in list2]
 
-class FairDB(object):
+class hypdb(object):
     def recommend_covarite(self, treatment, outcome, potential):
         inf = info.Info(self.data)
         init_cmi = inf.CMI(treatment,outcome)
@@ -979,9 +979,9 @@ if __name__ == '__main__':
     #print(len(data))
     #data.drop(data.columns[[0]], axis=1, inplace=True)  ## drop the first column
     #print(data.columns)
-    detector = FairDB(data,1,cube=True,cubename='small10cubes')  # expricube12 cube 12  expricube10 small10cubes
-    #detector = FairDB(data)
-    #detector = FairDB(data, 1, database=True, tablename=filename)
+    detector = hypdb(data,1,cube=True,cubename='small10cubes')  # expricube12 cube 12  expricube10 small10cubes
+    #detector = hypdb(data)
+    #detector = hypdb(data, 1, database=True, tablename=filename)
     whitelist = []
     black = [""]  # ['fid', 'flightdate','origincityname', 'flightnum', 'tailnum','origincityname', 'depdelay', 'distance', 'arrdelayminutes', 'flights','yyear']
     rown = 100000

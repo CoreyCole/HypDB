@@ -4,7 +4,7 @@ build-backend = "flit.buildapi"
 
 [tool.poetry]
 name = "HypDB"
-version = "0.0.2"
+version = "1.0.0"
 description = "HypDB: Detect, Explain And Resolve Bias in OLAP (think twice about your group-by query)"
 
 license = "MIT"
@@ -31,5 +31,5 @@ matplotlib = "^2.2.3"
 scipy = "^1.1.0"
 psycopg2 = "^2.7.5"
 numpy-indexed = "^0.3.5"
-numba = "^0.39.0"
+numba = "==0.40.1"
 rpy2 = "^2.9.4"

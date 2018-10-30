@@ -1,10 +1,10 @@
 import copy
 
 import pandas as pd
-from FairDB.utils.read_data import *
+from hypdb.utils.read_data import *
 
-import FairDB.modules.infotheo.info_theo as info
-from FairDB.utils.util import *
+import hypdb.modules.infotheo.info_theo as info
+from hypdb.utils.util import *
 
 
 def get_respon2(data,treatment, outcome, covariates):

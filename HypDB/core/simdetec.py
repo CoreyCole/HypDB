@@ -1,5 +1,5 @@
 
-from FairDB.core.explanation import *
+from hypdb.core.explanation import *
 from statistics import mean
 
 def SimposonReversal(data, treatment, outcome,cov):

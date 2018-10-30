@@ -4,15 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pip = "==18.0"
 gunicorn = "*"
 falcon = "*"
 pandas = "*"
-matplotlib = "*"
+matplotlib = "==2.2.3"
 scipy = "*"
-"psycopg2" = "*"
+psycopg2 = "*"
 numpy-indexed = "*"
 numba = "*"
-"rpy2" = "*"
+rpy2 = "*"
+hypdb = {file = "https://files.pythonhosted.org/packages/3a/20/7d2405d9bb0be80758eed2cd9d74cc22df9ef566003286b84dd679faa979/HypDB-1.0.0-py3-none-any.whl"}
 
 [dev-packages]
 

@@ -1,3 +1,3 @@
 ###
-###  FairDB utilities
+###  hypdb utilities
 ###

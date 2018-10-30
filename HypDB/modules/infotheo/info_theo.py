@@ -1,24 +1,24 @@
 from pylab import *
 import scipy.stats as stats
 from  math import *
-from FairDB.utils.read_data import read_from_csv
-from FairDB.utils.util import get_distinct
+from hypdb.utils.read_data import read_from_csv
+from hypdb.utils.util import get_distinct
 from  math import *
 import functools
 import scipy.stats as stats
 from pylab import *
-from FairDB.utils.read_data import read_from_csv
+from hypdb.utils.read_data import read_from_csv
 from scipy.special import entr
 import time
 from scipy.special import entr
 import pandas as pd
 #from modules.statistics.hypothesis_test import *
 import numpy_indexed as npi
-from FairDB.utils.util import *
+from hypdb.utils.util import *
 import numba
 import os
 import psycopg2
-from FairDB.utils.read_data import *
+from hypdb.utils.read_data import *
 
 
 

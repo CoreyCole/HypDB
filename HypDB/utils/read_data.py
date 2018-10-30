@@ -3,7 +3,7 @@ import psycopg2
 
 def read_from_csv(filename, sep=None, header=0, to_drop=None):
     """
-    Load data from csv into a FairDB friendly format
+    Load data from csv into a hypdb friendly format
     Parameters:
     -----------
     filename :

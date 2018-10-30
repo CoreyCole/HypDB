@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import scipy.special as special
-from FairDB.utils.read_data import read_from_csv
+from hypdb.utils.read_data import read_from_csv
 # from rpy2.robjects.packages import importr
-import FairDB.modules.infotheo.info_theo as info
-from FairDB.utils.util import get_distinct,remove_dup
+import hypdb.modules.infotheo.info_theo as info
+from hypdb.utils.util import get_distinct,remove_dup
 from rpy2 import robjects as ro
 import time
 import random
